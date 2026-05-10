@@ -27,9 +27,10 @@ const PasswordField = ({ placeholder, name, value, onChange }) => {
         type="button"
         className="login-eye-toggle"
         onClick={() => setShowPassword((p) => !p)}
-        aria-label="Toggle password visibility"
+        aria-label={showPassword ? 'Hide password' : 'Show password'}
+        aria-pressed={showPassword}
       >
-        {showPassword ? <FaEyeSlash /> : <FaEye />}
+        {showPassword ? <FaEye /> : <FaEyeSlash />}
       </button>
     </div>
   );

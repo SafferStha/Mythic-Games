@@ -11,6 +11,8 @@ import Login from './pages/Login';
 import Account from './pages/Account';
 import Library from './pages/Library';
 import GameDetails from './pages/GameDetails';
+import ResetPassword from './pages/ResetPassword';
+import OtpVerification from './pages/OtpVerification';
 
 
 const App = () => {
