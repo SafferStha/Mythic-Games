@@ -10,6 +10,8 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Account from './pages/Account';
 import Library from './pages/Library';
+import GameDetails from './pages/GameDetails';
+
 
 const App = () => {
   return (
@@ -25,6 +27,7 @@ const App = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/account" element={<Account />} />
       <Route path="/library" element={<Library />} />
+      <Route path="/game/:id" element={<GameDetails />} />
     </Routes>
   );
 };
