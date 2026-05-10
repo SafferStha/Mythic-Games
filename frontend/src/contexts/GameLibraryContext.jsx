@@ -69,12 +69,14 @@ export const GameLibraryProvider = ({ children }) => {
         return [...currentItems, item];
       }
 
-      return currentItems.map((entry, index) =>
-        index === existingIndex
-          ? { ...entry, quantity: (Number(entry.quantity) || 1) + 1 }
-          : entry,
-      );
+      return currentItems;
     });
+  };
+
+  const isInCart = (game) => {
+    const item = normalizeGame(game);
+
+    return cartItems.some((entry) => entry.key === item.key);
   };
 
   const addToWishlist = (game) => {
@@ -86,6 +88,26 @@ export const GameLibraryProvider = ({ children }) => {
       }
 
       return [...currentItems, item];
+    });
+  };
+
+  const isInWishlist = (game) => {
+    const item = normalizeGame(game);
+
+    return wishlistItems.some((entry) => entry.key === item.key);
+  };
+
+  const toggleWishlist = (game) => {
+    const item = normalizeGame(game);
+
+    setWishlistItems((currentItems) => {
+      const existingIndex = currentItems.findIndex((entry) => entry.key === item.key);
+
+      if (existingIndex === -1) {
+        return [...currentItems, item];
+      }
+
+      return currentItems.filter((entry) => entry.key !== item.key);
     });
   };
 
@@ -157,7 +179,10 @@ export const GameLibraryProvider = ({ children }) => {
       cartCount,
       wishlistCount,
       addToCart,
+      isInCart,
       addToWishlist,
+      isInWishlist,
+      toggleWishlist,
       removeFromCart,
       removeFromWishlist,
       moveCartItemToWishlist,

@@ -25,20 +25,6 @@
   display: block;
 }
 
-.news-card-delete {
-  position: absolute;
-  bottom: 10px;
-  left: 10px;
-  border: none;
-  border-radius: 999px;
-  background: #ff3b3b;
-  color: #ffffff;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
 .news-card-content {
   display: flex;
   flex-direction: column;

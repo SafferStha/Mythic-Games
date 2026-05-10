@@ -1,22 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import GameCard from '../components/GameCard';
 import './Wishlist.css';
-import { addToWishlist, getWishlist, removeFromWishlist } from './wishlistStorage';
+import { useGameLibrary } from '../contexts/GameLibraryContext.jsx';
 
 const Wishlist = () => {
-  const [items, setItems] = useState([]);
+  const { wishlistItems, removeFromWishlist } = useGameLibrary();
 
-  useEffect(() => {
-    setItems(getWishlist());
-  }, []);
-
-  const removeItem = (id) => {
-    removeFromWishlist(id);
-    setItems(getWishlist());
+  const removeItem = (itemKey) => {
+    removeFromWishlist(itemKey);
   };
 
-  // Demo fallback: if wishlist is empty, show a helpful empty state.
+  const items = wishlistItems;
+
   return (
     <div className="wishlist-container">
       <Navbar />
@@ -39,39 +36,17 @@ const Wishlist = () => {
             </div>
 
             <div className="wishlist-actions" style={{ marginTop: 14 }}>
-              <a
-                href="/browse"
-                className="small-btn"
-                style={{ display: 'inline-block', textDecoration: 'none' }}
-              >
+              <Link to="/browse" className="small-btn" style={{ display: 'inline-block' }}>
                 Go to Browse
-              </a>
-
-              <button
-                type="button"
-                className="small-btn secondary"
-                onClick={() => {
-                  // add a single demo item for immediate visibility
-                  addToWishlist({
-                    id: '1',
-                    title: 'Red Dead Redemption 2',
-                    type: 'Action-Adventure',
-                    price: 3499,
-                    image: ''
-                  });
-                  setItems(getWishlist());
-                }}
-              >
-                Add demo item
-              </button>
+              </Link>
             </div>
           </div>
         ) : (
           <div className="wishlist-grid">
             {items.map((game) => (
               <div className="wishlist-card-wrap" key={String(game.id)}>
-                <a
-                  href={`/game/${encodeURIComponent(String(game.id))}`}
+                <Link
+                  to={`/game/${encodeURIComponent(String(game.title))}`}
                   style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block' }}
                   aria-label={`View ${game.title}`}
                 >
@@ -82,12 +57,12 @@ const Wishlist = () => {
                     image={game.image}
                     type={game.type}
                   />
-                </a>
+                </Link>
 
                 <button
                   type="button"
                   className="wishlist-remove"
-                  onClick={() => removeItem(game.id)}
+                  onClick={() => removeItem(game.key)}
                 >
                   Remove
                 </button>

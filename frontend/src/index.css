@@ -82,9 +82,7 @@ body {
     font-family: "Inter", Arial, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /* Sidebar + topbar offsets */
-    padding-left: var(--sidebar-width);
-    padding-top: var(--topbar-height);
+    padding: 0;
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────── */
@@ -106,6 +104,6 @@ body[data-theme="light"] ::-webkit-scrollbar-thumb {
 /* ─── Mobile layout ─────────────────────────────────────── */
 @media (max-width: 768px) {
     body {
-        padding-left: 0;
+        padding: 0;
     }
 }

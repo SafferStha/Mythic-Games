@@ -52,7 +52,6 @@ const News = () => {
           <div className="news-header-group">
             <h1 className="section-label">Mythic Games News</h1>
           </div>
-          <button className="primary-btn">Add news</button>
         </section>
 
         <div className="news-grid">

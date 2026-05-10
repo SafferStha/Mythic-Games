@@ -8,6 +8,8 @@ import Wishlist from "./pages/Wishlist";
 import Gifts from "./pages/Gifts";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+import OtpVerification from "./pages/OtpVerification";
 import Account from "./pages/Account";
 import Library from "./pages/Library";
 import GameDetails from "./pages/GameDetails";

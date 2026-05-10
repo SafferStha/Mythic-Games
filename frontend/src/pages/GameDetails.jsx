@@ -20,7 +20,7 @@ const fallbackGames = {
 const GameDetails = () => {
   const { gameTitle } = useParams();
   const location = useLocation();
-  const { addToCart, addToWishlist } = useGameLibrary();
+  const { addToCart, toggleWishlist, isInWishlist, isInCart } = useGameLibrary();
 
   const routeTitle = decodeURIComponent(gameTitle || "Game Name");
   const selectedGame = location.state ||
@@ -35,6 +35,8 @@ const GameDetails = () => {
     };
 
   const price = Number(selectedGame.price || 0).toLocaleString();
+  const savedInCart = isInCart(selectedGame);
+  const savedInWishlist = isInWishlist(selectedGame);
 
   return (
     <div className="details-page">
@@ -90,19 +92,21 @@ const GameDetails = () => {
 
           <button
             type="button"
-            className="details-btn-cart"
+            className={`details-btn-cart ${savedInCart ? "is-added" : ""}`}
             onClick={() => addToCart(selectedGame)}
+            disabled={savedInCart}
           >
-            Add to Cart
+            {savedInCart ? "Added to Cart" : "Add to Cart"}
           </button>
 
           <button
             type="button"
-            className="details-btn-wishlist"
-            onClick={() => addToWishlist(selectedGame)}
+            className={`details-btn-wishlist ${savedInWishlist ? "is-saved" : ""}`}
+            onClick={() => toggleWishlist(selectedGame)}
+            aria-pressed={savedInWishlist}
           >
-            <i className="bx bx-heart" />
-            Add to Wishlist
+            <i className={`bx ${savedInWishlist ? "bxs-heart" : "bx-heart"}`} />
+            {savedInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
           </button>
         </aside>
       </main>
