@@ -1,0 +1,273 @@
+/* ─────────────────────────────────────────
+   Checkout page — Epic Games style
+───────────────────────────────────────── */
+
+.checkout-page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text-primary);
+}
+
+.checkout-main {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+}
+
+/* ── Page header ── */
+.checkout-header {
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+}
+
+.checkout-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0;
+}
+
+/* ── Two-column body ── */
+.checkout-body {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 24px;
+    align-items: start;
+}
+
+/* ── Shared section label ── */
+.checkout-section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin: 0 0 14px 0;
+}
+
+/* ─────────────────────────────────────────
+   Left: Payment methods
+───────────────────────────────────────── */
+
+.checkout-methods-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.checkout-method-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    transition:
+        background 0.15s,
+        border-color 0.15s;
+    text-align: left;
+    width: 100%;
+}
+
+.checkout-method-item:hover {
+    background: var(--surface-strong);
+}
+
+.checkout-method-item.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: var(--text-primary);
+}
+
+.checkout-method-icon svg {
+    width: 36px;
+    height: 28px;
+    display: block;
+}
+
+.checkout-method-name {
+    flex: 1;
+}
+
+.checkout-method-check {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 16px;
+    margin-left: auto;
+}
+
+/* ─────────────────────────────────────────
+   Right: Order summary panel
+───────────────────────────────────────── */
+
+.checkout-summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: sticky;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── Item list ── */
+.checkout-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+}
+
+.checkout-items-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.checkout-items-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.checkout-items-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.checkout-empty {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+/* ── Single item row ── */
+.checkout-item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.checkout-item-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: var(--surface-strong);
+    flex-shrink: 0;
+}
+
+.checkout-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.checkout-item-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--surface-strong);
+}
+
+.checkout-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.checkout-item-title {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
+
+.checkout-item-price {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+/* ── Totals ── */
+.checkout-totals {
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.checkout-total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.checkout-grand-total {
+    font-size: 16px;
+    color: var(--text-primary);
+    font-weight: 700;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+}
+
+.checkout-grand-total strong {
+    font-size: 20px;
+    color: var(--accent);
+}
+
+/* ── Confirm button ── */
+.checkout-confirm-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: var(--radius-md);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.checkout-confirm-btn:hover:not(:disabled) {
+    background: var(--accent-strong);
+}
+
+.checkout-confirm-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ─────────────────────────────────────────
+   Responsive
+───────────────────────────────────────── */
+
+@media (max-width: 768px) {
+    .checkout-body {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-summary {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .checkout-main {
+        padding: 24px 16px 48px;
+    }
+}

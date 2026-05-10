@@ -1,111 +1,113 @@
-import React, { useMemo } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import './GameDetails.css';
-import { getWishlist, isInWishlist, addToWishlist, removeFromWishlist } from './wishlistStorage';
+import React from "react";
+import { useLocation, useParams } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import "./GameDetails.css";
+import redDeadImg from "../assets/RedDead.png";
+import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
 
-// Minimal demo catalog (no backend). Extend as needed.
-const DEMO_GAMES = {
-  '1': {
-    id: '1',
-    title: 'Red Dead Redemption 2',
-    type: 'Action-Adventure',
-    price: 3499,
-    image: new URL('../assets/RedDead.png', import.meta.url).toString(),
+const fallbackGames = {
+  "Elden Ring": {
+    title: "Elden Ring",
+    type: "Base Game",
+    price: 4999,
+    image: redDeadImg,
     description:
-      'A high-stakes journey through the American frontier—crafted for unforgettable moments.'
+      "Explore a vast open world, uncover legendary bosses, and shape your own path through a dark fantasy realm crafted by Hidetaka Miyazaki and George R.R. Martin. Face countless dangers as you traverse the Lands Between, grow stronger, and become the Elden Lord.",
+    genres: ["Action RPG", "Adventure", "Open World"],
   },
-  '2': {
-    id: '2',
-    title: 'Mystic Quest',
-    type: 'RPG',
-    price: 2999,
-    image: new URL('../assets/react.svg', import.meta.url).toString(),
-    description:
-      'Forge your legend, explore strange lands, and uncover ancient powers.'
-  },
-  '3': {
-    id: '3',
-    title: 'Indie Horizons',
-    type: 'Simulation',
-    price: 1599,
-    image: new URL('../assets/vite.svg', import.meta.url).toString(),
-    description:
-      'Build, manage, and thrive—one delightful decision at a time.'
-  }
 };
 
-const formatNpr = (n) => `${Number(n)} NPR`;
-
 const GameDetails = () => {
-  const { id } = useParams();
+  const { gameTitle } = useParams();
+  const location = useLocation();
+  const { addToCart, addToWishlist } = useGameLibrary();
 
-  const game = DEMO_GAMES[id] ?? {
-    id,
-    title: 'Unknown Game',
-    type: '—',
-    price: 0,
-    image: new URL('../assets/hero.png', import.meta.url).toString(),
-    description: 'No details available for this game.'
-  };
+  const routeTitle = decodeURIComponent(gameTitle || "Game Name");
+  const selectedGame = location.state ||
+    fallbackGames[routeTitle] || {
+      title: routeTitle,
+      type: "Base Game",
+      price: 0,
+      image: redDeadImg,
+      description:
+        "Game details are being prepared. This page is ready to receive title, artwork, and purchase information from the list view.",
+      genres: ["Action", "Adventure"],
+    };
 
-  const wishlisted = useMemo(() => isInWishlist(game.id), [game.id]);
-
-  const toggleWishlist = () => {
-    const current = getWishlist();
-    const exists = current.some((g) => String(g.id) === String(game.id));
-
-    if (exists) removeFromWishlist(game.id);
-    else addToWishlist(game);
-
-    // Force re-render for button label
-    // eslint-disable-next-line no-alert
-    window.location.reload();
-  };
+  const price = Number(selectedGame.price || 0).toLocaleString();
 
   return (
-    <div className="game-details-container">
+    <div className="details-page">
       <Navbar />
 
-      <div style={{ marginTop: 18 }}>
-        <Link to="/browse" style={{ color: 'var(--text-muted)', fontWeight: 800 }}>
-          ← Back to Browse
-        </Link>
+      <div className="details-banner">
+        <img
+          src={selectedGame.image}
+          alt={selectedGame.title}
+          className="details-banner-img"
+        />
+        <div className="details-banner-overlay" />
       </div>
 
-      <div className="game-details-layout" style={{ marginTop: 16 }}>
-        <div className="game-hero">
-          <img src={game.image} alt={game.title} />
-          <div className="game-info">
-            <h1>{game.title}</h1>
-            <div className="game-badges">
-              <span className="badge">{game.type}</span>
-              <span className="badge">Mythic Store</span>
-            </div>
-            <p className="muted" style={{ marginTop: 12 }}>
-              {game.description}
-            </p>
+      <main className="details-main">
+        <div className="details-content">
+          <p className="details-kicker">{selectedGame.type || "Base Game"}</p>
+          <h1 className="details-title">{selectedGame.title}</h1>
+
+          <div className="details-media">
+            <img
+              src={selectedGame.image}
+              alt={selectedGame.title}
+              className="details-media-img"
+            />
+          </div>
+
+          <section className="details-about">
+            <h2 className="details-section-label">About this game</h2>
+            <p className="details-description">{selectedGame.description}</p>
+          </section>
+
+          <div className="details-genres">
+            {(selectedGame.genres || []).map((genre) => (
+              <span key={genre} className="details-genre-tag">
+                {genre}
+              </span>
+            ))}
           </div>
         </div>
 
-        <aside className="side-panel">
-          <div className="muted">Price</div>
-          <div className="price">{formatNpr(game.price)}</div>
-
-          <div className="details-buttons">
-            <button type="button" className="primary-btn" onClick={toggleWishlist}>
-              {wishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
-            </button>
-
-            <Link to="/wishlist" className="secondary-btn" style={{ textAlign: 'center', textDecoration: 'none' }}>
-              View Wishlist
-            </Link>
+        <aside className="details-panel">
+          <div className="details-panel-thumb">
+            <img src={selectedGame.image} alt={selectedGame.title} />
           </div>
+
+          <h2 className="details-panel-title">{selectedGame.title}</h2>
+
+          <div className="details-panel-price-row">
+            <span className="details-panel-price-label">Base Game</span>
+            <span className="details-panel-price">{price} NPR</span>
+          </div>
+
+          <button
+            type="button"
+            className="details-btn-cart"
+            onClick={() => addToCart(selectedGame)}
+          >
+            Add to Cart
+          </button>
+
+          <button
+            type="button"
+            className="details-btn-wishlist"
+            onClick={() => addToWishlist(selectedGame)}
+          >
+            <i className="bx bx-heart" />
+            Add to Wishlist
+          </button>
         </aside>
-      </div>
+      </main>
     </div>
   );
 };
 
 export default GameDetails;
-

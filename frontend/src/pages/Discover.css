@@ -1,94 +1,12 @@
+/* ═══════════════════════════════════════════
+   DISCOVER PAGE
+   Section / slider styles live in GameCard.css
+   so they are available on every page that
+   renders <GameSlider>.
+   ═══════════════════════════════════════════ */
+
 .discover-page {
-	min-height: 100vh;
-	background: var(--bg);
-	color: var(--text-primary);
-}
-
-.discover-content {
-	padding: 24px;
-	margin-left: 160px;
-}
-
-.discover-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 16px;
-	margin-bottom: 20px;
-}
-
-.discover-title {
-	margin: 0;
-	font-weight: 700;
-}
-
-.discover-swiper {
-	padding: 20px 0;
-}
-
-.discover-nav {
-	display: flex;
-	align-items: center;
-	gap: 4px;
-	margin-right: 35px;
-}
-
-.discover-nav-btn {
-	border: 0;
-	color: var(--text-primary);
-	background-color: rgba(120, 120, 120, 0.35);
-	padding: 0;
-	border-radius: 50%;
-	width: 30px;
-	height: 30px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	cursor: pointer;
-}
-
-.discover-nav-btn:not(.swiper-button-disabled):hover {
-	background-color: rgba(152, 152, 152, 0.65);
-}
-
-.discover-nav-btn.swiper-button-disabled {
-	cursor: default;
-	pointer-events: none;
-	opacity: 0.45;
-}
-
-.discover-nav-btn i {
-	font-size: 24px;
-}
-
-.discover-swiper .swiper-button-next,
-.discover-swiper .swiper-button-prev {
-	display: none;
-}
-
-.discover-swiper .swiper-pagination-bullet {
-	background-color: var(--text-primary);
-	opacity: 0;
-	display: none;
-}
-
-.discover-swiper .swiper-pagination-bullet-active {
-	background-color: var(--text-primary);
-	opacity: 0;
-	display: none;
-}
-
-.discover-swiper .swiper-wrapper {
-	justify-content: flex-start; /* ensure slides start from the left */
-}
-
-.discover-swiper .swiper-slide {
-	display: flex;
-	align-items: flex-start; /* align card to top of slide */
-	justify-content: flex-start; /* don't center the card horizontally */
-}
-
-/* Optional: reduce left offset if needed (adjust value to taste) */
-.discover-content.adjust-left {
-	margin-left: 120px;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text-primary);
 }
