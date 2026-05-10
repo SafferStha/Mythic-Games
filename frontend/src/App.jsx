@@ -10,8 +10,8 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Account from './pages/Account';
 import Library from './pages/Library';
-import ResetPassword from './pages/ResetPassword';
-import OtpVerification from './pages/OtpVerification';
+import GameDetails from './pages/GameDetails';
+
 
 const App = () => {
 
@@ -31,6 +31,7 @@ const App = () => {
       <Route path="/account" element={<Account />} />
 
       <Route path="/library" element={<Library />} />
+      <Route path="/game/:id" element={<GameDetails />} />
     </Routes>
   );
 };
