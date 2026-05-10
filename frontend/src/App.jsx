@@ -10,8 +10,11 @@ import Cart from './pages/Cart';
 import Login from './pages/Login';
 import Account from './pages/Account';
 import Library from './pages/Library';
+import ResetPassword from './pages/ResetPassword';
+import OtpVerification from './pages/OtpVerification';
 
 const App = () => {
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -23,7 +26,10 @@ const App = () => {
       <Route path="/gifts" element={<Gifts />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/otp-verification" element={<OtpVerification />} />
       <Route path="/account" element={<Account />} />
+
       <Route path="/library" element={<Library />} />
     </Routes>
   );

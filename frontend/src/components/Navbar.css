@@ -71,6 +71,8 @@ body{
 /* BUTTON */
 .btn{
     background: var(--btn-bg);
+    color: var(--text-muted);
+
     padding: 8px 12px;
     border-radius: 7px;
     font-size: 13px;
