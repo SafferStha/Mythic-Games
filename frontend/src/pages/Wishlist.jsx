@@ -15,10 +15,10 @@ const Wishlist = () => {
   const items = wishlistItems;
 
   return (
-    <div className="wishlist-container">
+    <div className="wishlist-page">
       <Navbar />
 
-      <div className="wishlist-container" style={{ paddingTop: 18 }}>
+      <main className="wishlist-container">
         <div style={{ padding: '0 0 0 0' }}>
           <h1 style={{ color: 'var(--text-primary)' }}>Wishlist</h1>
           <div className="muted" style={{ color: 'var(--text-muted)', marginTop: 8 }}>
@@ -70,7 +70,7 @@ const Wishlist = () => {
             ))}
           </div>
         )}
-      </div>
+      </main>
     </div>
   );
 };

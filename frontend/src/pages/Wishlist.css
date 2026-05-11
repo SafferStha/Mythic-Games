@@ -1,3 +1,8 @@
+.wishlist-page{
+  min-height: 100vh;
+  background: var(--bg);
+}
+
 .wishlist-container{
   padding: 40px;
   color: var(--text-primary);
