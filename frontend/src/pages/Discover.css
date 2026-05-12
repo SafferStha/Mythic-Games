@@ -92,3 +92,21 @@
 .discover-content.adjust-left {
 	margin-left: 120px;
 }
+
+.discover-main {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 75px 48px 175px;
+}
+
+.discover-main .game-section {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+@media (max-width: 1024px) {
+    .discover-main {
+        padding: 8px 24px 40px;
+    }
+}
