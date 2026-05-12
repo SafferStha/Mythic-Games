@@ -1,4 +1,5 @@
-* {
+.login-page,
+.login-page * {
   box-sizing: border-box;
 }
 
