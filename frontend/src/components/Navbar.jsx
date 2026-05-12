@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/MythicLogo.png";
@@ -8,155 +7,103 @@ import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const { cartCount } = useGameLibrary();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <>
-      <aside className={sidebarOpen ? "sidebar sidebar-open" : "sidebar"}>
-        <div className="sidebar-logo">
-          <Link to="/" onClick={closeSidebar}>
+    <header className="navbar">
+      {/* ── Row 1: Logo + right actions ── */}
+      <div className="nav-top">
+        <div className="nav-brand-wrap">
+          <Link to="/" className="nav-logo">
             <img src={logo} alt="Mythic Games" />
           </Link>
+          <span className="nav-brand-name">Mythic Games Store</span>
         </div>
 
-        <nav className="sidebar-nav">
-          <span className="sidebar-section-label">Store</span>
-
-          <NavLink
-            to="/"
-            end
-            className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
-            }
-            onClick={closeSidebar}
-          >
-            <i className="bx bx-store" />
-            <span>Home</span>
-          </NavLink>
-
-          <NavLink
-            to="/discover"
-            className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
-            }
-            onClick={closeSidebar}
-          >
-            <i className="bx bx-compass" />
-            <span>Discover</span>
-          </NavLink>
-
-          <NavLink
-            to="/browse"
-            className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
-            }
-            onClick={closeSidebar}
-          >
-            <i className="bx bx-grid-alt" />
-            <span>Browse</span>
-          </NavLink>
-
-          <NavLink
-            to="/news"
-            className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
-            }
-            onClick={closeSidebar}
-          >
-            <i className="bx bx-news" />
-            <span>News</span>
-          </NavLink>
-
-          <hr className="sidebar-divider" />
-
-          <span className="sidebar-section-label">Library</span>
-
-          <NavLink
-            to="/wishlist"
-            className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
-            }
-            onClick={closeSidebar}
-          >
-            <i className="bx bx-heart" />
-            <span>Wishlist</span>
-          </NavLink>
-
-          <NavLink
-            to="/gifts"
-            className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
-            }
-            onClick={closeSidebar}
-          >
-            <i className="bx bx-gift" />
-            <span>Gifts</span>
-          </NavLink>
-
-          <NavLink
-            to="/cart"
-            className={({ isActive }) =>
-              isActive ? "sidebar-link active" : "sidebar-link"
-            }
-            onClick={closeSidebar}
-          >
-            <i className="bx bx-cart" />
-            <span>Cart</span>
-            {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-          </NavLink>
-        </nav>
-
-        <div className="sidebar-footer">
-          <span>Mythic Games &copy; 2025</span>
-        </div>
-      </aside>
-
-      {sidebarOpen && (
-        <div className="sidebar-overlay" onClick={closeSidebar} />
-      )}
-
-      <header className="topbar">
-        <button
-          type="button"
-          className="hamburger-btn"
-          onClick={() => setSidebarOpen((prev) => !prev)}
-          aria-label="Toggle navigation"
-        >
-          <i className="bx bx-menu" />
-        </button>
-
-        <div className="search-wrapper">
-          <i className="bx bx-search search-icon" />
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search store..."
-            aria-label="Search store"
-          />
-        </div>
-
-        <div className="topbar-actions">
+        <div className="nav-top-right">
           <button
             type="button"
-            className="topbar-icon-btn"
+            className="nav-icon-btn"
             onClick={toggleTheme}
             aria-label="Toggle theme"
           >
             <i className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"}`} />
           </button>
-
-          <Link
-            to="/account"
-            className="topbar-icon-btn topbar-profile-btn"
-            aria-label="Account"
-          >
-            <i className="bx bx-user-circle" />
+          <Link to="/account" className="nav-signin-btn">
+            Sign-in
           </Link>
         </div>
-      </header>
-    </>
+      </div>
+
+      {/* ── Row 2: Search + links (indented to align with brand name) ── */}
+      <div className="nav-bottom">
+        <span className="nav-bottom-spacer" aria-hidden="true" />
+        <div className="nav-search-wrap">
+          <input
+            type="text"
+            placeholder="Search store"
+            className="nav-search"
+          />
+          <i className="bx bx-search nav-search-icon" />
+        </div>
+
+        <nav className="nav-links">
+          <NavLink
+            to="/discover"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Discover
+          </NavLink>
+          <NavLink
+            to="/browse"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Browse
+          </NavLink>
+          <NavLink
+            to="/news"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            News
+          </NavLink>
+        </nav>
+
+        <div className="nav-right-links">
+          <NavLink
+            to="/wishlist"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Wishlist
+          </NavLink>
+          <NavLink
+            to="/gifts"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Gifts
+          </NavLink>
+          <NavLink
+            to="/cart"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Cart{" "}
+            {cartCount > 0 && (
+              <span className="nav-cart-badge">{cartCount}</span>
+            )}
+          </NavLink>
+        </div>
+      </div>
+    </header>
   );
 };
 

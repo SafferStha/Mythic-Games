@@ -1,36 +1,9 @@
-/* ═══════════════════════════════════════════
-   DISCOVER PAGE
-   Section / slider styles live in GameCard.css
-   so they are available on every page that
-   renders <GameSlider>.
-   ═══════════════════════════════════════════ */
-
 .discover-page {
     min-height: 100vh;
     background: var(--bg);
     color: var(--text-primary);
-<<<<<<< HEAD
-<<<<<<< HEAD
 }
 
 .discover-main {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 8px 75px 48px 175px;
-}
-
-.discover-main .game-section {
-    padding-left: 0;
-    padding-right: 0;
-}
-
-@media (max-width: 1024px) {
-    .discover-main {
-        padding: 8px 24px 40px;
-    }
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+    padding-bottom: 48px;
 }

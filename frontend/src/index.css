@@ -1,7 +1,6 @@
 /* ─── Design Tokens ─────────────────────────────────────── */
 :root {
-    --sidebar-width: 240px;
-    --topbar-height: 56px;
+    --navbar-height: 110px;
 
     --bg: #121212;
     --nav-bg: #181818;
@@ -82,19 +81,7 @@ body {
     font-family: "Inter", Arial, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-<<<<<<< HEAD
-<<<<<<< HEAD
-    padding: 0;
-=======
-    /* Sidebar + topbar offsets */
-    padding-left: var(--sidebar-width);
-    padding-top: var(--topbar-height);
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-=======
-    /* Sidebar + topbar offsets */
-    padding-left: var(--sidebar-width);
-    padding-top: var(--topbar-height);
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+    padding-top: var(--navbar-height);
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────── */
@@ -111,19 +98,4 @@ body {
 }
 body[data-theme="light"] ::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.18);
-}
-
-/* ─── Mobile layout ─────────────────────────────────────── */
-@media (max-width: 768px) {
-    body {
-<<<<<<< HEAD
-<<<<<<< HEAD
-        padding: 0;
-=======
-        padding-left: 0;
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-=======
-        padding-left: 0;
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-    }
 }

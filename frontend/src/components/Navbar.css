@@ -1,324 +1,178 @@
-/* ─── Sidebar ───────────────────────────────────────────── */
-.sidebar {
+/* ── Navbar wrapper ── */
+.navbar {
     position: fixed;
-    left: 0;
     top: 0;
-    bottom: 0;
-    width: var(--sidebar-width);
-    background: var(--nav-bg);
-    border-right: 1px solid var(--border);
+    left: 0;
+    right: 0;
     z-index: 200;
+}
+
+/* ══════════════════════════════
+   ROW 1 — slightly lighter bg
+══════════════════════════════ */
+.nav-top {
     display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    overflow-x: hidden;
-    transition: transform 0.25s ease;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 24px;
+    background: var(--nav-bg); /* #181818 */
+    border-bottom: 1px solid var(--border);
 }
 
-/* ─── Sidebar Logo ──────────────────────────────────────── */
-.sidebar-logo {
-    padding: 20px 20px 14px;
-    flex-shrink: 0;
-}
-
-.sidebar-logo img {
-    height: 40px;
-    width: auto;
-    display: block;
-}
-
-/* ─── Sidebar Nav ───────────────────────────────────────── */
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-/* ─── Section Labels ────────────────────────────────────── */
-.sidebar-section-label {
-    display: block;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--text-muted);
-    padding: 16px 20px 6px;
-    user-select: none;
-}
-
-/* ─── Sidebar Links ─────────────────────────────────────── */
-.sidebar-link {
+/* Logo + brand text grouped together */
+.nav-brand-wrap {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 20px;
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 0;
-    transition:
-        background 0.15s,
-        color 0.15s;
-    position: relative;
-    border-left: 3px solid transparent;
 }
 
-.sidebar-link:hover {
-    background: rgba(255, 255, 255, 0.05);
-    color: var(--text-primary);
-}
-
-.sidebar-link.active {
-    color: var(--text-primary);
-    background: rgba(0, 120, 242, 0.1);
-    border-left-color: var(--accent);
-}
-
-.sidebar-link i {
-    font-size: 18px;
+.nav-logo img {
+    height: 48px;
+    width: auto;
+    display: block;
     flex-shrink: 0;
 }
 
-/* ─── Cart Badge ────────────────────────────────────────── */
-.cart-badge {
+.nav-brand-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    letter-spacing: 0.01em;
+}
+
+.nav-top-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Theme toggle icon */
+.nav-icon-btn {
+    background: transparent;
+    border: 0;
+    color: var(--text-primary);
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+/* Sign-in button */
+.nav-signin-btn {
+    background: var(--btn-bg);
+    color: var(--text-primary);
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    transition: opacity 0.15s;
+}
+
+.nav-signin-btn:hover {
+    opacity: 0.8;
+}
+
+/* ══════════════════════════════
+   ROW 2 — slightly darker bg
+══════════════════════════════ */
+.nav-bottom {
+    display: flex;
+    align-items: center;
+    padding: 10px 24px 14px;
+    gap: 20px;
+    background: var(--bg); /* #121212 */
+}
+
+/*
+  Invisible spacer — same width as logo image so the
+  search bar starts directly below "Mythic Games Store"
+*/
+.nav-bottom-spacer {
+    /* logo img ~50px wide + 10px gap from nav-brand-wrap gap */
+    width: 60px;
+    flex-shrink: 0;
+}
+
+/* Search */
+.nav-search-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.nav-search {
+    width: 220px;
+    padding: 9px 40px 9px 16px;
+    border-radius: 999px;
+    border: none;
+    outline: none;
+    background: var(--surface-strong);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.nav-search::placeholder {
+    color: var(--text-muted);
+}
+
+.nav-search-icon {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+/* Center links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Shared link style */
+.nav-link {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+    padding: 4px 10px;
+    transition: color 0.15s;
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+}
+
+.nav-link.active {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Right links (Wishlist, Gifts, Cart) */
+.nav-right-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    padding-right: 0;
+}
+
+/* Cart badge */
+.nav-cart-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-width: 18px;
     height: 18px;
     padding: 0 5px;
-    border-radius: 999px;
     background: var(--accent);
     color: #fff;
     font-size: 11px;
     font-weight: 700;
-    line-height: 1;
-    margin-left: auto;
-}
-
-/* ─── Sidebar Divider ───────────────────────────────────── */
-.sidebar-divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 8px 20px;
-}
-
-/* ─── Sidebar Footer ────────────────────────────────────── */
-.sidebar-footer {
-    padding: 16px 20px;
-    font-size: 11px;
-    color: var(--text-muted);
-    flex-shrink: 0;
-    margin-top: auto;
-}
-
-/* ─── Mobile Overlay ────────────────────────────────────── */
-.sidebar-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    z-index: 198;
-}
-
-/* ─── Topbar ────────────────────────────────────────────── */
-.topbar {
-    position: fixed;
-    top: 0;
-    left: var(--sidebar-width);
-    right: 0;
-    height: var(--topbar-height);
-    background: var(--nav-bg);
-    border-bottom: 1px solid var(--border);
-    z-index: 199;
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-    gap: 12px;
-}
-
-/* ─── Hamburger ─────────────────────────────────────────── */
-.hamburger-btn {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: 0;
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-size: 22px;
-    padding: 0;
-    flex-shrink: 0;
-}
-
-/* ─── Search ────────────────────────────────────────────── */
-.search-wrapper {
-    position: relative;
-    flex: 1;
-    max-width: 360px;
-}
-
-.search-icon {
-    position: absolute;
-    left: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px;
-    color: var(--text-muted);
-    pointer-events: none;
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-.lower-menu a:hover {
-    color: var(--hover);
-}
-
-/* RIGHT MENU */
-.lower-menu-right{
-    display: flex;
-    gap: 25px;
-    margin-left: auto;
-    margin-right: 50px;
-}
-
-.lower-menu-right li{
-    list-style: none;
-}
-
-.lower-menu-right a{
-    color: var(--text-muted);
-}
-
-.lower-menu-right a:hover{
-    color: var(--hover);
-}
-
-.nav-cart-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.cart-count-badge {
-    min-width: 20px;
-    height: 20px;
-    padding: 0 6px;
     border-radius: 999px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-    line-height: 20px;
-    text-align: center;
+    margin-left: 3px;
 }
-
-.nav-link {
-    color: var(--text-muted);
-    transition: 0.2s;
-    opacity: 0.65;
-    padding-bottom: 4px;
-    border-bottom: 2px solid transparent;
-}
-
-.nav-link:hover {
-    color: var(--hover);
-    opacity: 1;
-}
-
-.active-link {
-=======
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-.search-input {
-    width: 100%;
-    height: 36px;
-    background: var(--surface-strong);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: 0 12px 0 36px;
-<<<<<<< HEAD
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-    color: var(--text-primary);
-    font-size: 13px;
-    font-family: inherit;
-    outline: none;
-    transition: border-color 0.15s;
-}
-
-.search-input::placeholder {
-    color: var(--text-muted);
-}
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-.left-menu .active-link {
-    opacity: 1;
-    border-bottom: none;
-}
-
-=======
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-.search-input:focus {
-    border-color: var(--accent);
-}
-
-/* ─── Topbar Actions ────────────────────────────────────── */
-.topbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-left: auto;
-}
-
-.topbar-icon-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    border: 0;
-    color: var(--text-secondary);
-    cursor: pointer;
-    font-size: 20px;
-    padding: 6px;
-    border-radius: var(--radius);
-    transition:
-        color 0.15s,
-        background 0.15s;
-    text-decoration: none;
-}
-
-.topbar-icon-btn:hover {
-    color: var(--text-primary);
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.topbar-profile-btn,
-.topbar-profile-btn i {
-    font-size: 26px;
-}
-
-/* ─── Mobile ────────────────────────────────────────────── */
-@media (max-width: 768px) {
-    .sidebar {
-        transform: translateX(-100%);
-    }
-
-    .sidebar.sidebar-open {
-        transform: translateX(0);
-    }
-
-    .topbar {
-        left: 0;
-    }
-
-    .hamburger-btn {
-        display: flex;
-    }
-}
-<<<<<<< HEAD
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")

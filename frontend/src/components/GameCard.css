@@ -152,7 +152,9 @@
    ═══════════════════════════════════════════ */
 
 .game-section {
-    padding: 32px 24px 8px;
+    padding: 32px 24px 8px 104px;
+    display: flex;
+    flex-direction: column;
 }
 
 .game-section-header {
@@ -160,6 +162,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 16px;
+    margin-right: 0;
 }
 
 .game-section-title {
