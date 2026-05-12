@@ -6,11 +6,11 @@ const WISHLIST_STORAGE_KEY = 'mythic-games-wishlist';
 const GameLibraryContext = createContext(null);
 
 const getItemKey = (game) => {
-  const title = game?.title || 'unknown';
-  const type = game?.type || 'game';
-  const price = Number.isFinite(Number(game?.price)) ? Number(game.price) : 0;
+  const normalizedTitle = String(game?.title || 'unknown')
+    .trim()
+    .toLowerCase();
 
-  return `${title}-${type}-${price}`.toLowerCase();
+  return normalizedTitle;
 };
 
 const loadStoredItems = (storageKey) => {
@@ -44,8 +44,12 @@ const normalizeGame = (game) => {
 };
 
 export const GameLibraryProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => loadStoredItems(CART_STORAGE_KEY));
-  const [wishlistItems, setWishlistItems] = useState(() => loadStoredItems(WISHLIST_STORAGE_KEY));
+  const [cartItems, setCartItems] = useState(() =>
+    loadStoredItems(CART_STORAGE_KEY).map((item) => normalizeGame(item)),
+  );
+  const [wishlistItems, setWishlistItems] = useState(() =>
+    loadStoredItems(WISHLIST_STORAGE_KEY).map((item) => normalizeGame(item)),
+  );
 
   useEffect(() => {
     try {

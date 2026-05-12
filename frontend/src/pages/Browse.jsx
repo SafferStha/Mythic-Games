@@ -6,7 +6,7 @@ const Browse = () => {
   const games = [
     {
       id: '1',
-      title: 'Red Dead Redemption 2',
+      title: 'Crimson Skies: Legacy',
       price: 3499,
       originalPrice: 3499,
       image: new URL('../assets/RedDead.png', import.meta.url).toString(),
@@ -14,26 +14,26 @@ const Browse = () => {
     },
     {
       id: '2',
-      title: 'Mystic Quest',
-      price: 2999,
-      originalPrice: 2999,
+      title: 'Twilight Chronicles',
+      price: 2799,
+      originalPrice: 2799,
       image: new URL('../assets/react.svg', import.meta.url).toString(),
       type: 'RPG'
     },
     {
       id: '3',
-      title: 'Indie Horizons',
-      price: 1599,
-      originalPrice: 1599,
+      title: 'Neon Pulse Racing',
+      price: 1899,
+      originalPrice: 1899,
       image: new URL('../assets/vite.svg', import.meta.url).toString(),
-      type: 'Simulation'
+      type: 'Racing'
     }
   ];
 
   return (
     <div className="browse-page">
       <Navbar />
-      <div style={{ padding: '40px', color: 'var(--text-primary)' }}>
+      <div style={{ paddingLeft: '84px', paddingRight: '40px', paddingTop: '40px', paddingBottom: '40px', color: 'var(--text-primary)' }}>
         <h1>Browse Games</h1>
         <div
           style={{
@@ -44,19 +44,17 @@ const Browse = () => {
           }}
         >
           {games.map((game) => (
-            <a
-              key={game.id}
-              href={`/game/${encodeURIComponent(String(game.id))}`}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
+            <div key={game.id} style={{ textDecoration: 'none', color: 'inherit' }}>
               <GameCard
+                id={game.id}
                 title={game.title}
                 price={game.price}
                 originalPrice={game.originalPrice}
                 image={game.image}
                 type={game.type}
+                detailState={game}
               />
-            </a>
+            </div>
           ))}
         </div>
       </div>

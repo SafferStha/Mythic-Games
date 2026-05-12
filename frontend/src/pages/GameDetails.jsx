@@ -20,10 +20,22 @@ const fallbackGames = {
 const GameDetails = () => {
   const { gameTitle } = useParams();
   const location = useLocation();
-  const { addToCart, toggleWishlist, isInWishlist, isInCart } = useGameLibrary();
+  const {
+    addToCart,
+    toggleWishlist,
+    isInWishlist,
+    isInCart,
+    wishlistItems,
+    cartItems,
+  } = useGameLibrary();
 
   const routeTitle = decodeURIComponent(gameTitle || "Game Name");
+  const libraryMatch = [...wishlistItems, ...cartItems].find(
+    (entry) => String(entry.title).toLowerCase() === routeTitle.toLowerCase(),
+  );
+
   const selectedGame = location.state ||
+    libraryMatch ||
     fallbackGames[routeTitle] || {
       title: routeTitle,
       type: "Base Game",
@@ -35,8 +47,18 @@ const GameDetails = () => {
     };
 
   const price = Number(selectedGame.price || 0).toLocaleString();
-  const savedInCart = isInCart(selectedGame);
-  const savedInWishlist = isInWishlist(selectedGame);
+  const detailsGame = {
+    id: selectedGame.id,
+    title: selectedGame.title,
+    type: selectedGame.type || "Base Game",
+    price: selectedGame.price || 0,
+    image: selectedGame.image,
+    description: selectedGame.description,
+    genres: selectedGame.genres,
+  };
+
+  const savedInCart = isInCart(detailsGame);
+  const savedInWishlist = isInWishlist(detailsGame);
 
   return (
     <div className="details-page">
@@ -93,18 +115,23 @@ const GameDetails = () => {
           <button
             type="button"
             className={`details-btn-cart ${savedInCart ? "is-added" : ""}`}
-            onClick={() => addToCart(selectedGame)}
+            onClick={() => addToCart(detailsGame)}
             disabled={savedInCart}
           >
-            {savedInCart ? "Added to Cart" : "Add to Cart"}
-          >
-            Add to Cart
+            {savedInCart ? (
+              <>
+                <i className="bx bxs-check-circle" style={{ marginRight: "6px" }} />
+                Added to Cart
+              </>
+            ) : (
+              "Add to Cart"
+            )}
           </button>
 
           <button
             type="button"
             className={`details-btn-wishlist ${savedInWishlist ? "is-saved" : ""}`}
-            onClick={() => toggleWishlist(selectedGame)}
+            onClick={() => toggleWishlist(detailsGame)}
             aria-pressed={savedInWishlist}
           >
             <i className={`bx ${savedInWishlist ? "bxs-heart" : "bx-heart"}`} />

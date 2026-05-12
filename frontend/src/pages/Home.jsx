@@ -10,56 +10,56 @@ import redDeadImg from "../assets/RedDead.png";
 const topPicks = [
   {
     id: 1,
-    title: "Red Dead Redemption 2",
+    title: "Crimson Skies: Legacy",
     type: "Base Game",
     price: 4999,
     image: redDeadImg,
   },
   {
     id: 2,
-    title: "Cyberpunk 2077",
+    title: "Neon Pulse Racing",
     type: "Base Game",
-    price: 3499,
+    price: 3299,
     image:
       "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 3,
-    title: "Hades II",
+    title: "Echoes of Tomorrow",
     type: "Early Access",
-    price: 2199,
+    price: 2449,
     image:
       "https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 4,
-    title: "FIFA 25",
+    title: "Apex Champions Pro",
     type: "Sports",
-    price: 2999,
+    price: 2899,
     image:
       "https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 5,
-    title: "Assassin's Creed",
+    title: "Shadow Legends: Origins",
     type: "Base Game",
-    price: 2500,
+    price: 3199,
     image:
       "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 6,
-    title: "God of War",
+    title: "Twilight Chronicles",
     type: "Base Game",
-    price: 3000,
+    price: 2799,
     image:
       "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 7,
-    title: "Far Cry Primal",
+    title: "Primal Fury: Expedition",
     type: "Base Game",
-    price: 3000,
+    price: 3599,
     image:
       "https://images.unsplash.com/photo-1551649001-7a2493a40c64?auto=format&fit=crop&w=800&q=80",
   },
@@ -68,50 +68,50 @@ const topPicks = [
 const newReleases = [
   {
     id: 1,
-    title: "Elden Ring",
+    title: "Stellar Voyager",
     type: "Base Game",
-    price: 3999,
-    originalPrice: 4999,
+    price: 3899,
+    originalPrice: 4599,
     image:
       "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 2,
-    title: "Night Falls",
+    title: "Digital Dreams",
     type: "Base Game",
-    price: 3000,
+    price: 2599,
     image:
       "https://images.unsplash.com/photo-1523978591478-c753949ff840?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 3,
-    title: "Watch Dogs",
+    title: "Midnight Vigilante",
     type: "Base Game",
-    price: 3000,
+    price: 3399,
     image:
       "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 4,
-    title: "GTA V",
+    title: "Metropolis Empire",
     type: "Base Game",
-    price: 3000,
+    price: 3799,
     image:
       "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 5,
-    title: "Indie Spotlight",
+    title: "Quantum Nexus",
     type: "DLC",
-    price: 2500,
+    price: 1799,
     image:
       "https://images.unsplash.com/photo-1528701800489-20be9c2c8d5d?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: 6,
-    title: "Cyberpunk 2077",
+    title: "Frost and Flame",
     type: "Base Game",
-    price: 3499,
+    price: 3199,
     image:
       "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80",
   },

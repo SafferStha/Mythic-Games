@@ -52,6 +52,7 @@ const GameSlider = ({ title, games, sliderId }) => {
         {games.map((game) => (
           <SwiperSlide key={game.id}>
             <GameCard
+              id={game.id}
               title={game.title}
               type={game.type}
               price={game.price}

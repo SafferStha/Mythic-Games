@@ -6,7 +6,7 @@ import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
-  const { cartCount } = useGameLibrary();
+  const { cartCount, wishlistCount } = useGameLibrary();
 
   return (
     <header className="navbar">
@@ -80,7 +80,10 @@ const Navbar = () => {
               isActive ? "nav-link active" : "nav-link"
             }
           >
-            Wishlist
+            Wishlist{" "}
+            {wishlistCount > 0 && (
+              <span className="nav-cart-badge">{wishlistCount}</span>
+            )}
           </NavLink>
           <NavLink
             to="/gifts"

@@ -1,8 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useGameLibrary } from "../contexts/GameLibraryContext";
 import "./GameCard.css";
 
 const GameCard = ({
+  id,
   title,
   price,
   image,
@@ -13,6 +15,35 @@ const GameCard = ({
   detailPath,
   detailState,
 }) => {
+  const { toggleWishlist, isInWishlist } = useGameLibrary();
+
+  const gameData = detailState
+    ? {
+        ...detailState,
+        id: detailState.id ?? id,
+        title: detailState.title ?? title,
+        price: detailState.price ?? price,
+        image: detailState.image ?? image,
+        type: detailState.type ?? type,
+      }
+    : {
+        id,
+        title,
+        price,
+        image,
+        type,
+        originalPrice,
+      };
+
+  // Get current wishlist state from context (not local state)
+  const isWishlisted = isInWishlist(gameData);
+
+  const handleWishlistClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleWishlist(gameData);
+  };
+
   const numericPrice = Number(price);
   const numericOriginalPrice = Number(originalPrice);
   const hasSalePrice =
@@ -37,7 +68,7 @@ const GameCard = ({
       {/* ── Image + hover overlay ── */}
       <Link
         to={detailPath || `/game/${encodeURIComponent(title)}`}
-        state={detailState}
+        state={detailState || gameData}
         className="game-image-wrapper"
         aria-label={`Open ${title}`}
       >
@@ -45,6 +76,15 @@ const GameCard = ({
         <div className="game-hover-overlay">
           <p className="game-hover-price">{overlayLabel}</p>
         </div>
+        <button
+          type="button"
+          className={`game-wishlist-btn ${isWishlisted ? 'active' : ''}`}
+          onClick={handleWishlistClick}
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        >
+          <i className={`bx ${isWishlisted ? 'bxs-heart' : 'bx-heart'}`} />
+        </button>
       </Link>
 
       {/* ── Info below image ── */}
@@ -53,7 +93,7 @@ const GameCard = ({
 
         <Link
           to={detailPath || `/game/${encodeURIComponent(title)}`}
-          state={detailState}
+          state={detailState || gameData}
           className="game-title-link"
           aria-label={`Open ${title}`}
         >
