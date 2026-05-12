@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 .wishlist-page{
   min-height: 100vh;
   background: var(--bg);
@@ -72,6 +73,8 @@
 }
 
 =======
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 /* ─── Wishlist Page ──────────────────────────────────────── */
 .wishlist-page {
     min-height: 100vh;
@@ -147,4 +150,7 @@
         padding: 24px 16px 48px;
     }
 }
+<<<<<<< HEAD
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+=======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")

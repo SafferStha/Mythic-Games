@@ -69,18 +69,6 @@ export const GameLibraryProvider = ({ children }) => {
         return [...currentItems, item];
       }
 
-<<<<<<< HEAD
-      return currentItems;
-    });
-  };
-
-  const isInCart = (game) => {
-    const item = normalizeGame(game);
-
-    return cartItems.some((entry) => entry.key === item.key);
-  };
-
-=======
       return currentItems.map((entry, index) =>
         index === existingIndex
           ? { ...entry, quantity: (Number(entry.quantity) || 1) + 1 }
@@ -89,7 +77,11 @@ export const GameLibraryProvider = ({ children }) => {
     });
   };
 
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+  const isInCart = (game) => {
+    const item = normalizeGame(game);
+
+    return cartItems.some((entry) => entry.key === item.key);
+  };
   const addToWishlist = (game) => {
     const item = normalizeGame(game);
 
@@ -102,7 +94,6 @@ export const GameLibraryProvider = ({ children }) => {
     });
   };
 
-<<<<<<< HEAD
   const isInWishlist = (game) => {
     const item = normalizeGame(game);
 
@@ -122,9 +113,6 @@ export const GameLibraryProvider = ({ children }) => {
       return currentItems.filter((entry) => entry.key !== item.key);
     });
   };
-
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
   const removeFromCart = (itemKey) => {
     setCartItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
   };
@@ -193,14 +181,10 @@ export const GameLibraryProvider = ({ children }) => {
       cartCount,
       wishlistCount,
       addToCart,
-<<<<<<< HEAD
       isInCart,
       addToWishlist,
       isInWishlist,
       toggleWishlist,
-=======
-      addToWishlist,
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
       removeFromCart,
       removeFromWishlist,
       moveCartItemToWishlist,

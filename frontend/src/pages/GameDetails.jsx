@@ -20,11 +20,7 @@ const fallbackGames = {
 const GameDetails = () => {
   const { gameTitle } = useParams();
   const location = useLocation();
-<<<<<<< HEAD
   const { addToCart, toggleWishlist, isInWishlist, isInCart } = useGameLibrary();
-=======
-  const { addToCart, addToWishlist } = useGameLibrary();
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 
   const routeTitle = decodeURIComponent(gameTitle || "Game Name");
   const selectedGame = location.state ||
@@ -39,11 +35,8 @@ const GameDetails = () => {
     };
 
   const price = Number(selectedGame.price || 0).toLocaleString();
-<<<<<<< HEAD
   const savedInCart = isInCart(selectedGame);
   const savedInWishlist = isInWishlist(selectedGame);
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 
   return (
     <div className="details-page">
@@ -99,36 +92,23 @@ const GameDetails = () => {
 
           <button
             type="button"
-<<<<<<< HEAD
             className={`details-btn-cart ${savedInCart ? "is-added" : ""}`}
             onClick={() => addToCart(selectedGame)}
             disabled={savedInCart}
           >
             {savedInCart ? "Added to Cart" : "Add to Cart"}
-=======
-            className="details-btn-cart"
-            onClick={() => addToCart(selectedGame)}
           >
             Add to Cart
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
           </button>
 
           <button
             type="button"
-<<<<<<< HEAD
             className={`details-btn-wishlist ${savedInWishlist ? "is-saved" : ""}`}
             onClick={() => toggleWishlist(selectedGame)}
             aria-pressed={savedInWishlist}
           >
             <i className={`bx ${savedInWishlist ? "bxs-heart" : "bx-heart"}`} />
             {savedInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
-=======
-            className="details-btn-wishlist"
-            onClick={() => addToWishlist(selectedGame)}
-          >
-            <i className="bx bx-heart" />
-            Add to Wishlist
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
           </button>
         </aside>
       </main>

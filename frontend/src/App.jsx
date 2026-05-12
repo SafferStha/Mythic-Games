@@ -8,11 +8,8 @@ import Wishlist from "./pages/Wishlist";
 import Gifts from "./pages/Gifts";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
-<<<<<<< HEAD
 import ResetPassword from "./pages/ResetPassword";
 import OtpVerification from "./pages/OtpVerification";
-=======
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 import Account from "./pages/Account";
 import Library from "./pages/Library";
 import GameDetails from "./pages/GameDetails";

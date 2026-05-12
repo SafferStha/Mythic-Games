@@ -1,8 +1,14 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 /* ═══════════════════════════════════════════
    GAME DETAILS PAGE
    Current JSX uses details-* class names.
    ═══════════════════════════════════════════ */
+=======
+/* ─────────────────────────────────────────
+   GameDetails — Epic Games style
+───────────────────────────────────────── */
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 =======
 /* ─────────────────────────────────────────
    GameDetails — Epic Games style
@@ -16,12 +22,15 @@
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 .details-banner {
     position: relative;
     width: 100%;
     height: 260px;
     overflow: hidden;
 =======
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 /* ── Full-width hero banner ── */
 .details-banner {
     position: relative;
@@ -29,6 +38,9 @@
     height: 380px;
     overflow: hidden;
     margin-bottom: -120px;
+<<<<<<< HEAD
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+=======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 }
 
@@ -37,6 +49,10 @@
     height: 100%;
     object-fit: cover;
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    object-position: center 20%;
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 =======
     object-position: center 20%;
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
@@ -47,6 +63,7 @@
     position: absolute;
     inset: 0;
     background: linear-gradient(
+<<<<<<< HEAD
 <<<<<<< HEAD
         to top,
         rgba(0, 0, 0, 0.72) 0%,
@@ -103,6 +120,8 @@
 
 .details-about {
 =======
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
         to bottom,
         rgba(18, 18, 18, 0.1) 0%,
         #121212 100%
@@ -202,11 +221,15 @@
 
 /* ── Right: sticky purchase panel ── */
 .details-panel {
+<<<<<<< HEAD
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+=======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: 20px;
+<<<<<<< HEAD
 <<<<<<< HEAD
     box-shadow: var(--shadow);
 }
@@ -252,27 +275,38 @@
     padding: 18px;
     box-shadow: var(--shadow);
 =======
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
     display: flex;
     flex-direction: column;
     gap: 14px;
     position: sticky;
     top: 20px;
     margin-top: 60px;
+<<<<<<< HEAD
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+=======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 }
 
 .details-panel-thumb {
     width: 100%;
 <<<<<<< HEAD
+<<<<<<< HEAD
     aspect-ratio: 16 / 10;
     overflow: hidden;
     border-radius: var(--radius-md);
     margin-bottom: 16px;
 =======
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
     border-radius: var(--radius-md);
     overflow: hidden;
     max-height: 180px;
     aspect-ratio: 16 / 9;
+<<<<<<< HEAD
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+=======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 }
 
@@ -285,9 +319,15 @@
 
 .details-panel-title {
 <<<<<<< HEAD
+<<<<<<< HEAD
     margin: 0 0 12px;
     font-size: 20px;
     line-height: 1.2;
+=======
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 =======
     font-size: 16px;
     font-weight: 700;
@@ -297,6 +337,7 @@
 
 .details-panel-price-row {
     display: flex;
+<<<<<<< HEAD
 <<<<<<< HEAD
     align-items: baseline;
     justify-content: space-between;
@@ -309,6 +350,8 @@
     font-size: 13px;
     font-weight: 600;
 =======
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
     justify-content: space-between;
     align-items: center;
     padding: 10px 0;
@@ -319,6 +362,9 @@
 .details-panel-price-label {
     font-size: 12px;
     color: var(--text-muted);
+<<<<<<< HEAD
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+=======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 }
 
@@ -328,6 +374,7 @@
     color: var(--text-primary);
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 .details-btn-cart,
 .details-btn-wishlist {
@@ -407,6 +454,8 @@
 }
 
 =======
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 /* ── CTA buttons ── */
 .details-btn-cart {
     width: 100%;
@@ -452,6 +501,9 @@
 }
 
 /* ── Responsive ── */
+<<<<<<< HEAD
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+=======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 @media (max-width: 1024px) {
     .details-main {
@@ -460,6 +512,7 @@
 
     .details-panel {
         position: static;
+<<<<<<< HEAD
 <<<<<<< HEAD
     }
 }
@@ -476,6 +529,8 @@
     .details-panel {
         padding: 16px;
 =======
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
         margin-top: 0;
         max-width: 400px;
     }
@@ -493,6 +548,9 @@
 
     .details-title {
         font-size: 28px;
+<<<<<<< HEAD
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
+=======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
     }
 }

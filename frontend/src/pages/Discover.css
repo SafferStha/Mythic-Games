@@ -10,6 +10,7 @@
     background: var(--bg);
     color: var(--text-primary);
 <<<<<<< HEAD
+<<<<<<< HEAD
 }
 
 .discover-main {
@@ -28,6 +29,8 @@
     .discover-main {
         padding: 8px 24px 40px;
     }
+=======
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 =======
 >>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 }

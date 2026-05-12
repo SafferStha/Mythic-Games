@@ -2,21 +2,6 @@ import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/MythicLogo.png";
-<<<<<<< HEAD
-import { useTheme } from '../contexts/ThemeContext';
-import { useGameLibrary } from '../contexts/GameLibraryContext.jsx';
-
-const Navbar = () => {
-  const { theme, toggleTheme } = useTheme();
-    const { cartCount } = useGameLibrary();
-  
-    return (
-   <header>
-       {/* TOP NAV */}
-    <nav className="upper-nav">
-        <div className="nav-div">
-            <div className="logo"><Link to="/"><img src={logo} alt="MythicLogo"/></Link></div>
-=======
 import { useTheme } from "../contexts/ThemeContext";
 import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
 
@@ -24,7 +9,6 @@ const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const { cartCount } = useGameLibrary();
   const [sidebarOpen, setSidebarOpen] = useState(false);
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 
   const closeSidebar = () => setSidebarOpen(false);
 
@@ -63,36 +47,6 @@ const Navbar = () => {
             <span>Discover</span>
           </NavLink>
 
-<<<<<<< HEAD
-        {/* Right side of lower menu */}
-        <ul className="lower-menu-right">
-            <li>
-                <NavLink
-                    to="/wishlist"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
-                >
-                    Wishlist
-                </NavLink>
-            </li>
-            <li>
-                <NavLink
-                    to="/gifts"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
-                >
-                    Gifts
-                </NavLink>
-            </li>
-            <li>
-                <NavLink
-                    to="/cart"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link nav-cart-link' : 'nav-link nav-cart-link')}
-                >
-                    <span>Cart</span>
-                    {cartCount > 0 && <span className="cart-count-badge">{cartCount}</span>}
-                </NavLink>
-            </li>
-        </ul>
-=======
           <NavLink
             to="/browse"
             className={({ isActive }) =>
@@ -103,7 +57,6 @@ const Navbar = () => {
             <i className="bx bx-grid-alt" />
             <span>Browse</span>
           </NavLink>
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 
           <NavLink
             to="/news"
@@ -174,9 +127,6 @@ const Navbar = () => {
           <i className="bx bx-menu" />
         </button>
 
-<<<<<<< HEAD
-export default Navbar
-=======
         <div className="search-wrapper">
           <i className="bx bx-search search-icon" />
           <input
@@ -211,4 +161,3 @@ export default Navbar
 };
 
 export default Navbar;
->>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
