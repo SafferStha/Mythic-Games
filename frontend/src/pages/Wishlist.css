@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .wishlist-page{
   min-height: 100vh;
   background: var(--bg);
@@ -70,3 +71,80 @@
   font-weight: 700;
 }
 
+=======
+/* ─── Wishlist Page ──────────────────────────────────────── */
+.wishlist-page {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text-primary);
+}
+
+.wishlist-main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 24px 64px;
+}
+
+/* ─── Header ────────────────────────────────────────────── */
+.wishlist-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 16px;
+}
+
+.wishlist-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.wishlist-header span {
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+/* ─── List ──────────────────────────────────────────────── */
+.wishlist-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    background: var(--border);
+}
+
+/* ─── Empty state ───────────────────────────────────────── */
+.wishlist-empty {
+    padding: 64px 24px;
+    text-align: center;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+}
+
+.wishlist-empty-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    line-height: 1;
+    color: var(--text-muted);
+}
+
+.wishlist-empty h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+}
+
+.wishlist-empty p {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+/* ─── Responsive ────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .wishlist-main {
+        padding: 24px 16px 48px;
+    }
+}
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")

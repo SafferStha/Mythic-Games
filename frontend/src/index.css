@@ -82,7 +82,13 @@ body {
     font-family: "Inter", Arial, Helvetica, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+<<<<<<< HEAD
     padding: 0;
+=======
+    /* Sidebar + topbar offsets */
+    padding-left: var(--sidebar-width);
+    padding-top: var(--topbar-height);
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────── */
@@ -104,6 +110,10 @@ body[data-theme="light"] ::-webkit-scrollbar-thumb {
 /* ─── Mobile layout ─────────────────────────────────────── */
 @media (max-width: 768px) {
     body {
+<<<<<<< HEAD
         padding: 0;
+=======
+        padding-left: 0;
+>>>>>>> parent of 886da3a (Revert "Add GameLibrary, cart UI, and navbar overhaul")
     }
 }
