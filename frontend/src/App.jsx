@@ -13,8 +13,10 @@ import OtpVerification from "./pages/OtpVerification";
 import Account from "./pages/Account";
 import Library from "./pages/Library";
 import GameDetails from "./pages/GameDetails";
+import Checkout from "./pages/Checkout";
 
 const App = () => {
+
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -30,7 +32,9 @@ const App = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/otp-verification" element={<OtpVerification />} />
       <Route path="/account" element={<Account />} />
+
       <Route path="/library" element={<Library />} />
+      <Route path="/checkout" element={<Checkout />} />
     </Routes>
   );
 };
