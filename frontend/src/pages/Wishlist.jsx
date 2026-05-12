@@ -6,7 +6,7 @@ import './Wishlist.css';
 import { useGameLibrary } from '../contexts/GameLibraryContext.jsx';
 
 const Wishlist = () => {
-  const { wishlistItems, removeFromWishlist, addToCart } = useGameLibrary();
+  const { wishlistItems, removeFromWishlist, addToCart, isInCart } = useGameLibrary();
 
   const removeItem = (itemKey) => {
     removeFromWishlist(itemKey);
@@ -65,11 +65,12 @@ const Wishlist = () => {
 
                 <div className="wishlist-card-actions">
                   <button 
-                    className="wishlist-add-cart-btn"
+                    className={`wishlist-add-cart-btn ${isInCart(game) ? 'added' : ''}`}
                     onClick={() => handleAddToCart(game)}
                     type="button"
+                    disabled={isInCart(game)}
                   >
-                    Add to Cart
+                    {isInCart(game) ? 'Added to Cart' : 'Add to Cart'}
                   </button>
                 </div>
               </div>

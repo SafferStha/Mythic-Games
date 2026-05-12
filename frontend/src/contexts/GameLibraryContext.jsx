@@ -73,11 +73,8 @@ export const GameLibraryProvider = ({ children }) => {
         return [...currentItems, item];
       }
 
-      return currentItems.map((entry, index) =>
-        index === existingIndex
-          ? { ...entry, quantity: (Number(entry.quantity) || 1) + 1 }
-          : entry,
-      );
+      // Item already in cart - do not add again
+      return currentItems;
     });
   };
 
@@ -160,11 +157,8 @@ export const GameLibraryProvider = ({ children }) => {
           return [...currentCart, { ...itemToMove, quantity: 1 }];
         }
 
-        return currentCart.map((entry, index) =>
-          index === existingIndex
-            ? { ...entry, quantity: (Number(entry.quantity) || 1) + 1 }
-            : entry,
-        );
+        // Item already in cart - do not add again
+        return currentCart;
       });
 
       return currentItems.filter((entry) => entry.key !== itemKey);

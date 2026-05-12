@@ -6,7 +6,7 @@
 
 .wishlist-container {
     max-width: 1200px;
-    margin: 0 auto;
+    margin:  auto;
     padding: 140px 24px 64px;
 }
 
@@ -27,9 +27,9 @@
 
 .wishlist-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
     gap: 24px;
-    margin-top: 24px;
+    margin-top: 20px;
 }
 
 .wishlist-card-wrap {
@@ -80,6 +80,21 @@
 }
 
 .wishlist-add-cart-btn:active {
+    transform: translateY(0);
+}
+
+.wishlist-add-cart-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.wishlist-add-cart-btn.added {
+    background: #4ade80;
+    cursor: not-allowed;
+}
+
+.wishlist-add-cart-btn.added:hover {
+    opacity: 1;
     transform: translateY(0);
 }
 
