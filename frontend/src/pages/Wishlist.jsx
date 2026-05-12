@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import GameCard from '../components/GameCard';
@@ -76,4 +76,3 @@ const Wishlist = () => {
 };
 
 export default Wishlist;
-

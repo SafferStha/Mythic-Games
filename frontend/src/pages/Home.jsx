@@ -3,8 +3,6 @@ import Navbar from "../components/Navbar";
 import "./Home.css";
 import GameSlider from "../components/GameSlider";
 
-/* ── Dummy data ─────────────────────────────────────────── */
-
 const topPicks = [
   {
     id: 1,
@@ -108,14 +106,11 @@ const newReleases = [
   },
 ];
 
-/* ── Component ──────────────────────────────────────────── */
-
 const Home = () => {
   return (
     <div className="home-page">
       <Navbar />
 
-      {/* ── Game sliders ── */}
       <div className="home-sections">
         <GameSlider title="Top Picks" games={topPicks} sliderId="topPicks" />
         <GameSlider

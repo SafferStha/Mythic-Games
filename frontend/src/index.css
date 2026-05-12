@@ -1,81 +1,36 @@
-/* ─── Design Tokens ─────────────────────────────────────── */
 :root {
-    --sidebar-width: 240px;
-    --topbar-height: 56px;
-
-    --bg: #121212;
-    --nav-bg: #181818;
-    --surface: #1e1e1e;
-    --surface-strong: #272727;
-    --surface-soft: #161616;
-    --surface-subtle: rgba(255, 255, 255, 0.025);
-
-    --text: #f0f0f0;
-    --text-primary: #f0f0f0;
-    --text-muted: #808080;
-    --text-secondary: #b0b0b0;
-    --hover: #ffffff;
-
-    --card: #202020;
-    --btn-bg: #272727;
-    --border: rgba(255, 255, 255, 0.07);
-
-    --accent: #0078f2;
-    --accent-soft: rgba(0, 120, 242, 0.12);
-    --accent-strong: #0059cc;
-
-    --shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
-    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.65);
-
-    --radius: 4px;
-    --radius-md: 6px;
-    --radius-lg: 10px;
+--bg: #0e0e0e;
+--nav-bg: #18181c;
+--text: #e6e6e6;
+--text-muted: #cfcfcf;
+--hover: #ffffff;
+--card: #2a2a2e;
+--btn-bg: #333;
 }
 
-/* ─── Light Theme ───────────────────────────────────────── */
-body[data-theme="light"] {
-    --bg: #f0f2f5;
-    --nav-bg: #ffffff;
-    --surface: #ffffff;
-    --surface-strong: #e8eaed;
-    --surface-soft: #f6f8fa;
-    --surface-subtle: rgba(0, 0, 0, 0.02);
-
-    --text: #111111;
-    --text-primary: #111111;
-    --text-muted: #6e6e6e;
-    --text-secondary: #3d3d3d;
-    --hover: #000000;
-
-    --card: #eaeaea;
-    --btn-bg: #e3e5e8;
-    --border: rgba(0, 0, 0, 0.08);
-
-    --accent: #0078f2;
-    --accent-soft: rgba(0, 120, 242, 0.08);
-    --accent-strong: #0059cc;
-
-    --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+body[data-theme='light'] {
+--bg: #f5f5f5;
+--nav-bg: #ffffff;
+--text: #111111;
+--text-muted: #444444;
+--hover: #000000;
+--card: #e0e0e0;
+--btn-bg: #dddddd;
 }
 
-/* ─── Reset ─────────────────────────────────────────────── */
-*,
-*::before,
-*::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    text-decoration: none;
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+text-decoration: none;
 }
 
 html,
 body,
 #root {
-    min-height: 100%;
+min-height: 100%;
 }
 
-/* ─── Base ──────────────────────────────────────────────── */
 body {
     background: var(--bg);
     color: var(--text);
@@ -85,7 +40,6 @@ body {
     padding: 0;
 }
 
-/* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -101,7 +55,6 @@ body[data-theme="light"] ::-webkit-scrollbar-thumb {
     background: rgba(0, 0, 0, 0.18);
 }
 
-/* ─── Mobile layout ─────────────────────────────────────── */
 @media (max-width: 768px) {
     body {
         padding: 0;

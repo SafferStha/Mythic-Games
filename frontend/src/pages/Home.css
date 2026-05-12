@@ -1,115 +1,20 @@
-/* ═══════════════════════════════════════════
-   HOME PAGE  —  Epic Games Store style
-   ═══════════════════════════════════════════ */
-
 .home-page {
-    min-height: 100vh;
-    background: var(--bg);
-    color: var(--text-primary);
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text-primary);
 }
 
-/* ── Hero banner ──────────────────────────── */
-.home-hero {
-    position: relative;
-    width: 100%;
-    height: 520px;
-    overflow: hidden;
-    margin-bottom: 8px;
+.home-content {
+  padding: 60px 40px;
+  text-align: center;
 }
 
-.home-hero-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+.home-content h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
 }
 
-.home-hero-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        to right,
-        rgba(0, 0, 0, 0.75) 0%,
-        rgba(0, 0, 0, 0.3) 50%,
-        transparent 100%
-    );
-}
-
-.home-hero-content {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    padding: 48px 40px;
-    max-width: 500px;
-}
-
-.home-hero-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    margin-bottom: 8px;
-}
-
-.home-hero-title {
-    font-size: clamp(32px, 5vw, 56px);
-    font-weight: 800;
-    line-height: 1.05;
-    color: #fff;
-    letter-spacing: -0.02em;
-}
-
-.home-hero-sub {
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.7);
-    margin-top: 10px;
-    margin-bottom: 24px;
-}
-
-.home-hero-actions {
-    display: flex;
-    gap: 10px;
-}
-
-/* ── Hero CTA buttons ─────────────────────── */
-.home-btn-primary {
-    padding: 12px 24px;
-    background: var(--accent);
-    color: #fff;
-    border: 0;
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.15s;
-    font-family: inherit;
-}
-
-.home-btn-primary:hover {
-    background: var(--accent-strong);
-}
-
-.home-btn-secondary {
-    padding: 12px 24px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: var(--radius-md);
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.15s;
-    font-family: inherit;
-}
-
-.home-btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.22);
-}
-
-/* ── Slider sections container ────────────── */
-.home-sections {
-    padding: 0 24px 48px;
+.home-content p {
+  font-size: 20px;
+  opacity: 0.8;
 }
