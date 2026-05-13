@@ -28,7 +28,7 @@ const Navbar = () => {
           >
             <i className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"}`} />
           </button>
-          <Link to="/account" className="nav-signin-btn">
+          <Link to="/login" className="nav-signin-btn">
             Sign-in
           </Link>
         </div>

@@ -1,5 +1,5 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Discover from "./pages/Discover";
 import Browse from "./pages/Browse";
@@ -8,6 +8,7 @@ import Wishlist from "./pages/Wishlist";
 import Gifts from "./pages/Gifts";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import ResetPassword from "./pages/ResetPassword";
 import OtpVerification from "./pages/OtpVerification";
 import Account from "./pages/Account";
@@ -16,6 +17,19 @@ import GameDetails from "./pages/GameDetails";
 import Checkout from "./pages/Checkout";
 
 const App = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    const setNavbarHeight = () => {
+      const nav = document.querySelector('.navbar');
+      const height = nav ? nav.offsetHeight : 92;
+      document.documentElement.style.setProperty('--navbar-height', `${height}px`);
+    };
+
+    setNavbarHeight();
+    window.addEventListener('resize', setNavbarHeight);
+    return () => window.removeEventListener('resize', setNavbarHeight);
+  }, [location]);
 
   return (
     <Routes>
@@ -29,6 +43,7 @@ const App = () => {
       <Route path="/cart" element={<Cart />} />
       <Route path="/game/:gameTitle" element={<GameDetails />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/sign-up" element={<SignUp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/otp-verification" element={<OtpVerification />} />
       <Route path="/account" element={<Account />} />
