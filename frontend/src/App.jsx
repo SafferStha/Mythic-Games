@@ -14,6 +14,8 @@ import Account from "./pages/Account";
 import Library from "./pages/Library";
 import GameDetails from "./pages/GameDetails";
 import Checkout from "./pages/Checkout";
+import ManageNews from "./pages/ManageNews";
+import ManageGames from "./pages/ManageGames";
 
 const App = () => {
 
@@ -35,6 +37,8 @@ const App = () => {
 
       <Route path="/library" element={<Library />} />
       <Route path="/checkout" element={<Checkout />} />
+      <Route path="/manage-news" element={<ManageNews />} />
+      <Route path="/manage-games" element={<ManageGames />} />
     </Routes>
   );
 };
