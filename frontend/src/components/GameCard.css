@@ -148,14 +148,19 @@
 /* ── Coming Soon button ───────────────────── */
 .release-btn {
     margin-top: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: none;
     border-radius: var(--radius);
-    padding: 4px 10px;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-muted);
-    background: transparent;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a1a1a;
+    background: linear-gradient(180deg, #ffd54f 0%, #f7c948 100%);
+    box-shadow: 0 2px 8px rgba(247, 201, 72, 0.18);
     cursor: default;
+}
+
+.release-btn:hover {
+    filter: brightness(0.98);
 }
 
 /* ── Sale price row ───────────────────────── */
@@ -271,4 +276,27 @@
     align-items: flex-start;
     justify-content: flex-start;
     height: auto;
+}
+
+@media (max-width: 768px) {
+    .game-section {
+        padding: 24px 16px 8px 16px;
+    }
+
+    .game-section-header {
+        margin-bottom: 12px;
+    }
+
+    .game-section-nav {
+        display: none;
+    }
+
+    .game-card {
+        width: 100%;
+        max-width: 240px;
+    }
+
+    .game-image-wrapper {
+        width: 100%;
+    }
 }

@@ -43,8 +43,8 @@ const GameSlider = ({ title, games, sliderId }) => {
           nextEl: `.${sliderId}-next`,
         }}
         breakpoints={{
-          320: { slidesPerView: 1, slidesPerGroup: 1 },
-          640: { slidesPerView: 2, slidesPerGroup: 2 },
+          320: { slidesPerView: 1.15, slidesPerGroup: 1 },
+          640: { slidesPerView: 2.15, slidesPerGroup: 2 },
           1024: { slidesPerView: 3, slidesPerGroup: 3 },
           1280: { slidesPerView: 5, slidesPerGroup: 5 },
         }}

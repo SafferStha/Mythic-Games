@@ -6,7 +6,7 @@ import "./Cart.css";
 import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
 
 const Cart = () => {
-  const { cartItems, moveCartItemToWishlist, removeFromCart } =
+  const { cartItems, moveCartItemToWishlist, removeFromCart, isInWishlist } =
     useGameLibrary();
 
   const subtotal = cartItems.reduce(
@@ -41,7 +41,9 @@ const Cart = () => {
                   platform={item.platform}
                   onRemove={() => removeFromCart(item.key)}
                   onMoveToWishlist={() => moveCartItemToWishlist(item.key)}
-                  primaryActionLabel="Move to wishlist"
+                  primaryActionLabel={
+                    isInWishlist(item) ? "Already on wishlist" : "Move to wishlist"
+                  }
                 />
               ))
             ) : (
