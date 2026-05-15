@@ -44,7 +44,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   const [submitMessage, setSubmitMessage] = useState('');
-  const [submitType, setSubmitType] = useState('');
+  const [submitType, setSubmitType] = useState(''); 
 
   const resetMessage = () => {
     setSubmitMessage('');
@@ -54,6 +54,7 @@ const Login = () => {
   const validate = () => {
     if (!email.trim()) return 'Email is required.';
     if (!password) return 'Password is required.';
+
     return '';
   };
 
@@ -74,7 +75,7 @@ const Login = () => {
     try {
       setSubmitType('error');
       setSubmitMessage(
-        'Login is not available yet (backend auth endpoints not implemented).'
+        'Login/Register is not available yet (backend auth endpoints not implemented).'
       );
     } catch {
       setSubmitType('error');
@@ -148,7 +149,7 @@ const Login = () => {
               type="submit"
               disabled={loading}
             >
-              {loading ? 'Please wait…' : 'Sign In'}
+              {loading ? 'Please wait…' : 'Login'}
             </button>
           </form>
 
@@ -156,7 +157,7 @@ const Login = () => {
             Don't have an account?
             <span
               className="login-link"
-              onClick={() => navigate('/sign-up')}
+              onClick={() => navigate('/signup')}
             >
               {' '}Sign Up
             </span>

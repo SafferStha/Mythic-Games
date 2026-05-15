@@ -138,7 +138,7 @@ export const GameLibraryProvider = ({ children }) => {
         return [...currentWishlist, { ...itemToMove, quantity: 1 }];
       });
 
-      return currentItems.filter((entry) => entry.key !== itemKey);
+      return currentItems;
     });
   };
 

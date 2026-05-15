@@ -56,22 +56,98 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
     padding: 0;
+    line-height: 1;
+    flex: 0 0 auto;
 }
 
-/* Sign-in button */
-.nav-signin-btn {
-    background: var(--btn-bg);
+.nav-profile-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.nav-profile-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 10px;
+}
+
+.nav-profile-btn {
+    background: transparent;
+    border: 0;
     color: var(--text-primary);
-    padding: 8px 16px;
-    border-radius: 6px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    line-height: 1;
+    flex: 0 0 auto;
+}
+
+/* Profile dropdown menu */
+.nav-profile-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    min-width: 170px;
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
+    background: var(--btn-bg);
+    border-radius: 12px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: opacity 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+    z-index: 5;
+}
+
+.nav-icon-btn i,
+.nav-profile-btn i {
+    line-height: 1;
+    display: block;
+}
+
+.nav-profile-wrap:hover .nav-profile-menu,
+.nav-profile-wrap:focus-within .nav-profile-menu {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.nav-profile-menu-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    color: var(--text-primary);
+    padding: 10px 12px;
+    border-radius: 10px;
     font-size: 13px;
     font-weight: 600;
-    transition: opacity 0.15s;
+    white-space: nowrap;
 }
 
-.nav-signin-btn:hover {
-    opacity: 0.8;
+.nav-profile-menu-item i {
+    font-size: 18px;
+    line-height: 1;
+}
+
+.nav-profile-menu-item:hover {
+    background: rgba(255, 255, 255, 0.08);
 }
 
 /* ══════════════════════════════
@@ -136,11 +212,20 @@
 
 /* Shared link style */
 .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     font-size: 14px;
     font-weight: 500;
     color: var(--text-muted);
     padding: 4px 10px;
     transition: color 0.15s;
+}
+
+.nav-link-icon {
+    display: none;
+    font-size: 18px;
+    line-height: 1;
 }
 
 .nav-link:hover {
@@ -175,4 +260,105 @@
     font-weight: 700;
     border-radius: 999px;
     margin-left: 3px;
+}
+
+@media (max-width: 768px) {
+    .nav-top {
+        padding: 10px 16px;
+    }
+
+    .nav-brand-name {
+        display: none;
+    }
+
+    .nav-signin-btn {
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+
+    .nav-bottom {
+        padding: 10px 16px 12px;
+        gap: 12px;
+        overflow-x: auto;
+    }
+
+    .nav-bottom-spacer {
+        width: 36px;
+    }
+
+    .nav-search {
+        width: 170px;
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .nav-right-links {
+        gap: 8px;
+        margin-left: auto;
+    }
+
+    .nav-link {
+        padding: 8px 10px;
+        border-radius: 999px;
+        gap: 0;
+    }
+
+    .nav-link-text {
+        display: none;
+    }
+
+    .nav-link-icon {
+        display: inline-flex;
+    }
+
+    .nav-cart-badge {
+        margin-left: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-top {
+        padding: 8px 12px;
+    }
+
+    .nav-top-right {
+        gap: 8px;
+    }
+
+    .nav-icon-btn {
+        font-size: 20px;
+    }
+
+    .nav-profile-btn {
+        font-size: 22px;
+    }
+
+    .nav-profile-menu {
+        min-width: 160px;
+    }
+
+    .nav-profile-menu-item {
+        padding: 9px 10px;
+        font-size: 12px;
+    }
+
+    .nav-bottom {
+        padding: 8px 12px 10px;
+        gap: 10px;
+    }
+
+    .nav-search {
+        width: 150px;
+        font-size: 12px;
+    }
+
+    .nav-link {
+        padding: 7px 8px;
+    }
+
+    .nav-link-icon {
+        font-size: 19px;
+    }
 }

@@ -16,7 +16,7 @@ const Navbar = () => {
           <Link to="/" className="nav-logo">
             <img src={logo} alt="Mythic Games" />
           </Link>
-          <span className="nav-brand-name">Mythic Games Store</span>
+          <span className="nav-brand-name">Mythic Games</span>
         </div>
 
         <div className="nav-top-right">
@@ -28,9 +28,29 @@ const Navbar = () => {
           >
             <i className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"}`} />
           </button>
-          <Link to="/login" className="nav-signin-btn">
-            Sign-in
-          </Link>
+          <div className="nav-profile-wrap">
+            <button
+              type="button"
+              className="nav-profile-btn"
+              aria-label="Open account menu"
+            >
+              <i className="bx bx-user-circle" aria-hidden="true" />
+            </button>
+            <div className="nav-profile-menu" role="menu" aria-label="Account menu">
+              <Link to="/login" className="nav-profile-menu-item" role="menuitem">
+                <i className="bx bx-log-in" aria-hidden="true" />
+                <span>Sign-in</span>
+              </Link>
+              <Link to="/library" className="nav-profile-menu-item" role="menuitem">
+                <i className="bx bx-library" aria-hidden="true" />
+                <span>My library</span>
+              </Link>
+              <Link to="/wishlist" className="nav-profile-menu-item" role="menuitem">
+                <i className="bx bx-heart" aria-hidden="true" />
+                <span>Wishlist</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -80,7 +100,8 @@ const Navbar = () => {
               isActive ? "nav-link active" : "nav-link"
             }
           >
-            Wishlist{" "}
+            <span className="nav-link-text">Wishlist</span>
+            <i className="bx bx-heart nav-link-icon" aria-hidden="true" />
             {wishlistCount > 0 && (
               <span className="nav-cart-badge">{wishlistCount}</span>
             )}
@@ -91,7 +112,8 @@ const Navbar = () => {
               isActive ? "nav-link active" : "nav-link"
             }
           >
-            Gifts
+            <span className="nav-link-text">Gifts</span>
+            <i className="bx bx-gift nav-link-icon" aria-hidden="true" />
           </NavLink>
           <NavLink
             to="/cart"
@@ -99,7 +121,8 @@ const Navbar = () => {
               isActive ? "nav-link active" : "nav-link"
             }
           >
-            Cart{" "}
+            <span className="nav-link-text">Cart</span>
+            <i className="bx bx-cart nav-link-icon" aria-hidden="true" />
             {cartCount > 0 && (
               <span className="nav-cart-badge">{cartCount}</span>
             )}
