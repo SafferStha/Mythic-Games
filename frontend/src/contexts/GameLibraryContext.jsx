@@ -6,11 +6,11 @@ const WISHLIST_STORAGE_KEY = 'mythic-games-wishlist';
 const GameLibraryContext = createContext(null);
 
 const getItemKey = (game) => {
-  const title = game?.title || 'unknown';
-  const type = game?.type || 'game';
-  const price = Number.isFinite(Number(game?.price)) ? Number(game.price) : 0;
+  const normalizedTitle = String(game?.title || 'unknown')
+    .trim()
+    .toLowerCase();
 
-  return `${title}-${type}-${price}`.toLowerCase();
+  return normalizedTitle;
 };
 
 const loadStoredItems = (storageKey) => {
@@ -44,8 +44,12 @@ const normalizeGame = (game) => {
 };
 
 export const GameLibraryProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => loadStoredItems(CART_STORAGE_KEY));
-  const [wishlistItems, setWishlistItems] = useState(() => loadStoredItems(WISHLIST_STORAGE_KEY));
+  const [cartItems, setCartItems] = useState(() =>
+    loadStoredItems(CART_STORAGE_KEY).map((item) => normalizeGame(item)),
+  );
+  const [wishlistItems, setWishlistItems] = useState(() =>
+    loadStoredItems(WISHLIST_STORAGE_KEY).map((item) => normalizeGame(item)),
+  );
 
   useEffect(() => {
     try {
@@ -69,6 +73,7 @@ export const GameLibraryProvider = ({ children }) => {
         return [...currentItems, item];
       }
 
+      // Item already in cart - do not add again
       return currentItems;
     });
   };
@@ -78,7 +83,6 @@ export const GameLibraryProvider = ({ children }) => {
 
     return cartItems.some((entry) => entry.key === item.key);
   };
-
   const addToWishlist = (game) => {
     const item = normalizeGame(game);
 
@@ -110,7 +114,6 @@ export const GameLibraryProvider = ({ children }) => {
       return currentItems.filter((entry) => entry.key !== item.key);
     });
   };
-
   const removeFromCart = (itemKey) => {
     setCartItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
   };
@@ -135,7 +138,7 @@ export const GameLibraryProvider = ({ children }) => {
         return [...currentWishlist, { ...itemToMove, quantity: 1 }];
       });
 
-      return currentItems.filter((entry) => entry.key !== itemKey);
+      return currentItems;
     });
   };
 
@@ -154,11 +157,8 @@ export const GameLibraryProvider = ({ children }) => {
           return [...currentCart, { ...itemToMove, quantity: 1 }];
         }
 
-        return currentCart.map((entry, index) =>
-          index === existingIndex
-            ? { ...entry, quantity: (Number(entry.quantity) || 1) + 1 }
-            : entry,
-        );
+        // Item already in cart - do not add again
+        return currentCart;
       });
 
       return currentItems.filter((entry) => entry.key !== itemKey);

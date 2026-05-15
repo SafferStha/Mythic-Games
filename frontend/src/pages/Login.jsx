@@ -1,10 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
 
 import logo from '../assets/MythicLogo.png';
 
-import { FaEnvelope, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 
 const PasswordField = ({ placeholder, name, value, onChange }) => {
@@ -37,28 +37,14 @@ const PasswordField = ({ placeholder, name, value, onChange }) => {
 
 
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [submitMessage, setSubmitMessage] = useState('');
   const [submitType, setSubmitType] = useState(''); 
-
-  const title = useMemo(
-    () => (isLogin ? 'Sign In' : 'Sign Up'),
-    [isLogin]
-  );
-
-  const actionLabel = useMemo(
-    () => (isLogin ? 'Login' : 'Register'),
-    [isLogin]
-  );
 
   const resetMessage = () => {
     setSubmitMessage('');
@@ -68,12 +54,6 @@ const Login = () => {
   const validate = () => {
     if (!email.trim()) return 'Email is required.';
     if (!password) return 'Password is required.';
-
-    if (!isLogin) {
-      if (!username.trim()) return 'Username is required.';
-      if (!confirmPassword) return 'Confirm Password is required.';
-      if (password !== confirmPassword) return 'Passwords do not match.';
-    }
 
     return '';
   };
@@ -115,24 +95,9 @@ const Login = () => {
             className="login-logo"
           />
 
-          <h2 className="login-title">{title}</h2>
+          <h2 className="login-title">Sign In</h2>
 
           <form onSubmit={onMainButtonClick}>
-            {!isLogin && (
-              <div className="login-input-wrapper">
-                <input
-                  type="text"
-                  placeholder="Username"
-                  className="login-input"
-                  name="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-
-                <FaUser className="login-icon" />
-              </div>
-            )}
-
             <div className="login-input-wrapper">
               <input
                 type="email"
@@ -153,30 +118,15 @@ const Login = () => {
               onChange={setPassword}
             />
 
-            {!isLogin && (
-              <div className="login-input-wrapper">
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="login-input"
-                  name="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-              </div>
-            )}
-
-            {isLogin && (
-              <div className="login-forgot-row">
-                <button
-                  type="button"
-                  className="login-forgot"
-                  onClick={() => navigate('/reset-password')}
-                >
-                  Forgot password?
-                </button>
-              </div>
-            )}
+            <div className="login-forgot-row">
+              <button
+                type="button"
+                className="login-forgot"
+                onClick={() => navigate('/reset-password')}
+              >
+                Forgot password?
+              </button>
+            </div>
 
             {submitMessage && (
 
@@ -199,26 +149,17 @@ const Login = () => {
               type="submit"
               disabled={loading}
             >
-              {loading ? 'Please wait…' : actionLabel}
+              {loading ? 'Please wait…' : 'Login'}
             </button>
           </form>
 
           <p className="login-text">
-            {isLogin ? "Don't have an account?" : 'Already have an account?'}
+            Don't have an account?
             <span
               className="login-link"
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setSubmitMessage('');
-                setSubmitType('');
-                setUsername('');
-                setEmail('');
-                setPassword('');
-                setConfirmPassword('');
-                setLoading(false);
-              }}
+              onClick={() => navigate('/signup')}
             >
-              {isLogin ? ' Sign Up' : ' Login'}
+              {' '}Sign Up
             </span>
           </p>
         </div>

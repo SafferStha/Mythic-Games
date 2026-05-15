@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import GameCard from '../components/GameCard';
@@ -6,10 +6,14 @@ import './Wishlist.css';
 import { useGameLibrary } from '../contexts/GameLibraryContext.jsx';
 
 const Wishlist = () => {
-  const { wishlistItems, removeFromWishlist } = useGameLibrary();
+  const { wishlistItems, removeFromWishlist, addToCart, isInCart } = useGameLibrary();
 
   const removeItem = (itemKey) => {
     removeFromWishlist(itemKey);
+  };
+
+  const handleAddToCart = (game) => {
+    addToCart(game);
   };
 
   const items = wishlistItems;
@@ -19,8 +23,8 @@ const Wishlist = () => {
       <Navbar />
 
       <main className="wishlist-container">
-        <div style={{ padding: '0 0 0 0' }}>
-          <h1 style={{ color: 'var(--text-primary)' }}>Wishlist</h1>
+        <div>
+          <h1>Wishlist</h1>
           <div className="muted" style={{ color: 'var(--text-muted)', marginTop: 8 }}>
             {items.length > 0
               ? `${items.length} game${items.length === 1 ? '' : 's'} saved`
@@ -47,7 +51,7 @@ const Wishlist = () => {
               <div className="wishlist-card-wrap" key={String(game.id)}>
                 <Link
                   to={`/game/${encodeURIComponent(String(game.title))}`}
-                  style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block' }}
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block', width: '100%' }}
                   aria-label={`View ${game.title}`}
                 >
                   <GameCard
@@ -59,13 +63,16 @@ const Wishlist = () => {
                   />
                 </Link>
 
-                <button
-                  type="button"
-                  className="wishlist-remove"
-                  onClick={() => removeItem(game.key)}
-                >
-                  Remove
-                </button>
+                <div className="wishlist-card-actions">
+                  <button 
+                    className={`wishlist-add-cart-btn ${isInCart(game) ? 'added' : ''}`}
+                    onClick={() => handleAddToCart(game)}
+                    type="button"
+                    disabled={isInCart(game)}
+                  >
+                    {isInCart(game) ? 'Added to Cart' : 'Add to Cart'}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -76,3 +83,4 @@ const Wishlist = () => {
 };
 
 export default Wishlist;
+
