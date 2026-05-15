@@ -8,6 +8,7 @@ import Wishlist from "./pages/Wishlist";
 import Gifts from "./pages/Gifts";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
 import ResetPassword from "./pages/ResetPassword";
 import OtpVerification from "./pages/OtpVerification";
 import Account from "./pages/Account";
@@ -31,6 +32,7 @@ const App = () => {
       <Route path="/cart" element={<Cart />} />
       <Route path="/game/:gameTitle" element={<GameDetails />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<SignUp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/otp-verification" element={<OtpVerification />} />
       <Route path="/account" element={<Account />} />

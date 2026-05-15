@@ -4,8 +4,7 @@ import './Login.css';
 
 import logo from '../assets/MythicLogo.png';
 
-import { FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
-
+import { FaEnvelope, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
 
 const PasswordField = ({ placeholder, name, value, onChange }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,7 +18,7 @@ const PasswordField = ({ placeholder, name, value, onChange }) => {
         name={name}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        autoComplete="current-password"
+        autoComplete="new-password"
       />
 
       <button
@@ -35,16 +34,18 @@ const PasswordField = ({ placeholder, name, value, onChange }) => {
   );
 };
 
-
-const Login = () => {
+const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const [submitMessage, setSubmitMessage] = useState('');
-  const [submitType, setSubmitType] = useState(''); 
+  const [submitType, setSubmitType] = useState('');
 
   const resetMessage = () => {
     setSubmitMessage('');
@@ -52,8 +53,12 @@ const Login = () => {
   };
 
   const validate = () => {
+    if (!fullName.trim()) return 'Full name is required.';
+    if (!username.trim()) return 'Username is required.';
     if (!email.trim()) return 'Email is required.';
     if (!password) return 'Password is required.';
+    if (!confirmPassword) return 'Confirm Password is required.';
+    if (password !== confirmPassword) return 'Passwords do not match.';
 
     return '';
   };
@@ -68,14 +73,14 @@ const Login = () => {
     if (err) {
       setSubmitType('error');
       setSubmitMessage(err);
-      return; 
+      return;
     }
 
     setLoading(true);
     try {
       setSubmitType('error');
       setSubmitMessage(
-        'Login/Register is not available yet (backend auth endpoints not implemented).'
+        'Sign-up is not available yet (backend auth endpoints not implemented).'
       );
     } catch {
       setSubmitType('error');
@@ -89,15 +94,39 @@ const Login = () => {
     <div className="login-page">
       <div className="login-container">
         <div className="login-card">
-          <img
-            src={logo}
-            alt="logo"
-            className="login-logo"
-          />
+          <img src={logo} alt="logo" className="login-logo" />
 
-          <h2 className="login-title">Sign In</h2>
+          <h2 className="login-title">Sign Up</h2>
 
           <form onSubmit={onMainButtonClick}>
+            <div className="login-input-wrapper">
+              <input
+                type="text"
+                placeholder="Full Name"
+                className="login-input"
+                name="fullName"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                autoComplete="name"
+              />
+
+              <FaUser className="login-icon" />
+            </div>
+
+            <div className="login-input-wrapper">
+              <input
+                type="text"
+                placeholder="Username"
+                className="login-input"
+                name="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                autoComplete="username"
+              />
+
+              <FaUser className="login-icon" />
+            </div>
+
             <div className="login-input-wrapper">
               <input
                 type="email"
@@ -106,6 +135,7 @@ const Login = () => {
                 name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
               />
 
               <FaEnvelope className="login-icon" />
@@ -118,18 +148,19 @@ const Login = () => {
               onChange={setPassword}
             />
 
-            <div className="login-forgot-row">
-              <button
-                type="button"
-                className="login-forgot"
-                onClick={() => navigate('/reset-password')}
-              >
-                Forgot password?
-              </button>
+            <div className="login-input-wrapper">
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                className="login-input"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+              />
             </div>
 
             {submitMessage && (
-
               <p
                 className="login-text"
                 style={{
@@ -143,23 +174,15 @@ const Login = () => {
               </p>
             )}
 
-
-            <button
-              className="login-button"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? 'Please wait…' : 'Login'}
+            <button className="login-button" type="submit" disabled={loading}>
+              {loading ? 'Please wait…' : 'Register'}
             </button>
           </form>
 
           <p className="login-text">
-            Don't have an account?
-            <span
-              className="login-link"
-              onClick={() => navigate('/signup')}
-            >
-              {' '}Sign Up
+            Already have an account?
+            <span className="login-link" onClick={() => navigate('/login')}>
+              {' '}Login
             </span>
           </p>
         </div>
@@ -168,4 +191,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default SignUp;

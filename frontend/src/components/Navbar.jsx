@@ -28,9 +28,29 @@ const Navbar = () => {
           >
             <i className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"}`} />
           </button>
-          <Link to="/login" className="nav-signin-btn">
-            Sign-in
-          </Link>
+          <div className="nav-profile-wrap">
+            <button
+              type="button"
+              className="nav-profile-btn"
+              aria-label="Open account menu"
+            >
+              <i className="bx bx-user-circle" aria-hidden="true" />
+            </button>
+            <div className="nav-profile-menu" role="menu" aria-label="Account menu">
+              <Link to="/login" className="nav-profile-menu-item" role="menuitem">
+                <i className="bx bx-log-in" aria-hidden="true" />
+                <span>Sign-in</span>
+              </Link>
+              <Link to="/library" className="nav-profile-menu-item" role="menuitem">
+                <i className="bx bx-library" aria-hidden="true" />
+                <span>My library</span>
+              </Link>
+              <Link to="/wishlist" className="nav-profile-menu-item" role="menuitem">
+                <i className="bx bx-heart" aria-hidden="true" />
+                <span>Wishlist</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
 
