@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
-import { FaEnvelope, FaUser, FaCamera, FaShieldAlt } from "react-icons/fa";
+import { FaEnvelope, FaUser, FaCamera, FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Account.css";
 
 const Field = ({ icon, label, value, onChange, placeholder, type = "text", autoComplete }) => (
@@ -21,6 +21,35 @@ const Field = ({ icon, label, value, onChange, placeholder, type = "text", autoC
     </div>
   </label>
 );
+
+const PasswordField = ({ label, value, onChange, placeholder, autoComplete }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <label className="account-field">
+      <span className="account-field-label">{label}</span>
+      <div className="account-input-wrap account-input-wrap--password">
+        <input
+          type={showPassword ? "text" : "password"}
+          className="account-input account-input--password"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          autoComplete={autoComplete}
+        />
+        <button
+          type="button"
+          className="account-eye-toggle"
+          onClick={() => setShowPassword((prev) => !prev)}
+          aria-label={showPassword ? "Hide password" : "Show password"}
+          aria-pressed={showPassword}
+        >
+          {showPassword ? <FaEye /> : <FaEyeSlash />}
+        </button>
+      </div>
+    </label>
+  );
+};
 
 const Account = () => {
   const [fullName, setFullName] = useState("Ava Morgan");
@@ -129,30 +158,24 @@ const Account = () => {
               <span>Security</span>
             </div>
 
-            <Field
-              icon={<FaShieldAlt />}
+            <PasswordField
               label="Current password"
-              type="password"
               value={currentPassword}
               onChange={setCurrentPassword}
               placeholder="Enter current password"
               autoComplete="current-password"
             />
 
-            <Field
-              icon={<FaShieldAlt />}
+            <PasswordField
               label="New password"
-              type="password"
               value={newPassword}
               onChange={setNewPassword}
               placeholder="Create a new password"
               autoComplete="new-password"
             />
 
-            <Field
-              icon={<FaShieldAlt />}
-              label="Confirm new password"
-              type="password"
+            <PasswordField
+              label="Confirm password"
               value={confirmPassword}
               onChange={setConfirmPassword}
               placeholder="Confirm the new password"

@@ -178,6 +178,10 @@ body[data-theme='light'] .account-card-copy {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.account-input-wrap--password {
+  padding-right: 10px;
+}
+
 body[data-theme='light'] .account-input-wrap,
 body[data-theme='light'] .account-textarea-wrap {
   background: #eef1f8;
@@ -197,6 +201,10 @@ body[data-theme='light'] .account-textarea-wrap {
   background: transparent;
   color: inherit;
   font: inherit;
+}
+
+.account-input--password {
+  padding-right: 0;
 }
 
 .account-input {
@@ -227,6 +235,22 @@ body[data-theme='light'] .account-textarea::placeholder {
   justify-content: center;
   color: #cfd2dc;
   flex: 0 0 auto;
+}
+
+.account-eye-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: #cfd2dc;
+  cursor: pointer;
+  padding: 6px;
+  flex: 0 0 auto;
+}
+
+.account-eye-toggle svg {
+  font-size: 18px;
 }
 
 body[data-theme='light'] .account-field-icon {
@@ -313,12 +337,4 @@ body[data-theme='light'] .account-secondary-btn {
     border-radius: 20px;
   }
 
-  .account-summary-list div {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .account-summary-list strong {
-    text-align: left;
-  }
 }

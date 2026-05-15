@@ -148,17 +148,12 @@ const SignUp = () => {
               onChange={setPassword}
             />
 
-            <div className="login-input-wrapper">
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                className="login-input"
-                name="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-              />
-            </div>
+            <PasswordField
+              placeholder="Confirm Password"
+              name="confirmPassword"
+              value={confirmPassword}
+              onChange={setConfirmPassword}
+            />
 
             {submitMessage && (
               <p
