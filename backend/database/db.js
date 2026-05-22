@@ -10,18 +10,16 @@ function buildConnectionOptions() {
 			connectionString: databaseUrl,
 			ssl:
 				process.env.DB_SSL === 'true'
-					? { rejectUnauthorized: false }
-					: false,
+						? { rejectUnauthorized: false }
+						: false,
 		};
 	}
 
 	const databaseName = process.env.DB_NAME?.trim();
 
-	if (!databaseName) {
-		throw new Error(
-			'PostgreSQL configuration is missing. Set DATABASE_URL or DB_NAME in backend/.env.'
-		);
-	}
+	// Dev-friendly: if DB env vars are missing, don't crash on startup.
+	// Endpoints that touch the DB should handle the missing pool.
+	if (!databaseName) return null;
 
 	return {
 		user: process.env.DB_USER,
@@ -31,16 +29,23 @@ function buildConnectionOptions() {
 		port: Number(process.env.DB_PORT || 5432),
 		ssl:
 			process.env.DB_SSL === 'true'
-				? { rejectUnauthorized: false }
-				: false,
+					? { rejectUnauthorized: false }
+					: false,
 	};
 }
 
 const connectionOptions = buildConnectionOptions();
 
-const pool = new Pool(connectionOptions);
+const pool = connectionOptions ? new Pool(connectionOptions) : null;
 
 async function initializeDatabase() {
+	if (!pool) {
+		console.warn(
+			'[db] PostgreSQL is not configured (missing DATABASE_URL/DB_NAME). Skipping table initialization.'
+		);
+		return;
+	}
+
 	await pool.query(`
 		CREATE TABLE IF NOT EXISTS users (
 			id SERIAL PRIMARY KEY,

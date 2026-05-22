@@ -36,16 +36,23 @@ app.use((error, req, res, next) => {
 async function startServer() {
 	try {
 		await initializeDatabase();
-		const connectionInfo = await getConnectionInfo();
-		console.log(
-			`Server connected successfully to PostgreSQL database "${connectionInfo.database}" at ${connectionInfo.host}:${connectionInfo.port}`
-		);
+
+		// If DB isn't configured, db.js will skip initialization.
+		// In that case, keep the server running (health endpoints etc.).
+		try {
+			const connectionInfo = await getConnectionInfo();
+			console.log(
+				`Server connected successfully to PostgreSQL database "${connectionInfo.database}" at ${connectionInfo.host}:${connectionInfo.port}`
+			);
+		} catch (dbError) {
+			console.warn('[server] PostgreSQL not available:', dbError.message || dbError);
+		}
 
 		app.listen(port, () => {
 			console.log(`Server is running on http://localhost:${port}`);
 		});
 	} catch (error) {
-		console.error('Server failed to connect to PostgreSQL:', error.message || error);
+		console.error('Server failed to start:', error.message || error);
 		process.exit(1);
 	}
 }
