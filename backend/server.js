@@ -15,6 +15,10 @@ app.get('/health', (req, res) => {
 	res.json({ success: true, message: 'Mythic Games backend is running' });
 });
 
+app.get('/', (req, res) => {
+	res.json({ success: true, message: 'Mythic Games backend is running' });
+});
+
 app.use('/api/users', userRoutes);
 
 app.use((req, res) => {
@@ -33,13 +37,15 @@ async function startServer() {
 	try {
 		await initializeDatabase();
 		const connectionInfo = await getConnectionInfo();
+		console.log(
+			`Server connected successfully to PostgreSQL database "${connectionInfo.database}" at ${connectionInfo.host}:${connectionInfo.port}`
+		);
+
 		app.listen(port, () => {
-			console.log(
-				`Server is running on http://localhost:${port} and connected to PostgreSQL database "${connectionInfo.database}" at ${connectionInfo.host}:${connectionInfo.port}`
-			);
+			console.log(`Server is running on http://localhost:${port}`);
 		});
 	} catch (error) {
-		console.error('Failed to start server:', error);
+		console.error('Server failed to connect to PostgreSQL:', error.message || error);
 		process.exit(1);
 	}
 }
