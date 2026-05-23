@@ -17,6 +17,7 @@ import GameDetails from "./pages/GameDetails";
 import Checkout from "./pages/Checkout";
 import ManageNews from "./pages/ManageNews";
 import ManageGames from "./pages/ManageGames";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
 
@@ -27,7 +28,14 @@ const App = () => {
       <Route path="/discover" element={<Discover />} />
       <Route path="/browse" element={<Browse />} />
       <Route path="/news" element={<News />} />
-      <Route path="/wishlist" element={<Wishlist />} />
+      <Route
+        path="/wishlist"
+        element={
+          <ProtectedRoute>
+            <Wishlist />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/gifts" element={<Gifts />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/game/:gameTitle" element={<GameDetails />} />
@@ -35,10 +43,31 @@ const App = () => {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/otp-verification" element={<OtpVerification />} />
-      <Route path="/account" element={<Account />} />
+      <Route
+        path="/account"
+        element={
+          <ProtectedRoute>
+            <Account />
+          </ProtectedRoute>
+        }
+      />
 
-      <Route path="/library" element={<Library />} />
-      <Route path="/checkout" element={<Checkout />} />
+      <Route
+        path="/library"
+        element={
+          <ProtectedRoute>
+            <Library />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute>
+            <Checkout />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/manage-news" element={<ManageNews />} />
       <Route path="/manage-games" element={<ManageGames />} />
     </Routes>

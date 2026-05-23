@@ -6,6 +6,8 @@ import logo from '../assets/MythicLogo.png';
 
 import { FaEnvelope, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const PasswordField = ({ placeholder, name, value, onChange }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -38,7 +40,6 @@ const SignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -53,7 +54,6 @@ const SignUp = () => {
   };
 
   const validate = () => {
-    if (!fullName.trim()) return 'Full name is required.';
     if (!username.trim()) return 'Username is required.';
     if (!email.trim()) return 'Email is required.';
     if (!password) return 'Password is required.';
@@ -78,13 +78,33 @@ const SignUp = () => {
 
     setLoading(true);
     try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.message || 'Registration failed.');
+      }
+
+      setSubmitType('success');
+      setSubmitMessage(payload.message || 'Registration successful. You can now sign in.');
+      setUsername('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
+
+      window.setTimeout(() => {
+        navigate('/login');
+      }, 900);
+    } catch (error) {
       setSubmitType('error');
-      setSubmitMessage(
-        'Sign-up is not available yet (backend auth endpoints not implemented).'
-      );
-    } catch {
-      setSubmitType('error');
-      setSubmitMessage('Something went wrong.');
+      setSubmitMessage(error?.message || 'Unable to create your account. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -99,20 +119,6 @@ const SignUp = () => {
           <h2 className="login-title">Sign Up</h2>
 
           <form onSubmit={onMainButtonClick}>
-            <div className="login-input-wrapper">
-              <input
-                type="text"
-                placeholder="Full Name"
-                className="login-input"
-                name="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                autoComplete="name"
-              />
-
-              <FaUser className="login-icon" />
-            </div>
-
             <div className="login-input-wrapper">
               <input
                 type="text"
