@@ -95,7 +95,10 @@ const Login = () => {
       setStoredUser(payload.data);
       setSubmitType('success');
       setSubmitMessage(payload.message || 'Login successful.');
-      navigate(location.state?.from || returnTo || '/account', { replace: true });
+      navigate(
+        location.state?.from || returnTo || (payload.data?.role === 'admin' ? '/manage-games' : '/account'),
+        { replace: true }
+      );
     } catch (error) {
       setSubmitType('error');
       setSubmitMessage(error?.message || 'Unable to sign in. Check your email and password.');

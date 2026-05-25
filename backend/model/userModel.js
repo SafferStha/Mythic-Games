@@ -22,7 +22,7 @@ async function getUserById(userId) {
 
 async function getUserByEmailOrUsername(email, username) {
 	const result = await pool.query(
-		`SELECT ${USER_SELECT_FIELDS} FROM users WHERE email = $1 OR username = $2 LIMIT 1`,
+		`SELECT ${USER_SELECT_FIELDS} FROM users WHERE LOWER(email) = LOWER($1) OR LOWER(username) = LOWER($2) LIMIT 1`,
 		[email, username]
 	);
 
@@ -31,7 +31,7 @@ async function getUserByEmailOrUsername(email, username) {
 
 async function findUserByLoginIdentifier(identifier) {
 	const result = await pool.query(
-		`SELECT ${AUTH_SELECT_FIELDS} FROM users WHERE email = $1 OR username = $1 LIMIT 1`,
+		`SELECT ${AUTH_SELECT_FIELDS} FROM users WHERE LOWER(email) = LOWER($1) OR LOWER(username) = LOWER($1) LIMIT 1`,
 		[identifier]
 	);
 

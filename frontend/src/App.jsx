@@ -31,7 +31,7 @@ const App = () => {
       <Route
         path="/wishlist"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['user']}>
             <Wishlist />
           </ProtectedRoute>
         }
@@ -46,7 +46,7 @@ const App = () => {
       <Route
         path="/account"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['user']}>
             <Account />
           </ProtectedRoute>
         }
@@ -55,7 +55,7 @@ const App = () => {
       <Route
         path="/library"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['user']}>
             <Library />
           </ProtectedRoute>
         }
@@ -63,13 +63,27 @@ const App = () => {
       <Route
         path="/checkout"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute allowedRoles={['user']}>
             <Checkout />
           </ProtectedRoute>
         }
       />
-      <Route path="/manage-news" element={<ManageNews />} />
-      <Route path="/manage-games" element={<ManageGames />} />
+      <Route
+        path="/manage-news"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <ManageNews />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-games"
+        element={
+          <ProtectedRoute allowedRoles={['admin']}>
+            <ManageGames />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 };

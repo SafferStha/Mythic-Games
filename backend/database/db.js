@@ -54,6 +54,16 @@ async function initializeDatabase() {
 			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
 
+		CREATE TABLE IF NOT EXISTS admins (
+			admin_id SERIAL PRIMARY KEY,
+			username VARCHAR(50) UNIQUE NOT NULL,
+			email VARCHAR(100) UNIQUE NOT NULL,
+			password TEXT NOT NULL,
+			role VARCHAR(20) DEFAULT 'admin',
+			status VARCHAR(20) DEFAULT 'active',
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		);
+
 		ALTER SEQUENCE user_uid_seq OWNED BY users.uid;
 	`);
 }

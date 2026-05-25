@@ -27,9 +27,17 @@ const Navbar = () => {
   }, []);
 
   const menuLabel = useMemo(
-    () => (currentUser ? `My account` : 'Sign-in'),
+    () => {
+      if (!currentUser) {
+        return 'Sign-in';
+      }
+
+      return currentUser.role === 'admin' ? 'Admin panel' : 'My account';
+    },
     [currentUser]
   );
+
+  const isAdmin = currentUser?.role === 'admin';
 
   const handleSignOut = () => {
     clearStoredUser();
@@ -67,18 +75,33 @@ const Navbar = () => {
             <div className="nav-profile-menu" role="menu" aria-label="Account menu">
               {currentUser ? (
                 <>
-                  <Link to="/account" className="nav-profile-menu-item" role="menuitem">
-                    <i className="bx bx-user" aria-hidden="true" />
-                    <span>{menuLabel}</span>
-                  </Link>
-                  <Link to="/library" className="nav-profile-menu-item" role="menuitem">
-                    <i className="bx bx-library" aria-hidden="true" />
-                    <span>My library</span>
-                  </Link>
-                  <Link to="/wishlist" className="nav-profile-menu-item" role="menuitem">
-                    <i className="bx bx-heart" aria-hidden="true" />
-                    <span>Wishlist</span>
-                  </Link>
+                  {isAdmin ? (
+                    <>
+                      <Link to="/manage-games" className="nav-profile-menu-item" role="menuitem">
+                        <i className="bx bx-game" aria-hidden="true" />
+                        <span>{menuLabel}</span>
+                      </Link>
+                      <Link to="/manage-news" className="nav-profile-menu-item" role="menuitem">
+                        <i className="bx bx-news" aria-hidden="true" />
+                        <span>Manage news</span>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/account" className="nav-profile-menu-item" role="menuitem">
+                        <i className="bx bx-user" aria-hidden="true" />
+                        <span>{menuLabel}</span>
+                      </Link>
+                      <Link to="/library" className="nav-profile-menu-item" role="menuitem">
+                        <i className="bx bx-library" aria-hidden="true" />
+                        <span>My library</span>
+                      </Link>
+                      <Link to="/wishlist" className="nav-profile-menu-item" role="menuitem">
+                        <i className="bx bx-heart" aria-hidden="true" />
+                        <span>Wishlist</span>
+                      </Link>
+                    </>
+                  )}
                   <button
                     type="button"
                     className="nav-profile-menu-item nav-profile-menu-button"
