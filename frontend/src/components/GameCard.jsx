@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { useGameLibrary } from "../contexts/GameLibraryContext";
 import "./GameCard.css";
@@ -14,6 +13,9 @@ const GameCard = ({
   originalPrice,
   detailPath,
   detailState,
+  showAdminActions = false,
+  onEdit,
+  onDelete,
 }) => {
   const { toggleWishlist, isInWishlist } = useGameLibrary();
 
@@ -42,6 +44,24 @@ const GameCard = ({
     e.preventDefault();
     e.stopPropagation();
     toggleWishlist(gameData);
+  };
+
+  const handleEditClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (onEdit) {
+      onEdit(gameData);
+    }
+  };
+
+  const handleDeleteClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (onDelete) {
+      onDelete(gameData);
+    }
   };
 
   const numericPrice = Number(price);
@@ -112,6 +132,21 @@ const GameCard = ({
           </div>
         ) : (
           <p className="game-price">{price} NPR</p>
+        )}
+
+        {showAdminActions && (onEdit || onDelete) && (
+          <div className="game-admin-actions" aria-label="Admin game actions">
+            {onEdit && (
+              <button type="button" className="game-admin-btn game-admin-btn-edit" onClick={handleEditClick}>
+                Edit
+              </button>
+            )}
+            {onDelete && (
+              <button type="button" className="game-admin-btn game-admin-btn-delete" onClick={handleDeleteClick}>
+                Delete
+              </button>
+            )}
+          </div>
         )}
       </div>
     </div>

@@ -194,6 +194,38 @@
     text-decoration: line-through;
 }
 
+.game-admin-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.game-admin-btn {
+    border: 0;
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease, background 0.15s ease;
+}
+
+.game-admin-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.03);
+}
+
+.game-admin-btn-edit {
+    background: rgba(37, 99, 235, 0.14);
+    color: #5b8cff;
+}
+
+.game-admin-btn-delete {
+    background: rgba(239, 68, 68, 0.16);
+    color: #ff7c7c;
+}
+
 /* ═══════════════════════════════════════════
    GAME SECTION  —  shared slider layout
    used by GameSlider on every page

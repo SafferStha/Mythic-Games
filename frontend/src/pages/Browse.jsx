@@ -1,71 +1,93 @@
-import React, { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Navbar from '../components/Navbar';
 import GameCard from '../components/GameCard';
+import GameForm from '../components/GameForm';
+import { getStoredUser } from '../utils/auth';
 import './Browse.css';
 
+const BROWSE_STORAGE_KEY = 'mythic-games-browse-games';
+
+const defaultGames = [
+  {
+    id: '1',
+    title: 'Crimson Skies: Legacy',
+    price: 3499,
+    originalPrice: 3499,
+    image: new URL('../assets/RedDead.png', import.meta.url).toString(),
+    type: 'Action-Adventure',
+    events: ['Offers', 'Sales'],
+    genres: ['Action Games', 'Action-Adventure Games']
+  },
+  {
+    id: '2',
+    title: 'Twilight Chronicles',
+    price: 2799,
+    originalPrice: 3499,
+    image: new URL('../assets/react.svg', import.meta.url).toString(),
+    type: 'RPG',
+    events: ['Discounts'],
+    genres: ['Adventure Games']
+  },
+  {
+    id: '3',
+    title: 'Neon Pulse Racing',
+    price: 1899,
+    originalPrice: 2499,
+    image: new URL('../assets/vite.svg', import.meta.url).toString(),
+    type: 'Racing',
+    events: ['Sales'],
+    genres: ['Casual Games']
+  },
+  {
+    id: '4',
+    title: 'Shadow Circuit',
+    price: 0,
+    originalPrice: 0,
+    image: new URL('../assets/RedDead.png', import.meta.url).toString(),
+    type: 'Action',
+    events: ['Offers'],
+    genres: ['Action Games']
+  },
+  {
+    id: '5',
+    title: 'Aurora Drift',
+    price: 4299,
+    originalPrice: 5299,
+    image: new URL('../assets/react.svg', import.meta.url).toString(),
+    type: 'Adventure',
+    events: ['Discounts'],
+    genres: ['Adventure Games']
+  },
+  {
+    id: '6',
+    title: 'Pixel Harbor',
+    price: 1599,
+    originalPrice: 2199,
+    image: new URL('../assets/vite.svg', import.meta.url).toString(),
+    type: 'Casual',
+    events: ['Sales', 'Discounts'],
+    genres: ['Casual Games']
+  }
+];
+
+const loadGames = () => {
+  if (typeof window === 'undefined') {
+    return defaultGames;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(BROWSE_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : defaultGames;
+  } catch {
+    return defaultGames;
+  }
+};
+
 const Browse = () => {
-  const games = [
-    {
-      id: '1',
-      title: 'Crimson Skies: Legacy',
-      price: 3499,
-      originalPrice: 3499,
-      image: new URL('../assets/RedDead.png', import.meta.url).toString(),
-      type: 'Action-Adventure',
-      events: ['Offers', 'Sales'],
-      genres: ['Action Games', 'Action-Adventure Games']
-    },
-    {
-      id: '2',
-      title: 'Twilight Chronicles',
-      price: 2799,
-      originalPrice: 3499,
-      image: new URL('../assets/react.svg', import.meta.url).toString(),
-      type: 'RPG',
-      events: ['Discounts'],
-      genres: ['Adventure Games']
-    },
-    {
-      id: '3',
-      title: 'Neon Pulse Racing',
-      price: 1899,
-      originalPrice: 2499,
-      image: new URL('../assets/vite.svg', import.meta.url).toString(),
-      type: 'Racing',
-      events: ['Sales'],
-      genres: ['Casual Games']
-    },
-    {
-      id: '4',
-      title: 'Shadow Circuit',
-      price: 0,
-      originalPrice: 0,
-      image: new URL('../assets/RedDead.png', import.meta.url).toString(),
-      type: 'Action',
-      events: ['Offers'],
-      genres: ['Action Games']
-    },
-    {
-      id: '5',
-      title: 'Aurora Drift',
-      price: 4299,
-      originalPrice: 5299,
-      image: new URL('../assets/react.svg', import.meta.url).toString(),
-      type: 'Adventure',
-      events: ['Discounts'],
-      genres: ['Adventure Games']
-    },
-    {
-      id: '6',
-      title: 'Pixel Harbor',
-      price: 1599,
-      originalPrice: 2199,
-      image: new URL('../assets/vite.svg', import.meta.url).toString(),
-      type: 'Casual',
-      events: ['Sales', 'Discounts'],
-      genres: ['Casual Games']
-    }
-  ];
+  const [games, setGames] = useState(loadGames);
+  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  const [editingGame, setEditingGame] = useState(null);
+  const [showEditor, setShowEditor] = useState(false);
 
   const eventFilters = ['Offers', 'Sales', 'Discounts'];
   const genreFilters = ['Action Games', 'Action-Adventure Games', 'Adventure Games', 'Casual Games'];
@@ -76,6 +98,17 @@ const Browse = () => {
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedPrice, setSelectedPrice] = useState('All Prices');
   const [openSections, setOpenSections] = useState({ events: true, genre: true, price: true });
+  const isAdmin = currentUser?.role === 'admin';
+
+  useEffect(() => {
+    const syncAuth = () => setCurrentUser(getStoredUser());
+    window.addEventListener('auth-changed', syncAuth);
+    return () => window.removeEventListener('auth-changed', syncAuth);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(BROWSE_STORAGE_KEY, JSON.stringify(games));
+  }, [games]);
 
   const filteredGames = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -119,6 +152,31 @@ const Browse = () => {
     setSelectedPrice('All Prices');
   };
 
+  const handleEdit = (game) => {
+    setEditingGame(game);
+    setShowEditor(true);
+  };
+
+  const handleDelete = (game) => {
+    if (!window.confirm(`Delete ${game.title}?`)) {
+      return;
+    }
+
+    setGames((current) => current.filter((item) => item.id !== game.id));
+  };
+
+  const handleSave = (data) => {
+    if (!editingGame) {
+      return;
+    }
+
+    setGames((current) =>
+      current.map((item) => (item.id === editingGame.id ? { ...item, ...data } : item))
+    );
+    setEditingGame(null);
+    setShowEditor(false);
+  };
+
   return (
     <div className="browse-page">
       <Navbar />
@@ -143,6 +201,9 @@ const Browse = () => {
                   image={game.image}
                   type={game.type}
                   detailState={game}
+                  showAdminActions={isAdmin}
+                  onEdit={isAdmin ? handleEdit : undefined}
+                  onDelete={isAdmin ? handleDelete : undefined}
                 />
               </div>
             ))}
@@ -247,6 +308,30 @@ const Browse = () => {
           </div>
         </aside>
       </main>
+
+      {showEditor && editingGame && (
+        <div className="browse-game-modal" role="dialog" aria-modal="true" aria-labelledby="browse-game-modal-title">
+          <div className="browse-game-modal-overlay" onClick={() => { setShowEditor(false); setEditingGame(null); }} />
+          <div className="browse-game-modal-panel">
+            <div className="browse-game-modal-header">
+              <h2 id="browse-game-modal-title">Edit Game</h2>
+              <button
+                type="button"
+                className="browse-game-modal-close"
+                onClick={() => { setShowEditor(false); setEditingGame(null); }}
+                aria-label="Close editor"
+              >
+                ×
+              </button>
+            </div>
+            <GameForm
+              initialData={editingGame}
+              onCancel={() => { setShowEditor(false); setEditingGame(null); }}
+              onSubmit={handleSave}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "server.js",
   "dependencies": {
+<<<<<<< HEAD
     "audit": "^0.0.6",
+=======
+    "bcryptjs": "^2.4.3",
+>>>>>>> 5028d95e79fe89f6c3a7b2d3bf5a7dbe0eaa0b26
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -12,6 +16,6 @@
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "node scripts/open-frontend.js && nodemon server.js"
   }
 }
