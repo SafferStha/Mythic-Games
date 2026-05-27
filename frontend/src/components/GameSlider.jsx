@@ -1,4 +1,3 @@
-import React from "react";
 import GameCard from "./GameCard";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -6,7 +5,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 
-const GameSlider = ({ title, games, sliderId }) => {
+const GameSlider = ({ title, games, sliderId, showAdminActions = false, onEdit, onDelete }) => {
   return (
     <section className="game-section">
       {/* ── Section header with title + nav arrows ── */}
@@ -62,6 +61,9 @@ const GameSlider = ({ title, games, sliderId }) => {
               originalPrice={game.originalPrice}
               detailPath={game.detailPath}
               detailState={game}
+              showAdminActions={showAdminActions}
+              onEdit={onEdit ? () => onEdit(game) : undefined}
+              onDelete={onDelete ? () => onDelete(game) : undefined}
             />
           </SwiperSlide>
         ))}

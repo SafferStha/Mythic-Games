@@ -1,8 +1,12 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import GameSlider from "../components/GameSlider";
+import GameForm from "../components/GameForm";
+import { getStoredUser } from "../utils/auth";
 import "./Discover.css";
 import redDeadImg from "../assets/RedDead.png";
+
+const DISCOVER_STORAGE_KEY = "mythic-games-discover-games";
 
 const UpcomingGames = [
   {
@@ -397,33 +401,141 @@ const SalesSpotlight = [
   },
 ];
 
+const defaultDiscoverGames = {
+  upcoming: UpcomingGames,
+  topNewRelease: TopNewRelease,
+  trending: Trending,
+  freeGames: FreeGames,
+  salesSpotlight: SalesSpotlight,
+};
+
+const loadDiscoverGames = () => {
+  if (typeof window === "undefined") {
+    return defaultDiscoverGames;
+  }
+
+  try {
+    const raw = window.localStorage.getItem(DISCOVER_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : defaultDiscoverGames;
+  } catch {
+    return defaultDiscoverGames;
+  }
+};
+
 const Discover = () => {
+  const [sections, setSections] = useState(loadDiscoverGames);
+  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  const [editingGame, setEditingGame] = useState(null);
+  const [editingSection, setEditingSection] = useState(null);
+
+  const isAdmin = currentUser?.role === "admin";
+
+  useEffect(() => {
+    const syncAuth = () => setCurrentUser(getStoredUser());
+    window.addEventListener("auth-changed", syncAuth);
+    return () => window.removeEventListener("auth-changed", syncAuth);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(DISCOVER_STORAGE_KEY, JSON.stringify(sections));
+  }, [sections]);
+
+  const openEdit = (game, sectionKey) => {
+    setEditingGame(game);
+    setEditingSection(sectionKey);
+  };
+
+  const closeEditor = () => {
+    setEditingGame(null);
+    setEditingSection(null);
+  };
+
+  const handleDelete = (game, sectionKey) => {
+    if (!window.confirm(`Delete ${game.title}?`)) {
+      return;
+    }
+
+    setSections((current) => ({
+      ...current,
+      [sectionKey]: current[sectionKey].filter((item) => item.id !== game.id),
+    }));
+  };
+
+  const handleSave = (data) => {
+    if (!editingSection || !editingGame) {
+      return;
+    }
+
+    setSections((current) => ({
+      ...current,
+      [editingSection]: current[editingSection].map((item) =>
+        item.id === editingGame.id ? { ...item, ...data } : item,
+      ),
+    }));
+
+    closeEditor();
+  };
+
   return (
     <div className="discover-page">
       <Navbar />
       <main className="discover-main">
         <GameSlider
           title="Upcoming Games"
-          games={UpcomingGames}
+          games={sections.upcoming}
           sliderId="Discover"
+          showAdminActions={isAdmin}
+          onEdit={(game) => openEdit(game, "upcoming")}
+          onDelete={(game) => handleDelete(game, "upcoming")}
         />
         <GameSlider
           title="Top New Release"
-          games={TopNewRelease}
+          games={sections.topNewRelease}
           sliderId="TopNewRelease"
+          showAdminActions={isAdmin}
+          onEdit={(game) => openEdit(game, "topNewRelease")}
+          onDelete={(game) => handleDelete(game, "topNewRelease")}
         />
         <GameSlider
           title="Trending Games"
-          games={Trending}
+          games={sections.trending}
           sliderId="Trending"
+          showAdminActions={isAdmin}
+          onEdit={(game) => openEdit(game, "trending")}
+          onDelete={(game) => handleDelete(game, "trending")}
         />
-        <GameSlider title="Free Games" games={FreeGames} sliderId="FreeGames" />
+        <GameSlider
+          title="Free Games"
+          games={sections.freeGames}
+          sliderId="FreeGames"
+          showAdminActions={isAdmin}
+          onEdit={(game) => openEdit(game, "freeGames")}
+          onDelete={(game) => handleDelete(game, "freeGames")}
+        />
         <GameSlider
           title="Sales Spotlight"
-          games={SalesSpotlight}
+          games={sections.salesSpotlight}
           sliderId="SalesSpotlight"
+          showAdminActions={isAdmin}
+          onEdit={(game) => openEdit(game, "salesSpotlight")}
+          onDelete={(game) => handleDelete(game, "salesSpotlight")}
         />
       </main>
+
+      {isAdmin && editingGame && editingSection && (
+        <div className="discover-game-modal" role="dialog" aria-modal="true" aria-labelledby="discover-game-modal-title">
+          <div className="discover-game-modal-overlay" onClick={closeEditor} />
+          <div className="discover-game-modal-panel">
+            <div className="discover-game-modal-header">
+              <h2 id="discover-game-modal-title">Edit Game</h2>
+              <button type="button" className="discover-game-modal-close" onClick={closeEditor} aria-label="Close editor">
+                ×
+              </button>
+            </div>
+            <GameForm initialData={editingGame} onCancel={closeEditor} onSubmit={handleSave} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

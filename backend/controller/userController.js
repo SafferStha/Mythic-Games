@@ -5,20 +5,20 @@ function isBlank(value) {
 }
 
 function validateUserPayload(payload) {
-	const fullName = payload.fullName ?? payload.full_name;
 	const username = payload.username;
 	const email = payload.email;
 	const password = payload.password;
+	const status = payload.status;
 
-	if (isBlank(fullName) || isBlank(username) || isBlank(email) || isBlank(password)) {
+	if (isBlank(username) || isBlank(email) || isBlank(password)) {
 		return null;
 	}
 
 	return {
-		fullName: String(fullName).trim(),
 		username: String(username).trim(),
 		email: String(email).trim().toLowerCase(),
 		password: String(password),
+		status: isBlank(status) ? 'active' : String(status).trim().toLowerCase(),
 	};
 }
 
@@ -52,7 +52,7 @@ async function createUser(req, res, next) {
 		if (!userPayload) {
 			return res.status(400).json({
 				success: false,
-				message: 'fullName, username, email, and password are required',
+				message: 'username, email, and password are required',
 			});
 		}
 
@@ -82,7 +82,7 @@ async function updateUser(req, res, next) {
 		if (!userPayload) {
 			return res.status(400).json({
 				success: false,
-				message: 'fullName, username, email, and password are required',
+				message: 'username, email, and password are required',
 			});
 		}
 
@@ -91,7 +91,7 @@ async function updateUser(req, res, next) {
 			userPayload.username
 		);
 
-		if (existingUser && String(existingUser.id) !== String(req.params.id)) {
+		if (existingUser && String(existingUser.uid ?? existingUser.user_id) !== String(req.params.id)) {
 			return res.status(409).json({
 				success: false,
 				message: 'A user with that email or username already exists',

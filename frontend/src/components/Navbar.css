@@ -133,6 +133,9 @@
     align-items: center;
     gap: 10px;
     width: 100%;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
     color: var(--text-primary);
     padding: 10px 12px;
     border-radius: 10px;
@@ -148,6 +151,11 @@
 
 .nav-profile-menu-item:hover {
     background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-profile-menu-button {
+    font: inherit;
+    text-align: left;
 }
 
 /* ══════════════════════════════
