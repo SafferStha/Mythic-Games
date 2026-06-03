@@ -42,15 +42,29 @@ const pool = new Pool(connectionOptions);
 
 async function initializeDatabase() {
 	await pool.query(`
+		CREATE SEQUENCE IF NOT EXISTS user_uid_seq START 10000000;
+
 		CREATE TABLE IF NOT EXISTS users (
-			id SERIAL PRIMARY KEY,
-			full_name VARCHAR(120) NOT NULL,
-			username VARCHAR(60) NOT NULL UNIQUE,
-			email VARCHAR(120) NOT NULL UNIQUE,
-			password VARCHAR(255) NOT NULL,
-			created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-			updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+			uid BIGINT PRIMARY KEY DEFAULT nextval('user_uid_seq'),
+			username VARCHAR(50) UNIQUE NOT NULL,
+			email VARCHAR(100) UNIQUE NOT NULL,
+			password TEXT NOT NULL,
+			status VARCHAR(20) DEFAULT 'active',
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 		);
+
+		CREATE TABLE IF NOT EXISTS admins (
+			admin_id SERIAL PRIMARY KEY,
+			username VARCHAR(50) UNIQUE NOT NULL,
+			email VARCHAR(100) UNIQUE NOT NULL,
+			password TEXT NOT NULL,
+			role VARCHAR(20) DEFAULT 'admin',
+			status VARCHAR(20) DEFAULT 'active',
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		);
+
+		ALTER SEQUENCE user_uid_seq OWNED BY users.uid;
 	`);
 }
 

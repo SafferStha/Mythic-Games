@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './Login.css';
 
 import logo from '../assets/MythicLogo.png';
 
 import { FaEnvelope, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { setStoredUser } from '../utils/auth';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 
 const PasswordField = ({ placeholder, name, value, onChange }) => {
@@ -39,6 +42,8 @@ const PasswordField = ({ placeholder, name, value, onChange }) => {
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = new URLSearchParams(location.search).get('returnTo');
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -73,13 +78,30 @@ const Login = () => {
 
     setLoading(true);
     try {
-      setSubmitType('error');
-      setSubmitMessage(
-        'Login/Register is not available yet (backend auth endpoints not implemented).'
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ identifier: email, password }),
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.message || 'Login failed.');
+      }
+
+      setStoredUser(payload.data);
+      setSubmitType('success');
+      setSubmitMessage(payload.message || 'Login successful.');
+      navigate(
+        location.state?.from || returnTo || (payload.data?.role === 'admin' ? '/manage-games' : '/account'),
+        { replace: true }
       );
-    } catch {
+    } catch (error) {
       setSubmitType('error');
-      setSubmitMessage('Something went wrong.');
+      setSubmitMessage(error?.message || 'Unable to sign in. Check your email and password.');
     } finally {
       setLoading(false);
     }

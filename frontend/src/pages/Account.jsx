@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getStoredUser } from "../utils/auth";
 import Navbar from "../components/Navbar";
 import { FaEnvelope, FaUser, FaCamera, FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Account.css";
 
-const Field = ({ icon, label, value, onChange, placeholder, type = "text", autoComplete }) => (
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+const Field = ({ icon, label, value, onChange, placeholder, type = "text", autoComplete, readOnly = false }) => (
   <label className="account-field">
     <span className="account-field-label">{label}</span>
     <div className="account-input-wrap">
@@ -11,9 +14,10 @@ const Field = ({ icon, label, value, onChange, placeholder, type = "text", autoC
         type={type}
         className="account-input"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={readOnly ? undefined : (e) => onChange(e.target.value)}
         placeholder={placeholder}
         autoComplete={autoComplete}
+        readOnly={readOnly}
       />
       <span className="account-field-icon" aria-hidden="true">
         {icon}
@@ -51,32 +55,78 @@ const PasswordField = ({ label, value, onChange, placeholder, autoComplete }) =>
   );
 };
 
+const formatJoinedDate = (value) => {
+  if (!value) return "Unknown";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "Unknown";
+
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+};
+
 const Account = () => {
-  const [fullName, setFullName] = useState("Ava Morgan");
-  const [username, setUsername] = useState("ava_mythic");
-  const [email, setEmail] = useState("ava@mythicgames.com");
+  const storedUser = useMemo(() => getStoredUser(), []);
+  const [account, setAccount] = useState(storedUser);
+  const [loading, setLoading] = useState(true);
+  const [loadMessage, setLoadMessage] = useState("Loading your account details...");
   const [bio, setBio] = useState("Collector of indie RPGs, strategy titles, and limited edition loot.");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [status, setStatus] = useState("Your profile edits are kept on the frontend for now. Connect this form to your backend later.");
+  const [status, setStatus] = useState("Your profile is being loaded.");
+
+  useEffect(() => {
+    const loadAccount = async () => {
+      const userId = storedUser?.uid ?? storedUser?.user_id;
+
+      if (!userId) {
+        setLoading(false);
+        setLoadMessage("No saved login was found. Please sign in again.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/users/${userId}`);
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload?.message || "Failed to load account details.");
+        }
+
+        setAccount(payload.data);
+        setStatus("Account details loaded successfully.");
+        setLoadMessage("Account details loaded successfully.");
+      } catch (error) {
+        setLoadMessage(error?.message || "Unable to load account details.");
+        setStatus("Unable to refresh account details from the backend.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAccount();
+  }, [storedUser]);
+
+  const username = account?.username || "Unknown user";
+  const email = account?.email || "No email loaded";
+  const uid = account?.uid ?? account?.user_id ?? "Unknown UID";
+  const accountStatus = account?.status || "active";
+  const joinedAt = formatJoinedDate(account?.created_at);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    if (!fullName.trim() || !username.trim() || !email.trim()) {
-      setStatus("Please fill in your name, username, and email.");
-      return;
-    }
 
     if ((newPassword || confirmPassword || currentPassword) && newPassword !== confirmPassword) {
       setStatus("New password and confirm password must match.");
       return;
     }
 
-    setStatus(
-      "Account details are ready for backend integration. Hook this form to persist the profile, password changes, and preferences later."
-    );
+    setStatus("Account details are loaded from the database. Saving changes is not connected yet.");
   };
 
   return (
@@ -88,7 +138,7 @@ const Account = () => {
             <p className="account-kicker">Account settings</p>
             <h1>Manage your account details</h1>
             <p className="account-hero-copy">
-              Update your profile information, security details, and future preferences from one place.
+              {loadMessage}
             </p>
           </div>
 
@@ -97,8 +147,8 @@ const Account = () => {
               <FaUser />
             </div>
             <div>
-              <h2>Ava Morgan</h2>
-              <p>Level 12 player</p>
+              <h2>{username}</h2>
+              <p>{email}</p>
             </div>
             <button type="button" className="account-avatar-action">
               <FaCamera />
@@ -110,24 +160,26 @@ const Account = () => {
         <div className="account-grid">
           <form className="account-card account-form-card" onSubmit={handleSubmit}>
             <h2>Profile details</h2>
-            <p className="account-card-copy">These fields are prepared for backend storage later.</p>
-
-            <Field
-              icon={<FaUser />}
-              label="Full name"
-              value={fullName}
-              onChange={setFullName}
-              placeholder="Enter your full name"
-              autoComplete="name"
-            />
+            <p className="account-card-copy">
+              These values are loaded from the user row created at registration.
+            </p>
 
             <Field
               icon={<FaUser />}
               label="Username"
               value={username}
-              onChange={setUsername}
+              onChange={(value) => setAccount((previous) => ({ ...previous, username: value }))}
               placeholder="Choose a username"
               autoComplete="username"
+            />
+
+            <Field
+              icon={<FaShieldAlt />}
+              label="UID"
+              value={String(uid)}
+              onChange={() => {}}
+              placeholder="User UID"
+              readOnly
             />
 
             <Field
@@ -135,9 +187,27 @@ const Account = () => {
               label="Email address"
               type="email"
               value={email}
-              onChange={setEmail}
+              onChange={(value) => setAccount((previous) => ({ ...previous, email: value }))}
               placeholder="Enter your email"
               autoComplete="email"
+            />
+
+            <Field
+              icon={<FaShieldAlt />}
+              label="Account status"
+              value={accountStatus}
+              onChange={() => {}}
+              placeholder="Account status"
+              readOnly
+            />
+
+            <Field
+              icon={<FaCamera />}
+              label="Joined on"
+              value={joinedAt}
+              onChange={() => {}}
+              placeholder="Joined date"
+              readOnly
             />
 
             <label className="account-field">
@@ -195,6 +265,7 @@ const Account = () => {
               </button>
             </div>
 
+            {loading && <p className="account-status">Loading profile...</p>}
             <p className="account-status">{status}</p>
           </form>
         </div>
