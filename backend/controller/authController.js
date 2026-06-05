@@ -1,187 +1,230 @@
 const bcrypt = require('bcryptjs');
-const adminModel = require('../model/adminModel');
+const path = require('path');
+
 const userModel = require('../model/userModel');
+const adminModel = require('../model/adminModel');
 
-function isBlank(value) {
-	return !value || !String(value).trim();
+function isEmpty(v) {
+	return !v || !String(v).trim();
 }
 
-function normalizeRegisterPayload(payload) {
-	const username = payload.username;
-	const email = payload.email;
-	const password = payload.password;
+/* -------------------------
+   NORMALIZE INPUT
+--------------------------*/
+function normalizeRegister(body) {
+	const { username, email, password } = body;
 
-	if (isBlank(username) || isBlank(email) || isBlank(password)) {
+	if (isEmpty(username) || isEmpty(email) || isEmpty(password)) {
 		return null;
 	}
 
 	return {
-		username: String(username).trim(),
-		email: String(email).trim().toLowerCase(),
-		password: String(password),
+		username: username.trim(),
+		email: email.trim().toLowerCase(),
+		password,
 	};
 }
 
-function normalizeLoginPayload(payload) {
-	const identifier = payload.identifier ?? payload.email ?? payload.username;
-	const password = payload.password;
+function normalizeLogin(body) {
+	const identifier = body.identifier || body.email || body.username;
+	const password = body.password;
 
-	if (isBlank(identifier) || isBlank(password)) {
-		return null;
-	}
+	if (isEmpty(identifier) || isEmpty(password)) return null;
 
 	return {
-		identifier: String(identifier).trim().toLowerCase(),
-		password: String(password),
+		identifier: identifier.trim().toLowerCase(),
+		password,
 	};
 }
 
-function sanitizeUser(user) {
-	if (!user) {
-		return null;
-	}
-
+/* -------------------------
+   CLEAN OUTPUT
+--------------------------*/
+function cleanUser(u) {
 	return {
-		uid: user.uid,
-		user_id: user.user_id,
-		username: user.username,
-		email: user.email,
-		role: user.role || 'user',
-		status: user.status,
-		created_at: user.created_at,
-		updated_at: user.updated_at,
+		id: u.uid,
+		username: u.username,
+		email: u.email,
+		role: 'user',
+		status: u.status,
+		avatar: u.avatar,
 	};
 }
 
-function sanitizeAdmin(admin) {
-	if (!admin) {
-		return null;
-	}
-
+function cleanAdmin(a) {
 	return {
-		admin_id: admin.admin_id,
-		uid: admin.uid,
-		user_id: admin.user_id,
-		username: admin.username,
-		email: admin.email,
-		role: admin.role || 'admin',
-		status: admin.status,
-		created_at: admin.created_at,
- 	};
+		id: a.admin_id,
+		username: a.username,
+		email: a.email,
+		role: 'admin',
+		status: a.status,
+	};
 }
 
-async function comparePassword(password, storedPassword) {
-	return storedPassword?.startsWith('$2')
-		? bcrypt.compare(password, storedPassword)
-		: storedPassword === password;
-}
-
+/* -------------------------
+   REGISTER (USER + ADMIN)
+--------------------------*/
 async function register(req, res, next) {
 	try {
-		const userPayload = normalizeRegisterPayload(req.body);
+		const data = normalizeRegister(req.body);
 
-		if (!userPayload) {
+		if (!data) {
 			return res.status(400).json({
 				success: false,
-				message: 'username, email, and password are required',
+				message: 'username, email, password required',
 			});
 		}
 
-		const [existingUser, existingAdmin] = await Promise.all([
-			userModel.getUserByEmailOrUsername(userPayload.email, userPayload.username),
-			adminModel.getAdminByEmailOrUsername(userPayload.email, userPayload.username),
+		const [userExists, adminExists] = await Promise.all([
+			userModel.getUserByEmailOrUsername(data.email, data.username),
+			adminModel.getAdminByEmailOrUsername(data.email, data.username),
 		]);
 
-		if (existingUser || existingAdmin) {
+		if (userExists || adminExists) {
 			return res.status(409).json({
 				success: false,
-				message: 'An account with that email or username already exists',
+				message: 'Account already exists',
 			});
 		}
 
-		const hashedPassword = await bcrypt.hash(userPayload.password, 10);
+		const hash = await bcrypt.hash(data.password, 10);
+
+		// ADMIN
+		if (data.email.endsWith('@mythic.com')) {
+			const admin = await adminModel.createAdmin({
+				username: data.username,
+				email: data.email,
+				password: hash,
+			});
+
+			return res.status(201).json({
+				success: true,
+				message: 'Admin registered successfully',
+				data: cleanAdmin(admin),
+			});
+		}
+
+		// USER
 		const user = await userModel.createUser({
-			...userPayload,
-			password: hashedPassword,
+			username: data.username,
+			email: data.email,
+			password: hash,
 		});
 
 		return res.status(201).json({
 			success: true,
-			message: 'Registration successful',
-			data: sanitizeUser(user),
+			message: 'User registered successfully',
+			data: cleanUser(user),
 		});
-	} catch (error) {
-		next(error);
+	} catch (err) {
+		next(err);
 	}
 }
 
+/* -------------------------
+   LOGIN
+--------------------------*/
 async function login(req, res, next) {
 	try {
-		const loginPayload = normalizeLoginPayload(req.body);
+		const data = normalizeLogin(req.body);
 
-		if (!loginPayload) {
+		if (!data) {
 			return res.status(400).json({
 				success: false,
-				message: 'email/username and password are required',
+				message: 'identifier and password required',
 			});
 		}
 
-		const [admin, user] = await Promise.all([
-			adminModel.findAdminByLoginIdentifier(loginPayload.identifier),
-			userModel.findUserByLoginIdentifier(loginPayload.identifier),
+		const [user, admin] = await Promise.all([
+			userModel.findUserByLoginIdentifier(data.identifier),
+			adminModel.findAdminByLoginIdentifier(data.identifier),
 		]);
 
-		if (!admin && !user) {
-			return res.status(401).json({
-				success: false,
-				message: 'Invalid email/username or password',
-			});
-		}
-
+		// ADMIN
 		if (admin) {
-			if (admin.status !== 'active') {
-				return res.status(403).json({
-					success: false,
-					message: 'This admin account is inactive',
-				});
-			}
+			const ok = await bcrypt.compare(data.password, admin.password);
 
-			if (await comparePassword(loginPayload.password, admin.password)) {
+			if (ok) {
 				return res.json({
 					success: true,
-					message: 'Login successful',
-					data: sanitizeAdmin(admin),
+					message: 'Admin login successful',
+					data: cleanAdmin(admin),
 				});
 			}
 		}
 
+		// USER
 		if (user) {
-			if (user.status !== 'active') {
-				return res.status(403).json({
-					success: false,
-					message: 'This account is inactive',
-				});
-			}
+			const ok = await bcrypt.compare(data.password, user.password);
 
-			if (await comparePassword(loginPayload.password, user.password)) {
+			if (ok) {
 				return res.json({
 					success: true,
-					message: 'Login successful',
-					data: sanitizeUser(user),
+					message: 'User login successful',
+					data: cleanUser(user),
 				});
 			}
 		}
 
 		return res.status(401).json({
 			success: false,
-			message: 'Invalid email/username or password',
+			message: 'Invalid credentials',
 		});
-	} catch (error) {
-		next(error);
+	} catch (err) {
+		next(err);
 	}
 }
+
+/* -------------------------
+   AVATAR UPLOAD
+--------------------------*/
+async function uploadAvatar(req, res, next) {
+	try {
+		if (!req.file) {
+			return res.status(400).json({
+				success: false,
+				message: 'No file uploaded',
+			});
+		}
+
+		const { userId } = req.body;
+		const avatar = req.file.filename;
+
+		const updatedUser = await userModel.updateAvatar(userId, avatar);
+
+		return res.json({
+			success: true,
+			message: 'Avatar updated successfully',
+			data: cleanUser(updatedUser),
+		});
+	} catch (err) {
+		next(err);
+	}
+}
+
+const createAdmin = async (req, res, next) => {
+	try {
+		const { username, email, password } = req.body;
+
+		if (!username || !email || !password) {
+			return res.status(400).json({
+				success: false,
+				message: 'All fields required',
+			});
+		}
+
+		return res.json({
+			success: true,
+			message: 'Admin route working (placeholder)',
+		});
+	} catch (err) {
+		next(err);
+	}
+};
 
 module.exports = {
 	register,
 	login,
+	createAdmin,
+	uploadAvatar
 };

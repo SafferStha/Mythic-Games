@@ -21,7 +21,20 @@ async function findAdminByLoginIdentifier(identifier) {
 	return result.rows[0] || null;
 }
 
+async function createAdmin({ username, email, password }) {
+    const result = await pool.query(
+        `INSERT INTO admins
+        (username, email, password, role, status)
+        VALUES ($1, $2, $3, 'admin', 'active')
+        RETURNING ${ADMIN_SELECT_FIELDS}`,
+        [username, email, password]
+    );
+
+    return result.rows[0];
+}
+
 module.exports = {
 	getAdminByEmailOrUsername,
 	findAdminByLoginIdentifier,
+	createAdmin,
 };
