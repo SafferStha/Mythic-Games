@@ -24,6 +24,7 @@ if (typeof authController.uploadAvatar !== 'function') {
    AUTH ROUTES
 --------------------------*/
 router.post('/register', authController.register);
+router.post('/signup', authController.register);  // 👈 Add this line
 router.post('/login', authController.login);
 
 // temporary admin creation route

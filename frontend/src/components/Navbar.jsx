@@ -75,18 +75,36 @@ const Navbar = () => {
             <div className="nav-profile-menu" role="menu" aria-label="Account menu">
               {currentUser ? (
                 <>
-                  {isAdmin ? (
-                    <>
-                      <Link to="/manage-games" className="nav-profile-menu-item" role="menuitem">
-                        <i className="bx bx-game" aria-hidden="true" />
-                        <span>{menuLabel}</span>
-                      </Link>
-                      <Link to="/manage-news" className="nav-profile-menu-item" role="menuitem">
-                        <i className="bx bx-news" aria-hidden="true" />
-                        <span>Manage news</span>
-                      </Link>
-                    </>
-                  ) : (
+                 {isAdmin ? (
+  <>
+    <Link
+      to="/manage-games"
+      className="nav-profile-menu-item"
+      role="menuitem"
+    >
+      <i className="bx bx-game" aria-hidden="true" />
+      <span>Manage Games</span>
+    </Link>
+
+    <Link
+      to="/manage-news"
+      className="nav-profile-menu-item"
+      role="menuitem"
+    >
+      <i className="bx bx-news" aria-hidden="true" />
+      <span>Manage News</span>
+    </Link>
+
+    <Link
+      to="/manage-users"
+      className="nav-profile-menu-item"
+      role="menuitem"
+    >
+      <i className="bx bx-group" aria-hidden="true" />
+      <span>Manage Users</span>
+    </Link>
+  </>
+) : (
                     <>
                       <Link to="/account" className="nav-profile-menu-item" role="menuitem">
                         <i className="bx bx-user" aria-hidden="true" />
@@ -124,6 +142,8 @@ const Navbar = () => {
       </div>
 
       {/* ── Row 2: Search + links (indented to align with brand name) ── */}
+
+      
       <div className="nav-bottom">
         <span className="nav-bottom-spacer" aria-hidden="true" />
         <div className="nav-search-wrap">

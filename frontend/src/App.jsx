@@ -18,6 +18,7 @@ import Checkout from "./pages/Checkout";
 import ManageNews from "./pages/ManageNews";
 import ManageGames from "./pages/ManageGames";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ManageUsers from "./pages/ManageUsers";
 
 const App = () => {
 
@@ -43,6 +44,14 @@ const App = () => {
       <Route path="/signup" element={<SignUp />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/otp-verification" element={<OtpVerification />} />
+      <Route
+  path="/manage-users"
+  element={
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <ManageUsers />
+    </ProtectedRoute>
+  }
+/>
       <Route
         path="/account"
         element={

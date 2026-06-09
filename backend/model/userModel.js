@@ -60,17 +60,49 @@ async function createUser({ username, email, password, status = 'active' }) {
 	return result.rows[0];
 }
 
-async function updateUser(userId, { username, email, password, status }) {
+async function updateUser(userId, data) {
+	const existing = await getUserById(userId);
+
+	if (!existing) {
+		return null;
+	}
+
+	if (data.password) {
+		const result = await pool.query(
+			`UPDATE users
+			 SET username=$1,
+			     email=$2,
+			     password=$3,
+			     status=$4,
+			     updated_at=NOW()
+			 WHERE uid=$5
+			 RETURNING ${USER_SELECT_FIELDS}`,
+			[
+				data.username || existing.username,
+				data.email || existing.email,
+				data.password,
+				data.status || existing.status,
+				userId,
+			]
+		);
+
+		return result.rows[0] || null;
+	}
+
 	const result = await pool.query(
 		`UPDATE users
 		 SET username=$1,
 		     email=$2,
-		     password=$3,
-		     status=$4,
+		     status=$3,
 		     updated_at=NOW()
-		 WHERE uid=$5
+		 WHERE uid=$4
 		 RETURNING ${USER_SELECT_FIELDS}`,
-		[username, email, password, status, userId]
+		[
+			data.username || existing.username,
+			data.email || existing.email,
+			data.status || existing.status,
+			userId,
+		]
 	);
 
 	return result.rows[0] || null;

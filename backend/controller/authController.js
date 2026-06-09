@@ -42,7 +42,8 @@ function normalizeLogin(body) {
 --------------------------*/
 function cleanUser(u) {
 	return {
-		id: u.uid,
+		uid: u.uid,
+		user_id: u.uid,
 		username: u.username,
 		email: u.email,
 		role: 'user',
@@ -66,6 +67,8 @@ function cleanAdmin(a) {
 --------------------------*/
 async function register(req, res, next) {
 	try {
+		console.log("REGISTER BODY:", req.body);
+
 		const data = normalizeRegister(req.body);
 
 		if (!data) {
@@ -75,10 +78,37 @@ async function register(req, res, next) {
 			});
 		}
 
-		const [userExists, adminExists] = await Promise.all([
-			userModel.getUserByEmailOrUsername(data.email, data.username),
-			adminModel.getAdminByEmailOrUsername(data.email, data.username),
-		]);
+		/* -------------------------
+		   STEP 5 (FIXED SAFE CHECK)
+		--------------------------*/
+		let userExists = null;
+		let adminExists = null;
+
+		try {
+			userExists = await userModel.getUserByEmailOrUsername(
+				data.email,
+				data.username
+			);
+		} catch (e) {
+			console.error("🔥 USER CHECK ERROR:", e.message);
+			return res.status(500).json({
+				success: false,
+				message: "User lookup failed",
+			});
+		}
+
+		try {
+			adminExists = await adminModel.getAdminByEmailOrUsername(
+				data.email,
+				data.username
+			);
+		} catch (e) {
+			console.error("🔥 ADMIN CHECK ERROR:", e.message);
+			return res.status(500).json({
+				success: false,
+				message: "Admin lookup failed",
+			});
+		}
 
 		if (userExists || adminExists) {
 			return res.status(409).json({
@@ -87,6 +117,9 @@ async function register(req, res, next) {
 			});
 		}
 
+		/* -------------------------
+		   CREATE USER / ADMIN
+		--------------------------*/
 		const hash = await bcrypt.hash(data.password, 10);
 
 		// ADMIN
@@ -116,7 +149,9 @@ async function register(req, res, next) {
 			message: 'User registered successfully',
 			data: cleanUser(user),
 		});
+
 	} catch (err) {
+		console.error("🔥 REGISTER ERROR:", err);
 		next(err);
 	}
 }
@@ -170,7 +205,9 @@ async function login(req, res, next) {
 			success: false,
 			message: 'Invalid credentials',
 		});
+
 	} catch (err) {
+		console.error("🔥 LOGIN ERROR:", err);
 		next(err);
 	}
 }
@@ -197,11 +234,16 @@ async function uploadAvatar(req, res, next) {
 			message: 'Avatar updated successfully',
 			data: cleanUser(updatedUser),
 		});
+
 	} catch (err) {
+		console.error("🔥 AVATAR ERROR:", err);
 		next(err);
 	}
 }
 
+/* -------------------------
+   CREATE ADMIN (TEST ROUTE)
+--------------------------*/
 const createAdmin = async (req, res, next) => {
 	try {
 		const { username, email, password } = req.body;
@@ -217,7 +259,9 @@ const createAdmin = async (req, res, next) => {
 			success: true,
 			message: 'Admin route working (placeholder)',
 		});
+
 	} catch (err) {
+		console.error("🔥 CREATE ADMIN ERROR:", err);
 		next(err);
 	}
 };
