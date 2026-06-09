@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const fs = require('fs'); // ADD THIS LINE
+const multer = require('multer');
+const path = require('path');
 const userRoutes = require('./routes/userRoutes');
 const authRoutes = require('./routes/authRoutes');
 const { initializeDatabase, getConnectionInfo } = require('./database/db');
@@ -9,9 +12,41 @@ const { initializeDatabase, getConnectionInfo } = require('./database/db');
 const app = express();
 const port = Number(process.env.PORT || 5000);
 
+// --- Multer Configuration for File Uploads ---
+const UPLOAD_DIR = path.join(__dirname, 'uploads');
+
+// Ensure the upload directory exists
+if (!fs.existsSync(UPLOAD_DIR)) {
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+}
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, UPLOAD_DIR);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only images are allowed!'), false);
+        }
+    }
+});
+// --- End Multer Configuration ---
+
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from the 'uploads' directory
 app.get('/health', (req, res) => {
 	res.json({ success: true, message: 'Mythic Games backend is running' });
 });
@@ -20,7 +55,8 @@ app.get('/', (req, res) => {
 	res.json({ success: true, message: 'Mythic Games backend is running' });
 });
 
-app.use('/api/users', userRoutes);
+app.use('/uploads', express.static(UPLOAD_DIR)); // New: Serve uploaded files
+app.use('/api/users', userRoutes(upload)); // Modified: Pass upload middleware to userRoutes
 app.use('/api/auth', authRoutes);
 
 app.use((req, res) => {
@@ -28,10 +64,16 @@ app.use((req, res) => {
 });
 
 app.use((error, req, res, next) => {
-	console.error(error);
+	if (error instanceof multer.MulterError) {
+		if (error.code === 'LIMIT_FILE_SIZE') {
+			return res.status(400).json({ success: false, message: 'File is too large. Max limit is 2MB.' });
+		}
+	}
+
+	console.error('Server Error:', error.message);
 	res.status(500).json({
 		success: false,
-		message: 'Internal server error',
+		message: error.message || 'Internal server error',
 	});
 });
 

@@ -4,7 +4,7 @@ import './Login.css';
 
 import logo from '../assets/MythicLogo.png';
 
-import { FaEnvelope, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEnvelope, FaUser, FaEye, FaEyeSlash, FaImage } from 'react-icons/fa';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -43,6 +43,7 @@ const SignUp = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [profileImage, setProfileImage] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [submitMessage, setSubmitMessage] = useState('');
@@ -83,7 +84,7 @@ const SignUp = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, profileImage }),
       });
 
       const payload = await response.json();
@@ -97,6 +98,7 @@ const SignUp = () => {
       setUsername('');
       setEmail('');
       setPassword('');
+      setProfileImage('');
       setConfirmPassword('');
 
       window.setTimeout(() => {
@@ -160,6 +162,18 @@ const SignUp = () => {
               value={confirmPassword}
               onChange={setConfirmPassword}
             />
+
+            <div className="login-input-wrapper">
+              <input
+                type="text"
+                placeholder="Profile Image URL"
+                className="login-input"
+                name="profileImage"
+                value={profileImage}
+                onChange={(e) => setProfileImage(e.target.value)}
+              />
+              <FaImage className="login-icon" />
+            </div>
 
             {submitMessage && (
               <p

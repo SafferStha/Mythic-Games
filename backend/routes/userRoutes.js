@@ -1,12 +1,72 @@
 const express = require('express');
-const userController = require('../controller/userController');
+const { pool } = require('../database/db'); // Assuming db.js exports your PostgreSQL pool
 
-const router = express.Router();
+// This function will now accept the 'upload' middleware from server.js
+module.exports = (upload) => {
+    const router = express.Router();
 
-router.get('/', userController.listUsers);
-router.get('/:id', userController.getUser);
-router.post('/', userController.createUser);
-router.put('/:id', userController.updateUser);
-router.delete('/:id', userController.deleteUser);
+    // Route to get user details
+    // This route is assumed to exist or be created to fetch user data including profile_image
+    router.get('/:uid', async (req, res) => {
+        const { uid } = req.params;
+        try {
+            const result = await pool.query(
+                'SELECT uid, username, email, status, created_at, profile_image, bio FROM users WHERE uid = $1', // Added bio
+                [uid]
+            );
+            if (result.rows.length > 0) {
+                res.status(200).json({ success: true, data: result.rows[0] });
+            } else {
+                res.status(404).json({ success: false, message: 'User not found' });
+            }
+        } catch (error) {
+            console.error('Error fetching user:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    });
 
-module.exports = router;
+    // Route to update user profile image
+    router.put('/:uid/avatar', upload.single('profileImage'), async (req, res) => {
+        const { uid } = req.params;
+        if (!req.file) {
+            return res.status(400).json({ success: false, message: 'No file uploaded.' });
+        }
+
+        // The path to the uploaded file relative to the base URL
+        const profileImagePath = `/uploads/${req.file.filename}`;
+
+        try {
+            const result = await pool.query(
+                'UPDATE users SET profile_image = $1, updated_at = CURRENT_TIMESTAMP WHERE uid = $2 RETURNING uid, username, email, status, created_at, profile_image, bio',
+                [profileImagePath, uid]
+            );
+            res.status(200).json({ success: true, message: 'Profile image updated successfully.', data: result.rows[0] });
+        } catch (error) {
+            console.error('Error updating profile image:', error);
+            res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
+    });
+
+    // Route to update user profile details (username, email, bio)
+    router.put('/:uid/profile', async (req, res) => {
+        const { uid } = req.params;
+        const { username, email, bio } = req.body;
+
+        try {
+            const result = await pool.query(
+                'UPDATE users SET username = $1, email = $2, bio = $3, updated_at = CURRENT_TIMESTAMP WHERE uid = $4 RETURNING uid, username, email, status, created_at, profile_image, bio',
+                [username, email, bio, uid]
+            );
+            if (result.rows.length > 0) {
+                res.status(200).json({ success: true, message: 'Profile updated successfully.', data: result.rows[0] });
+            } else {
+                res.status(404).json({ success: false, message: 'User not found' });
+            }
+        } catch (error) {
+            console.error('Error updating user profile:', error);
+            res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
+    });
+
+    return router;
+};

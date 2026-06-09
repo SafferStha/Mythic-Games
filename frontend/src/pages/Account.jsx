@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { getStoredUser } from "../utils/auth";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getStoredUser, setStoredUser } from "../utils/auth";
 import Navbar from "../components/Navbar";
 import { FaEnvelope, FaUser, FaCamera, FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Account.css";
@@ -73,20 +73,19 @@ const Account = () => {
   const storedUser = useMemo(() => getStoredUser(), []);
   const [account, setAccount] = useState(storedUser);
   const [loading, setLoading] = useState(true);
-  const [loadMessage, setLoadMessage] = useState("Loading your account details...");
   const [bio, setBio] = useState("Collector of indie RPGs, strategy titles, and limited edition loot.");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [status, setStatus] = useState("Your profile is being loaded.");
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const loadAccount = async () => {
       const userId = storedUser?.uid ?? storedUser?.user_id;
 
       if (!userId) {
-        setLoading(false);
-        setLoadMessage("No saved login was found. Please sign in again.");
+        setStatus("No saved login was found. Please sign in again.");
         return;
       }
 
@@ -99,10 +98,9 @@ const Account = () => {
         }
 
         setAccount(payload.data);
+        setBio(payload.data.bio || "Collector of indie RPGs, strategy titles, and limited edition loot."); // Initialize bio from fetched data
         setStatus("Account details loaded successfully.");
-        setLoadMessage("Account details loaded successfully.");
       } catch (error) {
-        setLoadMessage(error?.message || "Unable to load account details.");
         setStatus("Unable to refresh account details from the backend.");
       } finally {
         setLoading(false);
@@ -117,16 +115,87 @@ const Account = () => {
   const uid = account?.uid ?? account?.user_id ?? "Unknown UID";
   const accountStatus = account?.status || "active";
   const joinedAt = formatJoinedDate(account?.created_at);
+  const profileImage = account?.profile_image;
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
+    setStatus("Saving changes...");
 
-    if ((newPassword || confirmPassword || currentPassword) && newPassword !== confirmPassword) {
-      setStatus("New password and confirm password must match.");
+    try {
+      if ((newPassword || confirmPassword || currentPassword) && newPassword !== confirmPassword) {
+        throw new Error("New password and confirm password must match.");
+      }
+
+      // Update profile details (username, email, bio)
+      const profileResponse = await fetch(`${API_BASE_URL}/api/users/${uid}/profile`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, bio }),
+      });
+
+      const profilePayload = await profileResponse.json();
+      if (!profileResponse.ok) {
+        throw new Error(profilePayload.message || 'Failed to update profile.');
+      }
+
+      // Update local storage and state with new profile data
+      setAccount(profilePayload.data);
+      setStoredUser(profilePayload.data);
+      setStatus("Profile updated successfully!");
+
+      // TODO: Add password change logic here if newPassword is provided
+
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAvatarChange = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Client-side validation: 2MB limit
+    if (file.size > 2 * 1024 * 1024) {
+      setStatus("Error: File size must be less than 2MB.");
       return;
     }
 
-    setStatus("Account details are loaded from the database. Saving changes is not connected yet.");
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      setStatus("Error: Only image files are allowed.");
+      return;
+    }
+
+    setLoading(true);
+    setStatus("Uploading new avatar...");
+
+    const formData = new FormData();
+    formData.append('profileImage', file); // 'profileImage' must match the fieldname in multer config
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/${uid}/avatar`, {
+        method: 'PUT',
+        // No 'Content-Type' header needed for FormData, browser sets it automatically
+        body: formData,
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload?.message || 'Failed to upload avatar.');
+      }
+
+      setAccount(payload.data); // Update account state with new data including profile_image
+      setStoredUser(payload.data); // Update local storage
+      setStatus("Avatar updated successfully!");
+    } catch (error) {
+      setStatus(`Error: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -134,23 +203,35 @@ const Account = () => {
       <Navbar />
       <main className="account-main">
         <section className="account-hero">
-          <div>
+          <div className="account-hero-text">
             <p className="account-kicker">Account settings</p>
             <h1>Manage your account details</h1>
-            <p className="account-hero-copy">
-              {loadMessage}
-            </p>
           </div>
-
+          
           <div className="account-avatar-card">
-            <div className="account-avatar">
-              <FaUser />
-            </div>
+            <img
+              src={
+                profileImage
+                  ? profileImage.startsWith("http")
+                    ? profileImage
+                    : `${API_BASE_URL}${profileImage}`
+                  : "https://via.placeholder.com/150"
+              }
+              alt="Profile Avatar"
+              className="account-avatar-img"
+            />
             <div>
               <h2>{username}</h2>
               <p>{email}</p>
             </div>
-            <button type="button" className="account-avatar-action">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleAvatarChange}
+              style={{ display: 'none' }}
+              accept="image/*"
+            />
+            <button type="button" className="account-avatar-action" onClick={() => fileInputRef.current.click()}>
               <FaCamera />
               Change avatar
             </button>
@@ -265,7 +346,7 @@ const Account = () => {
               </button>
             </div>
 
-            {loading && <p className="account-status">Loading profile...</p>}
+            {loading && <p className="account-status">Loading profile... (or saving)</p>}
             <p className="account-status">{status}</p>
           </form>
         </div>

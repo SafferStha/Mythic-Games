@@ -1,2 +1,2 @@
-#Ignore one file
-.env
+uploads/
+/.env
