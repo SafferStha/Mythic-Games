@@ -8,9 +8,9 @@ import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
 const fallbackGames = {
   "Elden Ring": {
     title: "Elden Ring",
-    type: "Base Game",
+    game_type: "Base Game",
     price: 4999,
-    image: redDeadImg,
+    image_url: redDeadImg,
     description:
       "Explore a vast open world, uncover legendary bosses, and shape your own path through a dark fantasy realm crafted by Hidetaka Miyazaki and George R.R. Martin. Face countless dangers as you traverse the Lands Between, grow stronger, and become the Elden Lord.",
     genres: ["Action RPG", "Adventure", "Open World"],
@@ -138,9 +138,9 @@ const GameDetails = () => {
     libraryMatch ||
     fallbackGames[routeTitle] || {
       title: routeTitle,
-      type: "Base Game",
+      game_type: "Base Game",
       price: 0,
-      image: redDeadImg,
+      image_url: redDeadImg,
       description:
         "Game details are being prepared. This page is ready to receive title, artwork, and purchase information from the list view.",
       genres: ["Action", "Adventure"],
@@ -150,9 +150,9 @@ const GameDetails = () => {
   const detailsGame = {
     id: selectedGame.id,
     title: selectedGame.title,
-    type: selectedGame.type || "Base Game",
+    game_type: selectedGame.game_type || "Base Game",
     price: selectedGame.price || 0,
-    image: selectedGame.image,
+    image_url: selectedGame.image_url,
     description: selectedGame.description,
     genres: selectedGame.genres,
   };
@@ -206,7 +206,7 @@ const GameDetails = () => {
 
       <div className="details-banner">
         <img
-          src={selectedGame.image}
+          src={selectedGame.image_url}
           alt={selectedGame.title}
           className="details-banner-img"
         />
@@ -215,12 +215,12 @@ const GameDetails = () => {
 
       <main className="details-main">
         <div className="details-content">
-          <p className="details-kicker">{selectedGame.type || "Base Game"}</p>
+          <p className="details-kicker">{selectedGame.game_type || "Base Game"}</p>
           <h1 className="details-title">{selectedGame.title}</h1>
 
           <div className="details-media">
             <img
-              src={selectedGame.image}
+              src={selectedGame.image_url}
               alt={selectedGame.title}
               className="details-media-img"
             />
@@ -310,7 +310,7 @@ const GameDetails = () => {
 
         <aside className="details-panel">
           <div className="details-panel-thumb">
-            <img src={selectedGame.image} alt={selectedGame.title} />
+            <img src={selectedGame.image_url} alt={selectedGame.title} />
           </div>
 
           <h2 className="details-panel-title">{selectedGame.title}</h2>
