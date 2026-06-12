@@ -127,25 +127,31 @@ export const GameLibraryProvider = ({ children }) => {
       return;
     }
 
-    setCartItems(
-      loadStoredItems(window.localStorage, storageKeys.cartKey).map((item) => normalizeGame(item)),
-    );
+    const userId = currentUser.uid ?? currentUser.user_id;
 
-    // Sync Wishlist from Backend
-    const fetchWishlist = async () => {
+    // Consolidate fetching for both cart and wishlist
+    const syncLibrary = async () => {
       try {
-        const userId = currentUser.uid ?? currentUser.user_id;
-        const response = await fetch(`${API_BASE_URL}/api/users/${userId}/wishlist`);
-        const payload = await response.json();
-        if (response.ok) {
-          setWishlistItems(payload.data.map((item) => normalizeGame(item)));
+        // Fetch Cart items from backend
+        const cartRes = await fetch(`${API_BASE_URL}/api/users/${userId}/cart`);
+        const cartPayload = await cartRes.json();
+        if (cartRes.ok) {
+          setCartItems(cartPayload.data.map((item) => normalizeGame(item)));
         }
+
+        // Fetch Wishlist items from backend
+        const wishlistRes = await fetch(`${API_BASE_URL}/api/users/${userId}/wishlist`);
+        const wishlistPayload = await wishlistRes.json();
+        if (wishlistRes.ok) {
+          setWishlistItems(wishlistPayload.data.map((item) => normalizeGame(item)));
+        }
+
       } catch (error) {
-        console.error('Failed to sync wishlist:', error);
+        console.error('Failed to sync user library (cart and wishlist):', error);
       }
     };
 
-    fetchWishlist();
+    syncLibrary();
   }, [isSignedIn, storageKeys.cartKey, storageKeys.wishlistKey]);
 
   useEffect(() => {
@@ -158,7 +164,7 @@ export const GameLibraryProvider = ({ children }) => {
       return;
     }
 
-    saveStoredItems(window.localStorage, storageKeys.cartKey, cartItems);
+    // Cart is now managed by backend for signed-in users
   }, [cartItems, isSignedIn, storageKeys.cartKey]);
 
   useEffect(() => {
@@ -193,23 +199,30 @@ export const GameLibraryProvider = ({ children }) => {
     return false;
   };
 
-  const addToCart = (game) => {
+  const addToCart = async (game) => {
     if (!requireSignedInUser()) {
       return;
     }
 
     const item = normalizeGame(game);
 
-    setCartItems((currentItems) => {
-      const existingIndex = currentItems.findIndex((entry) => entry.key === item.key);
+    try {
+      const userId = currentUser.uid ?? currentUser.user_id;
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gameId: item.id }),
+      });
 
-      if (existingIndex === -1) {
-        return [...currentItems, item];
+      if (response.ok) {
+        setCartItems((currentItems) => {
+          if (currentItems.some((entry) => entry.key === item.key)) return currentItems;
+          return [...currentItems, item];
+        });
       }
-
-      // Item already in cart - do not add again
-      return currentItems;
-    });
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
   };
 
   const isInCart = (game) => {
@@ -265,12 +278,26 @@ export const GameLibraryProvider = ({ children }) => {
       await addToWishlist(item);
     }
   };
-  const removeFromCart = (itemKey) => {
+  const removeFromCart = async (itemKey) => {
     if (!requireSignedInUser()) {
       return;
     }
 
-    setCartItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
+    const item = cartItems.find((i) => i.key === itemKey);
+    if (!item) return;
+
+    try {
+      const userId = currentUser.uid ?? currentUser.user_id;
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/cart/${item.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setCartItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
+      }
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+    }
   };
 
   const removeFromWishlist = async (itemKey) => {

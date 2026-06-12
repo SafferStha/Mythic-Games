@@ -132,6 +132,54 @@ module.exports = (upload) => {
         }
     });
 
+    // --- Cart Routes ---
+
+    // Get user cart
+    router.get('/:uid/cart', async (req, res) => {
+        const { uid } = req.params;
+        try {
+            const result = await db.query(
+                'SELECT g.*, c.quantity FROM cart c JOIN games g ON c.game_id = g.id WHERE c.user_id = $1',
+                [uid]
+            );
+            res.status(200).json({ success: true, data: result.rows });
+        } catch (error) {
+            console.error('Error fetching cart:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    });
+
+    // Add to cart
+    router.post('/:uid/cart', async (req, res) => {
+        const { uid } = req.params;
+        const { gameId } = req.body;
+        try {
+            await db.query(
+                'INSERT INTO cart (user_id, game_id) VALUES ($1, $2) ON CONFLICT (user_id, game_id) DO NOTHING',
+                [uid, gameId]
+            );
+            res.status(201).json({ success: true, message: 'Game added to cart' });
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    });
+
+    // Remove from cart
+    router.delete('/:uid/cart/:gameId', async (req, res) => {
+        const { uid, gameId } = req.params;
+        try {
+            await db.query(
+                'DELETE FROM cart WHERE user_id = $1 AND game_id = $2',
+                [uid, gameId]
+            );
+            res.status(200).json({ success: true, message: 'Game removed from cart' });
+        } catch (error) {
+            console.error('Error removing from cart:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    });
+
     // --- Wishlist Routes ---
 
     // Get user wishlist
