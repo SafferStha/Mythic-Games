@@ -132,5 +132,53 @@ module.exports = (upload) => {
         }
     });
 
+    // --- Wishlist Routes ---
+
+    // Get user wishlist
+    router.get('/:uid/wishlist', async (req, res) => {
+        const { uid } = req.params;
+        try {
+            const result = await db.query(
+                'SELECT g.* FROM wishlist w JOIN games g ON w.game_id = g.id WHERE w.user_id = $1',
+                [uid]
+            );
+            res.status(200).json({ success: true, data: result.rows });
+        } catch (error) {
+            console.error('Error fetching wishlist:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    });
+
+    // Add to wishlist
+    router.post('/:uid/wishlist', async (req, res) => {
+        const { uid } = req.params;
+        const { gameId } = req.body;
+        try {
+            await db.query(
+                'INSERT INTO wishlist (user_id, game_id) VALUES ($1, $2) ON CONFLICT (user_id, game_id) DO NOTHING',
+                [uid, gameId]
+            );
+            res.status(201).json({ success: true, message: 'Game added to wishlist' });
+        } catch (error) {
+            console.error('Error adding to wishlist:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    });
+
+    // Remove from wishlist
+    router.delete('/:uid/wishlist/:gameId', async (req, res) => {
+        const { uid, gameId } = req.params;
+        try {
+            await db.query(
+                'DELETE FROM wishlist WHERE user_id = $1 AND game_id = $2',
+                [uid, gameId]
+            );
+            res.status(200).json({ success: true, message: 'Game removed from wishlist' });
+        } catch (error) {
+            console.error('Error removing from wishlist:', error);
+            res.status(500).json({ success: false, message: 'Internal server error' });
+        }
+    });
+
     return router;
 };

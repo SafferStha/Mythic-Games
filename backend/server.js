@@ -53,6 +53,13 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+});
+
+server.on('error', (e) => {
+  if (e.code === 'EADDRINUSE') {
+    console.error(`Error: Port ${PORT} is already in use. Please kill the process or use a different port.`);
+    process.exit(1);
+  }
 });

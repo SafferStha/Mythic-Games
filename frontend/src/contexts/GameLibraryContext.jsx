@@ -6,6 +6,8 @@ const WISHLIST_STORAGE_KEY = 'mythic-games-wishlist';
 const GUEST_CART_STORAGE_KEY = 'mythic-games-guest-cart';
 const GUEST_WISHLIST_STORAGE_KEY = 'mythic-games-guest-wishlist';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const GameLibraryContext = createContext(null);
 
 const getItemKey = (game) => {
@@ -56,9 +58,9 @@ const normalizeGame = (game) => {
     id: game?.id || getItemKey(game),
     key: getItemKey(game),
     title: game?.title || 'Game Name',
-    type: game?.type || 'Base Game',
+    type: game?.type || game?.game_type || 'Base Game',
     price: Number.isFinite(price) ? price : 0,
-    image: game?.image,
+    image: game?.image || game?.image_url,
     description: game?.description || '',
     genres: game?.genres || [],
     platform: game?.platform || 'PC / Standard Edition',
@@ -128,9 +130,22 @@ export const GameLibraryProvider = ({ children }) => {
     setCartItems(
       loadStoredItems(window.localStorage, storageKeys.cartKey).map((item) => normalizeGame(item)),
     );
-    setWishlistItems(
-      loadStoredItems(window.localStorage, storageKeys.wishlistKey).map((item) => normalizeGame(item)),
-    );
+
+    // Sync Wishlist from Backend
+    const fetchWishlist = async () => {
+      try {
+        const userId = currentUser.uid ?? currentUser.user_id;
+        const response = await fetch(`${API_BASE_URL}/api/users/${userId}/wishlist`);
+        const payload = await response.json();
+        if (response.ok) {
+          setWishlistItems(payload.data.map((item) => normalizeGame(item)));
+        }
+      } catch (error) {
+        console.error('Failed to sync wishlist:', error);
+      }
+    };
+
+    fetchWishlist();
   }, [isSignedIn, storageKeys.cartKey, storageKeys.wishlistKey]);
 
   useEffect(() => {
@@ -156,7 +171,7 @@ export const GameLibraryProvider = ({ children }) => {
       return;
     }
 
-    saveStoredItems(window.localStorage, storageKeys.wishlistKey, wishlistItems);
+    // Wishlist is now managed by backend for signed-in users
   }, [wishlistItems, isSignedIn, storageKeys.wishlistKey]);
 
   const redirectToSignIn = () => {
@@ -206,20 +221,30 @@ export const GameLibraryProvider = ({ children }) => {
 
     return cartItems.some((entry) => entry.key === item.key);
   };
-  const addToWishlist = (game) => {
+  const addToWishlist = async (game) => {
     if (!requireSignedInUser()) {
       return;
     }
 
     const item = normalizeGame(game);
 
-    setWishlistItems((currentItems) => {
-      if (currentItems.some((entry) => entry.key === item.key)) {
-        return currentItems;
-      }
+    try {
+      const userId = currentUser.uid ?? currentUser.user_id;
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/wishlist`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gameId: item.id }),
+      });
 
-      return [...currentItems, item];
-    });
+      if (response.ok) {
+        setWishlistItems((currentItems) => {
+          if (currentItems.some((entry) => entry.key === item.key)) return currentItems;
+          return [...currentItems, item];
+        });
+      }
+    } catch (error) {
+      console.error('Error adding to wishlist:', error);
+    }
   };
 
   const isInWishlist = (game) => {
@@ -232,22 +257,13 @@ export const GameLibraryProvider = ({ children }) => {
     return wishlistItems.some((entry) => entry.key === item.key);
   };
 
-  const toggleWishlist = (game) => {
-    if (!requireSignedInUser()) {
-      return;
-    }
-
+  const toggleWishlist = async (game) => {
     const item = normalizeGame(game);
-
-    setWishlistItems((currentItems) => {
-      const existingIndex = currentItems.findIndex((entry) => entry.key === item.key);
-
-      if (existingIndex === -1) {
-        return [...currentItems, item];
-      }
-
-      return currentItems.filter((entry) => entry.key !== item.key);
-    });
+    if (isInWishlist(item)) {
+      await removeFromWishlist(item.key);
+    } else {
+      await addToWishlist(item);
+    }
   };
   const removeFromCart = (itemKey) => {
     if (!requireSignedInUser()) {
@@ -257,12 +273,26 @@ export const GameLibraryProvider = ({ children }) => {
     setCartItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
   };
 
-  const removeFromWishlist = (itemKey) => {
+  const removeFromWishlist = async (itemKey) => {
     if (!requireSignedInUser()) {
       return;
     }
 
-    setWishlistItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
+    const item = wishlistItems.find((i) => i.key === itemKey);
+    if (!item) return;
+
+    try {
+      const userId = currentUser.uid ?? currentUser.user_id;
+      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/wishlist/${item.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setWishlistItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
+      }
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+    }
   };
 
   const moveCartItemToWishlist = (itemKey) => {
