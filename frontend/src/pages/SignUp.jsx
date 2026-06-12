@@ -43,7 +43,6 @@ const SignUp = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [profileImage, setProfileImage] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
   const [submitMessage, setSubmitMessage] = useState('');
@@ -84,7 +83,7 @@ const SignUp = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password, profileImage }),
+        body: JSON.stringify({ username, email, password }),
       });
 
       const payload = await response.json();
@@ -98,7 +97,6 @@ const SignUp = () => {
       setUsername('');
       setEmail('');
       setPassword('');
-      setProfileImage('');
       setConfirmPassword('');
 
       window.setTimeout(() => {
@@ -162,18 +160,6 @@ const SignUp = () => {
               value={confirmPassword}
               onChange={setConfirmPassword}
             />
-
-            <div className="login-input-wrapper">
-              <input
-                type="text"
-                placeholder="Profile Image URL"
-                className="login-input"
-                name="profileImage"
-                value={profileImage}
-                onChange={(e) => setProfileImage(e.target.value)}
-              />
-              <FaImage className="login-icon" />
-            </div>
 
             {submitMessage && (
               <p

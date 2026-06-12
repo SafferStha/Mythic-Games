@@ -1,16 +1,80 @@
 const express = require('express');
-const { pool } = require('../database/db'); // Assuming db.js exports your PostgreSQL pool
+const db = require('../db'); 
+const bcrypt = require('bcryptjs');
 
-// This function will now accept the 'upload' middleware from server.js
 module.exports = (upload) => {
     const router = express.Router();
 
+    // 1. REGISTRATION (JSON only, no image)
+    router.post('/register', async (req, res) => {
+        const { username, email, password } = req.body;
+
+        if (!username || !email || !password) {
+            return res.status(400).json({ success: false, message: "All fields are required" });
+        }
+
+        try {
+            // Securely hash the password before saving
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            const result = await db.query(
+                'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING uid, username, email',
+                [username, email, hashedPassword]
+            );
+            
+            res.status(201).json({ 
+                success: true, 
+                message: "Registration successful!", 
+                data: result.rows[0] 
+            });
+        } catch (error) {
+            console.error('Registration Error:', error);
+            // Handle unique constraint violation (Username/Email already taken)
+            if (error.code === '23505') {
+                return res.status(409).json({ success: false, message: 'Username or email already exists.' });
+            }
+            res.status(500).json({ success: false, message: 'Database error or user already exists.' });
+        }
+    });
+
+    // 2. LOGIN
+    router.post('/login', async (req, res) => {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: "Email and password required" });
+        }
+
+        try {
+            const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+            const user = result.rows[0];
+
+            if (!user) {
+                return res.status(401).json({ success: false, message: 'Invalid email or password' });
+            }
+
+            // Compare the provided password with the hashed password in DB
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                return res.status(401).json({ success: false, message: 'Invalid email or password' });
+            }
+
+            res.status(200).json({ 
+                success: true, 
+                message: 'Login successful', 
+                data: { uid: user.uid, username: user.username, email: user.email } 
+            });
+        } catch (error) {
+            console.error('Login Error:', error);
+            res.status(500).json({ success: false, message: 'Internal server error.' });
+        }
+    });
+
     // Route to get user details
-    // This route is assumed to exist or be created to fetch user data including profile_image
     router.get('/:uid', async (req, res) => {
         const { uid } = req.params;
         try {
-            const result = await pool.query(
+            const result = await db.query(
                 'SELECT uid, username, email, status, created_at, profile_image, bio FROM users WHERE uid = $1', // Added bio
                 [uid]
             );
@@ -36,7 +100,7 @@ module.exports = (upload) => {
         const profileImagePath = `/uploads/${req.file.filename}`;
 
         try {
-            const result = await pool.query(
+            const result = await db.query(
                 'UPDATE users SET profile_image = $1, updated_at = CURRENT_TIMESTAMP WHERE uid = $2 RETURNING uid, username, email, status, created_at, profile_image, bio',
                 [profileImagePath, uid]
             );
@@ -53,7 +117,7 @@ module.exports = (upload) => {
         const { username, email, bio } = req.body;
 
         try {
-            const result = await pool.query(
+            const result = await db.query(
                 'UPDATE users SET username = $1, email = $2, bio = $3, updated_at = CURRENT_TIMESTAMP WHERE uid = $4 RETURNING uid, username, email, status, created_at, profile_image, bio',
                 [username, email, bio, uid]
             );

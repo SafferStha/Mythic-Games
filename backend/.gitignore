@@ -1,2 +1,6 @@
+.env
+node_modules/
 uploads/
-/.env
+npm-debug.log
+.DS_Store
+.vscode/
