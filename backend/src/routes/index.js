@@ -1,8 +1,9 @@
-'use strict';
+"use strict";
 
-const { Router } = require('express');
-const authRoutes = require('./authRoutes');
-const userRoutes = require('./userRoutes');
+const { Router } = require("express");
+const authRoutes = require("./authRoutes");
+const userRoutes = require("./userRoutes");
+const cartRoutes = require("./cartRoutes");
 
 /**
  * Root API router.
@@ -12,7 +13,8 @@ const userRoutes = require('./userRoutes');
  */
 const router = Router();
 
-router.use('/auth',  authRoutes);
-router.use('/users', userRoutes);
+router.use("/auth", authRoutes);
+router.use("/users", userRoutes);
+router.use("/cart", cartRoutes);
 
 module.exports = router;

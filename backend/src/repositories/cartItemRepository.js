@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-const { pool } = require('../config/database');
+const { pool } = require("../config/database");
 
 const ITEM_FIELDS = `
   ci.id, ci.cart_id, ci.game_id, ci.quantity, ci.unit_price, ci.subtotal, ci.added_at,
@@ -28,7 +28,7 @@ async function findByCartId(cartId, db = pool) {
        JOIN games g ON ci.game_id = g.id
       WHERE ci.cart_id = $1
       ORDER BY ci.added_at ASC`,
-    [cartId]
+    [cartId],
   );
   return rows;
 }
@@ -42,7 +42,7 @@ async function findById(itemId, db = pool) {
        FROM cart_items ci
        JOIN games g ON ci.game_id = g.id
       WHERE ci.id = $1`,
-    [itemId]
+    [itemId],
   );
   return rows[0] ?? null;
 }
@@ -54,7 +54,7 @@ async function findById(itemId, db = pool) {
 async function findByCartAndGame(cartId, gameId, db = pool) {
   const { rows } = await db.query(
     `SELECT * FROM cart_items WHERE cart_id = $1 AND game_id = $2`,
-    [cartId, gameId]
+    [cartId, gameId],
   );
   return rows[0] ?? null;
 }
@@ -69,22 +69,26 @@ async function create({ cartId, gameId, quantity, unitPrice }, db = pool) {
     `INSERT INTO cart_items (cart_id, game_id, quantity, unit_price, subtotal)
      VALUES ($1, $2, $3, $4, $5)
      RETURNING *`,
-    [cartId, gameId, quantity, unitPrice, subtotal]
+    [cartId, gameId, quantity, unitPrice, subtotal],
   );
   return rows[0];
 }
 
 /**
  * Updates quantity (and recomputes subtotal) for an existing cart item.
+ *
+ * IMPORTANT: uses $1 * unit_price, NOT quantity * unit_price.
+ * In PostgreSQL SET clauses, column references resolve to the pre-update row
+ * value, so `quantity * unit_price` would silently use the OLD quantity.
  */
 async function updateQuantity(itemId, quantity, db = pool) {
   const { rows } = await db.query(
     `UPDATE cart_items
         SET quantity = $1,
-            subtotal = quantity * unit_price
+            subtotal = $1 * unit_price
       WHERE id = $2
      RETURNING *`,
-    [quantity, itemId]
+    [quantity, itemId],
   );
   return rows[0] ?? null;
 }
@@ -94,8 +98,8 @@ async function updateQuantity(itemId, quantity, db = pool) {
  */
 async function remove(itemId, db = pool) {
   const result = await db.query(
-    'DELETE FROM cart_items WHERE id = $1 RETURNING id',
-    [itemId]
+    "DELETE FROM cart_items WHERE id = $1 RETURNING id",
+    [itemId],
   );
   return result.rowCount > 0;
 }
@@ -104,16 +108,40 @@ async function remove(itemId, db = pool) {
  * Removes all items from a cart (e.g. after checkout or on cart clear).
  */
 async function clearByCartId(cartId, db = pool) {
-  const result = await db.query(
-    'DELETE FROM cart_items WHERE cart_id = $1',
-    [cartId]
-  );
+  const result = await db.query("DELETE FROM cart_items WHERE cart_id = $1", [
+    cartId,
+  ]);
   return result.rowCount;
+}
+
+/**
+ * Ownership-aware lookup: returns the raw cart_items row only when
+ * the item belongs to an ACTIVE cart owned by `userId`.
+ * Single query — no round-trip to the carts table needed in the service.
+ *
+ * Returns null if:
+ *   - item does not exist
+ *   - item belongs to a different user
+ *   - item's cart is no longer active
+ */
+async function findByIdAndUserId(itemId, userId, db = pool) {
+  const { rows } = await db.query(
+    `SELECT ci.id, ci.cart_id, ci.game_id, ci.quantity,
+            ci.unit_price, ci.subtotal, ci.added_at
+       FROM cart_items ci
+       JOIN carts c ON ci.cart_id = c.id
+      WHERE ci.id     = $1
+        AND c.user_id = $2
+        AND c.status  = 'active'`,
+    [itemId, userId],
+  );
+  return rows[0] ?? null;
 }
 
 module.exports = {
   findByCartId,
   findById,
+  findByIdAndUserId,
   findByCartAndGame,
   create,
   updateQuantity,
