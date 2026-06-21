@@ -6,6 +6,8 @@ const env               = require('../config/env');
 const paymentRepository = require('../repositories/paymentRepository');
 const orderRepository   = require('../repositories/orderRepository');
 const paymentService    = require('./paymentService');
+const invoiceService    = require('./invoiceService');
+const receiptService    = require('./receiptService');
 const { AppError }      = require('../utils/AppError');
 const { logger }        = require('../utils/logger');
 const { round }         = require('../utils/cartCalculator');
@@ -287,6 +289,22 @@ async function handleSuccess(encodedData) {
     refId:           verificationResponse.ref_id,
   });
 
+  // ── 8. Generate PDFs (non-fatal — payment is already secure in DB) ─────────
+  try {
+    const [invResult, rcpResult] = await Promise.all([
+      invoiceService.generateInvoice(result.order.id),
+      receiptService.generateReceipt(result.payment.id),
+    ]);
+    result.invoice = invResult.invoice;
+    result.receipt = rcpResult.receipt;
+  } catch (pdfErr) {
+    logger.error('[eSewa] PDF generation failed after payment verified (non-fatal)', {
+      error:   pdfErr.message,
+      orderId: payment.order_id,
+    });
+    // PDFs can be regenerated on-demand via the download endpoints
+  }
+
   return result;
 }
 
@@ -385,6 +403,21 @@ async function verifyPayment(transactionUuid, userId) {
       paymentReference: verificationResponse.ref_id ?? null,
       gatewayResponse:  verificationResponse,
     });
+
+    // Generate PDFs (non-fatal)
+    try {
+      const [invResult, rcpResult] = await Promise.all([
+        invoiceService.generateInvoice(result.order.id),
+        receiptService.generateReceipt(result.payment.id),
+      ]);
+      result.invoice = invResult.invoice;
+      result.receipt = rcpResult.receipt;
+    } catch (pdfErr) {
+      logger.error('[eSewa] PDF generation failed after manual verify (non-fatal)', {
+        error:   pdfErr.message,
+        orderId: payment.order_id,
+      });
+    }
 
     return { already_verified: false, ...result };
   }

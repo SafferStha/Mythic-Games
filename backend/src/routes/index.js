@@ -7,6 +7,8 @@ const cartRoutes     = require("./cartRoutes");
 const checkoutRoutes = require("./checkoutRoutes");
 const orderRoutes    = require("./orderRoutes");
 const paymentRoutes  = require("./paymentRoutes");
+const invoiceRoutes  = require("./invoiceRoutes");
+const receiptRoutes  = require("./receiptRoutes");
 
 /**
  * Root API router.
@@ -22,5 +24,7 @@ router.use("/cart",     cartRoutes);
 router.use("/checkout", checkoutRoutes);
 router.use("/orders",   orderRoutes);
 router.use("/payment",  paymentRoutes);
+router.use("/invoice",  invoiceRoutes);
+router.use("/receipt",  receiptRoutes);
 
 module.exports = router;

@@ -1,193 +1,202 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Login.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Mail, User, ArrowRight, CheckCircle2, Flame } from 'lucide-react';
+import { toast } from 'sonner';
 
 import logo from '../assets/MythicLogo.png';
+import { Input, PasswordInput } from '../components/ui/Input';
+import { PrimaryButton } from '../components/ui/Button';
 
-import { FaEnvelope, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const AuthBackground = () => (
+  <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 bg-linear-to-br from-bg via-[#1a1040] to-bg" />
+    <motion.div
+      animate={{ scale: [1, 1.2, 1], opacity: [0.25, 0.4, 0.25] }}
+      transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+      className="absolute -top-32 -right-32 w-125 h-125 rounded-full bg-primary/20 blur-[110px]"
+    />
+    <motion.div
+      animate={{ scale: [1, 1.1, 1], opacity: [0.2, 0.3, 0.2] }}
+      transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 1.5 }}
+      className="absolute -bottom-32 -left-32 w-100 h-100 rounded-full bg-accent/15 blur-[90px]"
+    />
+    <div
+      className="absolute inset-0 opacity-[0.025]"
+      style={{
+        backgroundImage:
+          'linear-gradient(#A29BFE 1px, transparent 1px), linear-gradient(90deg, #A29BFE 1px, transparent 1px)',
+        backgroundSize: '48px 48px',
+      }}
+    />
+  </div>
+);
 
-const PasswordField = ({ placeholder, name, value, onChange }) => {
-  const [showPassword, setShowPassword] = useState(false);
-
-  return (
-    <div className="login-input-wrapper login-input-wrapper--icon-right">
-      <input
-        type={showPassword ? 'text' : 'password'}
-        placeholder={placeholder}
-        className="login-input login-input--no-left-padding"
-        name={name}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        autoComplete="new-password"
-      />
-
-      <button
-        type="button"
-        className="login-eye-toggle"
-        onClick={() => setShowPassword((p) => !p)}
-        aria-label={showPassword ? 'Hide password' : 'Show password'}
-        aria-pressed={showPassword}
-      >
-        {showPassword ? <FaEye /> : <FaEyeSlash />}
-      </button>
-    </div>
-  );
-};
+const perks = [
+  'Instant access to 500+ premium games',
+  'Exclusive member-only discounts',
+  'Secure eSewa & card payments',
+  'Download invoices & receipts',
+];
 
 const SignUp = () => {
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  const [submitMessage, setSubmitMessage] = useState('');
-  const [submitType, setSubmitType] = useState('');
-
-  const resetMessage = () => {
-    setSubmitMessage('');
-    setSubmitType('');
-  };
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const validate = () => {
-    if (!username.trim()) return 'Username is required.';
-    if (!email.trim()) return 'Email is required.';
-    if (!password) return 'Password is required.';
-    if (!confirmPassword) return 'Confirm Password is required.';
-    if (password !== confirmPassword) return 'Passwords do not match.';
-
-    return '';
+    const e = {};
+    if (!username.trim())               e.username = 'Username is required.';
+    if (!email.trim())                  e.email    = 'Email is required.';
+    if (!password)                      e.password = 'Password is required.';
+    else if (password.length < 6)      e.password = 'Password must be at least 6 characters.';
+    if (password !== confirmPassword)   e.confirm  = 'Passwords do not match.';
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
-  const onMainButtonClick = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return;
-
-    resetMessage();
-
-    const err = validate();
-    if (err) {
-      setSubmitType('error');
-      setSubmitMessage(err);
-      return;
-    }
+    if (loading || !validate()) return;
 
     setLoading(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),
       });
+      const data = await res.json();
 
-      const payload = await response.json();
+      if (!res.ok) throw new Error(data?.message || 'Registration failed.');
 
-      if (!response.ok) {
-        throw new Error(payload?.message || 'Registration failed.');
-      }
-
-      setSubmitType('success');
-      setSubmitMessage(payload.message || 'Registration successful. You can now sign in.');
-      setUsername('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
-
-      window.setTimeout(() => {
-        navigate('/login');
-      }, 900);
-    } catch (error) {
-      setSubmitType('error');
-      setSubmitMessage(error?.message || 'Unable to create your account. Please try again.');
+      toast.success('Account created! Welcome to Mythic Games 🎮');
+      setTimeout(() => navigate('/login'), 900);
+    } catch (err) {
+      toast.error(err?.message || 'Unable to create account. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-page">
-      <div className="login-container">
-        <div className="login-card">
-          <img src={logo} alt="logo" className="login-logo" />
+    <div className="min-h-screen relative flex items-center justify-center p-4 py-12">
+      <AuthBackground />
 
-          <h2 className="login-title">Sign Up</h2>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+        className="relative w-full max-w-md"
+      >
+        {/* Card */}
+        <div className="glass rounded-3xl p-8 border border-white/10 shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
 
-          <form onSubmit={onMainButtonClick}>
-            <div className="login-input-wrapper">
-              <input
-                type="text"
-                placeholder="Username"
-                className="login-input"
-                name="username"
+          {/* Header */}
+          <div className="flex flex-col items-center mb-8">
+            <Link to="/" className="group mb-6">
+              <img src={logo} alt="Mythic Games" className="h-14 w-14 group-hover:scale-105 transition-transform" />
+            </Link>
+            <h1 className="text-2xl font-extrabold text-foreground mb-1">Create Account</h1>
+            <p className="text-sm text-subtle">Join thousands of gamers on Mythic Games</p>
+          </div>
+
+          {/* Perks list */}
+          <div className="grid grid-cols-1 gap-2 mb-7 p-4 rounded-2xl bg-primary/5 border border-primary/15">
+            {perks.map((p) => (
+              <div key={p} className="flex items-center gap-2.5 text-xs text-muted">
+                <CheckCircle2 size={13} className="text-success shrink-0" />
+                {p}
+              </div>
+            ))}
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} noValidate>
+            <div className="flex flex-col gap-4 mb-6">
+              <Input
+                label="Username"
+                placeholder="Your gamer tag"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                error={errors.username}
                 autoComplete="username"
+                leftIcon={<User size={15} />}
               />
-
-              <FaUser className="login-icon" />
-            </div>
-
-            <div className="login-input-wrapper">
-              <input
+              <Input
                 type="email"
-                placeholder="Email"
-                className="login-input"
-                name="email"
+                label="Email"
+                placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                error={errors.email}
                 autoComplete="email"
+                leftIcon={<Mail size={15} />}
               />
-
-              <FaEnvelope className="login-icon" />
+              <PasswordInput
+                label="Password"
+                placeholder="At least 6 characters"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                error={errors.password}
+                autoComplete="new-password"
+              />
+              <PasswordInput
+                label="Confirm Password"
+                placeholder="Repeat your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                error={errors.confirm}
+                autoComplete="new-password"
+              />
             </div>
 
-            <PasswordField
-              placeholder="Password"
-              name="password"
-              value={password}
-              onChange={setPassword}
-            />
-
-            <PasswordField
-              placeholder="Confirm Password"
-              name="confirmPassword"
-              value={confirmPassword}
-              onChange={setConfirmPassword}
-            />
-
-            {submitMessage && (
-              <p
-                className="login-text"
-                style={{
-                  color: submitType === 'success' ? '#00ff99' : '#ff6b6b',
-                  marginTop: 10,
-                  marginBottom: 10,
-                  fontWeight: 700,
-                }}
-              >
-                {submitMessage}
-              </p>
-            )}
-
-            <button className="login-button" type="submit" disabled={loading}>
-              {loading ? 'Please wait…' : 'Register'}
-            </button>
+            <PrimaryButton
+              type="submit"
+              className="w-full"
+              size="lg"
+              loading={loading}
+              rightIcon={!loading && <ArrowRight size={17} />}
+            >
+              Create Account
+            </PrimaryButton>
           </form>
 
-          <p className="login-text">
-            Already have an account?
-            <span className="login-link" onClick={() => navigate('/login')}>
-              {' '}Login
-            </span>
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-6">
+            <div className="flex-1 h-px bg-white/8" />
+            <span className="text-xs text-subtle">or</span>
+            <div className="flex-1 h-px bg-white/8" />
+          </div>
+
+          <p className="text-center text-sm text-subtle">
+            Already have an account?{' '}
+            <Link to="/login" className="text-primary-light hover:text-foreground font-semibold transition-colors">
+              Sign in
+            </Link>
           </p>
         </div>
-      </div>
+
+        {/* Tags */}
+        <div className="flex justify-center gap-3 mt-6 flex-wrap">
+          {['100% Secure', 'No Hidden Fees', 'Instant Activation'].map((t) => (
+            <span
+              key={t}
+              className="inline-flex items-center gap-1.5 text-xs text-subtle bg-white/4 border border-white/6 px-3 py-1.5 rounded-full"
+            >
+              <Flame size={10} className="text-primary-light" />
+              {t}
+            </span>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 };

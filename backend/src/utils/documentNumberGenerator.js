@@ -7,8 +7,8 @@ const crypto = require('crypto');
  *
  * Format: PREFIX-YYYYMMDD-XXXXXX
  * Examples:
- *   INV-20260621-724519
- *   RCP-20260621-391024
+ *   INV-20260622-724519
+ *   REC-20260622-391024
  *
  * Uses crypto.randomBytes for unpredictability.
  * DB UNIQUE constraints are the final collision guard.
@@ -34,10 +34,10 @@ function generateInvoiceNumber() {
 
 /**
  * Generates a receipt number.
- * Format: RCP-YYYYMMDD-XXXXXX
+ * Format: REC-YYYYMMDD-XXXXXX
  */
 function generateReceiptNumber() {
-  return buildDocumentNumber('RCP');
+  return buildDocumentNumber('REC');
 }
 
 module.exports = { generateInvoiceNumber, generateReceiptNumber };

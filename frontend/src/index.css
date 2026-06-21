@@ -1,101 +1,161 @@
-/* ─── Design Tokens ─────────────────────────────────────── */
-:root {
-    --navbar-height: 92px;
+@import "tailwindcss";
 
-    --bg: #121212;
-    --nav-bg: #181818;
-    --surface: #1e1e1e;
-    --surface-strong: #272727;
-    --surface-soft: #161616;
-    --surface-subtle: rgba(255, 255, 255, 0.025);
+/* ─── Mythic Games Brand Theme ───────────────────────────── */
+@theme {
+  /* Brand colors */
+  --color-bg:            #0F172A;
+  --color-bg-deep:       #080D1A;
+  --color-primary:       #6C5CE7;
+  --color-primary-light: #A29BFE;
+  --color-accent:        #00CEC9;
+  --color-surface:       #1E293B;
+  --color-surface-hover: #334155;
+  --color-foreground:    #F8FAFC;
+  --color-muted:         #CBD5E1;
+  --color-subtle:        #64748B;
+  --color-border:        rgba(255,255,255,0.08);
+  --color-danger:        #EF4444;
+  --color-success:       #22C55E;
+  --color-warning:       #F59E0B;
 
-    --text: #f0f0f0;
-    --text-primary: #f0f0f0;
-    --text-muted: #808080;
-    --text-secondary: #b0b0b0;
-    --hover: #ffffff;
+  /* Fonts */
+  --font-sans: 'Inter', 'Arial', 'Helvetica', sans-serif;
 
-    --card: #202020;
-    --btn-bg: #272727;
-    --border: rgba(255, 255, 255, 0.07);
-
-    --accent: #0078f2;
-    --accent-soft: rgba(0, 120, 242, 0.12);
-    --accent-strong: #0059cc;
-
-    --shadow: 0 4px 24px rgba(0, 0, 0, 0.55);
-    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.65);
-
-    --radius: 4px;
-    --radius-md: 6px;
-    --radius-lg: 10px;
+  /* Animation curves */
+  --ease-premium: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ─── Light Theme ───────────────────────────────────────── */
-body[data-theme="light"] {
-    --bg: #f0f2f5;
-    --nav-bg: #ffffff;
-    --surface: #ffffff;
-    --surface-strong: #e8eaed;
-    --surface-soft: #f6f8fa;
-    --surface-subtle: rgba(0, 0, 0, 0.02);
+/* ─── Legacy Design Tokens (kept for existing components) ─── */
+:root {
+  --navbar-height: 68px;
 
-    --text: #111111;
-    --text-primary: #111111;
-    --text-muted: #6e6e6e;
-    --text-secondary: #3d3d3d;
-    --hover: #000000;
+  --bg:              #0F172A;
+  --nav-bg:          rgba(15, 23, 42, 0.85);
+  --surface:         #1E293B;
+  --surface-strong:  #334155;
+  --surface-soft:    #0F172A;
+  --surface-subtle:  rgba(255, 255, 255, 0.04);
 
-    --card: #eaeaea;
-    --btn-bg: #e3e5e8;
-    --border: rgba(0, 0, 0, 0.08);
+  --text:            #F8FAFC;
+  --text-primary:    #F8FAFC;
+  --text-muted:      #64748B;
+  --text-secondary:  #CBD5E1;
+  --hover:           #ffffff;
 
-    --accent: #0078f2;
-    --accent-soft: rgba(0, 120, 242, 0.08);
-    --accent-strong: #0059cc;
+  --card:            #1E293B;
+  --btn-bg:          #334155;
+  --border:          rgba(255, 255, 255, 0.08);
 
-    --shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --accent:          #6C5CE7;
+  --accent-soft:     rgba(108, 92, 231, 0.15);
+  --accent-strong:   #5a4bd1;
+
+  --shadow:          0 4px 24px rgba(0, 0, 0, 0.6);
+  --shadow-lg:       0 16px 48px rgba(0, 0, 0, 0.7);
+  --shadow-glow:     0 0 32px rgba(108, 92, 231, 0.25);
+
+  --radius:          6px;
+  --radius-md:       10px;
+  --radius-lg:       16px;
+  --radius-xl:       24px;
 }
 
 /* ─── Reset ─────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    text-decoration: none;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
 }
 
 html,
 body,
 #root {
-    min-height: 100%;
+  min-height: 100%;
 }
 
 /* ─── Base ──────────────────────────────────────────────── */
 body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: "Inter", Arial, Helvetica, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    padding-top: var(--navbar-height);
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding-top: var(--navbar-height);
 }
 
 /* ─── Scrollbar ─────────────────────────────────────────── */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.12);
-    border-radius: 3px;
+  background: rgba(108, 92, 231, 0.35);
+  border-radius: 3px;
 }
-body[data-theme="light"] ::-webkit-scrollbar-thumb {
-    background: rgba(0, 0, 0, 0.18);
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(108, 92, 231, 0.6);
+}
+
+/* ─── Glassmorphism utility ──────────────────────────────── */
+.glass {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* ─── Premium gradient utilities ──────────────────────────── */
+.gradient-primary {
+  background: linear-gradient(135deg, #6C5CE7, #A29BFE);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #A29BFE, #00CEC9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-primary {
+  box-shadow: 0 0 32px rgba(108, 92, 231, 0.4);
+}
+
+/* ─── Page transition wrapper ─────────────────────────────── */
+.page-enter {
+  animation: page-in 0.3s ease;
+}
+
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Shimmer skeleton animation ─────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(30, 41, 59, 0.8) 25%,
+    rgba(51, 65, 85, 0.8) 50%,
+    rgba(30, 41, 59, 0.8) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: var(--radius-md);
+}
+
+/* ─── Focus visible ───────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid #6C5CE7;
+  outline-offset: 2px;
 }
