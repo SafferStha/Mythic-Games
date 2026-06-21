@@ -1,55 +1,32 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+"use strict";
 
-const userRoutes = require('./routes/userRoutes');
-const authRoutes = require('./routes/authRoutes');
-const { initializeDatabase, getConnectionInfo } = require('./database/db');
+require("dotenv").config();
 
-const app = express();
-const port = Number(process.env.PORT || 5000);
-
-app.use(cors());
-app.use(express.json());
-
-app.get('/health', (req, res) => {
-	res.json({ success: true, message: 'Mythic Games backend is running' });
-});
-
-app.get('/', (req, res) => {
-	res.json({ success: true, message: 'Mythic Games backend is running' });
-});
-
-app.use('/api/users', userRoutes);
-app.use('/api/auth', authRoutes);
-
-app.use((req, res) => {
-	res.status(404).json({ success: false, message: 'Route not found' });
-});
-
-app.use((error, req, res, next) => {
-	console.error(error);
-	res.status(500).json({
-		success: false,
-		message: 'Internal server error',
-	});
-});
+const app = require("./src/app");
+const {
+  runMigrations,
+  getConnectionInfo,
+} = require("./src/database/migrations");
+const { logger } = require("./src/utils/logger");
+const env = require("./src/config/env");
 
 async function startServer() {
-	try {
-		await initializeDatabase();
-		const connectionInfo = await getConnectionInfo();
-		console.log(
-			`Server connected successfully to PostgreSQL database "${connectionInfo.database}" at ${connectionInfo.host}:${connectionInfo.port}`
-		);
+  try {
+    await runMigrations();
 
-		app.listen(port, () => {
-			console.log(`Server is running on http://localhost:${port}`);
-		});
-	} catch (error) {
-		console.error('Server failed to connect to PostgreSQL:', error.message || error);
-		process.exit(1);
-	}
+    const { database, host, port: dbPort } = await getConnectionInfo();
+    logger.info(
+      `Connected to PostgreSQL "${database}" at ${host ?? "localhost"}:${dbPort ?? 5432}`,
+    );
+
+    app.listen(env.PORT, () => {
+      logger.info(`Server running  →  http://localhost:${env.PORT}`);
+      logger.info(`Environment     →  ${env.NODE_ENV}`);
+    });
+  } catch (error) {
+    logger.error("Server failed to start", { error: error.message });
+    process.exit(1);
+  }
 }
 
 startServer();
