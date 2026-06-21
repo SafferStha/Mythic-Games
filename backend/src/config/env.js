@@ -39,6 +39,32 @@ const env = Object.freeze({
   // VAT / tax rate applied to cart totals (0.13 = 13%).
   // Override per environment — e.g. 0 for tax-exempt regions.
   CART_TAX_RATE: parseFloat(optional("CART_TAX_RATE", "0.13")),
+
+  // ── Frontend ──────────────────────────────────────────────────────────────
+  // Base URL of the React app — used for post-payment redirects.
+  FRONTEND_URL: optional("FRONTEND_URL", "http://localhost:5173"),
+
+  // ── eSewa Payment Gateway ─────────────────────────────────────────────────
+  // Use EPAYTEST / UAT credentials for development.
+  // Replace with live credentials for production.
+  ESEWA_MERCHANT_CODE: optional("ESEWA_MERCHANT_CODE", "EPAYTEST"),
+  ESEWA_SECRET_KEY: optional("ESEWA_SECRET_KEY", "8gBm/:&EnhH.1/q"),
+  ESEWA_PAYMENT_URL: optional(
+    "ESEWA_PAYMENT_URL",
+    "https://rc-epay.esewa.com.np/api/epay/main/v2/form",
+  ),
+  ESEWA_VERIFICATION_URL: optional(
+    "ESEWA_VERIFICATION_URL",
+    "https://rc-epay.esewa.com.np/api/epay/transaction/v2/status/",
+  ),
+  ESEWA_SUCCESS_URL: optional(
+    "ESEWA_SUCCESS_URL",
+    "http://localhost:5000/api/payment/esewa/success",
+  ),
+  ESEWA_FAILURE_URL: optional(
+    "ESEWA_FAILURE_URL",
+    "http://localhost:5000/api/payment/esewa/failure",
+  ),
 });
 
 module.exports = env;
