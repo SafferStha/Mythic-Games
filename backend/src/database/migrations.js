@@ -7,6 +7,7 @@ const schema001Auth = require("./schema/001_auth");
 const schema002Catalog = require("./schema/002_catalog");
 const schema003Commerce = require("./schema/003_commerce");
 const schema004Payments = require("./schema/004_payments");
+const schema005Admin    = require("./schema/005_admin");
 
 /**
  * Ordered list of all migrations.
@@ -19,6 +20,7 @@ const MIGRATIONS = [
   { name: "002_catalog_schema", up: schema002Catalog },
   { name: "003_commerce_schema", up: schema003Commerce },
   { name: "004_payments_schema", up: schema004Payments },
+  { name: "005_admin_schema",   up: schema005Admin },
 ];
 
 /**

@@ -72,11 +72,20 @@ async function remove(id) {
   return result.rowCount > 0;
 }
 
+async function countGamesByCategory(categoryId) {
+  const { rows } = await pool.query(
+    `SELECT COUNT(*) AS total FROM games WHERE category_id = $1 AND status != 'deleted'`,
+    [categoryId]
+  );
+  return parseInt(rows[0].total, 10);
+}
+
 module.exports = {
   findAll,
   findById,
   findBySlug,
   findByName,
+  countGamesByCategory,
   create,
   update,
   remove,

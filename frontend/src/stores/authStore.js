@@ -18,8 +18,9 @@ export const useAuthStore = create(
         set({ user: null, isAuthenticated: false });
       },
 
-      isAdmin: () => get().user?.role === 'admin',
-      isUser:  () => get().user?.role === 'user',
+      isAdmin:      () => ['admin', 'super_admin'].includes(get().user?.role),
+      isSuperAdmin: () => get().user?.role === 'super_admin',
+      isUser:       () => get().user?.role === 'user',
       userId:  () => get().user?.user_id ?? get().user?.uid ?? null,
       token:   () => get().user?.token ?? null,
     }),

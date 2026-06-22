@@ -85,12 +85,77 @@ async function remove(userId) {
   return result.rowCount > 0;
 }
 
+// ── Admin-only methods ────────────────────────────────────────────────────────
+
+async function findAllPaginated({ page = 1, limit = 20, search = null, status = null, role = null } = {}) {
+  const conditions = [];
+  const params     = [];
+  let   idx        = 1;
+
+  if (search) {
+    conditions.push(`(LOWER(username) LIKE $${idx} OR LOWER(email) LIKE $${idx})`);
+    params.push(`%${search.toLowerCase()}%`);
+    idx++;
+  }
+
+  if (status) {
+    conditions.push(`status = $${idx++}`);
+    params.push(status);
+  }
+
+  if (role) {
+    conditions.push(`role = $${idx++}`);
+    params.push(role);
+  }
+
+  const where  = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const offset = (page - 1) * limit;
+
+  const [dataResult, countResult] = await Promise.all([
+    pool.query(
+      `SELECT ${PUBLIC_FIELDS}
+         FROM users
+         ${where}
+         ORDER BY created_at DESC
+         LIMIT $${idx} OFFSET $${idx + 1}`,
+      [...params, limit, offset]
+    ),
+    pool.query(`SELECT COUNT(*) AS total FROM users ${where}`, params),
+  ]);
+
+  return {
+    users: dataResult.rows,
+    total: parseInt(countResult.rows[0].total, 10),
+    page,
+    limit,
+  };
+}
+
+async function updateStatus(userId, status) {
+  const { rows } = await pool.query(
+    `UPDATE users SET status = $1, updated_at = NOW() WHERE uid = $2 RETURNING ${PUBLIC_FIELDS}`,
+    [status, userId]
+  );
+  return rows[0] ?? null;
+}
+
+async function updateRole(userId, role) {
+  const { rows } = await pool.query(
+    `UPDATE users SET role = $1, updated_at = NOW() WHERE uid = $2 RETURNING ${PUBLIC_FIELDS}`,
+    [role, userId]
+  );
+  return rows[0] ?? null;
+}
+
 module.exports = {
   findAll,
+  findAllPaginated,
   findById,
   findByEmailOrUsername,
   findByLoginIdentifier,
   create,
   update,
+  updateStatus,
+  updateRole,
   remove,
 };

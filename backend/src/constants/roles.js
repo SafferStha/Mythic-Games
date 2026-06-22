@@ -5,8 +5,9 @@
  * Use these instead of raw string literals to prevent typo-based bugs.
  */
 const ROLES = Object.freeze({
-  USER:  'user',
-  ADMIN: 'admin',
+  USER:        'user',
+  ADMIN:       'admin',
+  SUPER_ADMIN: 'super_admin',
 });
 
 module.exports = { ROLES };

@@ -133,10 +133,54 @@ async function updateStatus(
   return rows[0] ?? null;
 }
 
+// ── Admin-only methods ────────────────────────────────────────────────────────
+
+async function findAllAdmin({ page = 1, limit = 20, status = null } = {}) {
+  const conditions = [];
+  const params     = [];
+  let   idx        = 1;
+
+  if (status) {
+    conditions.push(`p.payment_status = $${idx++}`);
+    params.push(status);
+  }
+
+  const where  = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const offset = (page - 1) * limit;
+
+  const [dataResult, countResult] = await Promise.all([
+    pool.query(
+      `SELECT p.*,
+              o.order_number,
+              u.username AS customer_name,
+              u.email    AS customer_email
+         FROM payments p
+         LEFT JOIN orders o ON p.order_id = o.id
+         LEFT JOIN users u  ON o.user_id  = u.uid
+         ${where}
+         ORDER BY p.created_at DESC
+         LIMIT $${idx} OFFSET $${idx + 1}`,
+      [...params, limit, offset]
+    ),
+    pool.query(
+      `SELECT COUNT(*) AS total FROM payments p ${where}`,
+      params
+    ),
+  ]);
+
+  return {
+    payments: dataResult.rows,
+    total:    parseInt(countResult.rows[0].total, 10),
+    page,
+    limit,
+  };
+}
+
 module.exports = {
   findById,
   findByOrderId,
   findByTransactionUuid,
+  findAllAdmin,
   create,
   recordVerification,
   recordFailure,

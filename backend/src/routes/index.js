@@ -9,6 +9,7 @@ const orderRoutes    = require("./orderRoutes");
 const paymentRoutes  = require("./paymentRoutes");
 const invoiceRoutes  = require("./invoiceRoutes");
 const receiptRoutes  = require("./receiptRoutes");
+const adminRoutes    = require("./adminRoutes");
 
 /**
  * Root API router.
@@ -26,5 +27,6 @@ router.use("/orders",   orderRoutes);
 router.use("/payment",  paymentRoutes);
 router.use("/invoice",  invoiceRoutes);
 router.use("/receipt",  receiptRoutes);
+router.use("/admin",    adminRoutes);
 
 module.exports = router;

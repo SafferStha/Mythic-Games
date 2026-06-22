@@ -61,10 +61,42 @@ async function updatePath(receiptId, receiptPath, db = pool) {
   return rows[0] ?? null;
 }
 
+async function findAllAdmin({ page = 1, limit = 20 } = {}) {
+  const offset = (page - 1) * limit;
+
+  const [dataResult, countResult] = await Promise.all([
+    pool.query(
+      `SELECT r.*,
+              p.transaction_uuid,
+              p.amount,
+              p.payment_status,
+              o.order_number,
+              u.username AS customer_name,
+              u.email    AS customer_email
+         FROM receipts r
+         LEFT JOIN payments p ON r.payment_id = p.id
+         LEFT JOIN orders o   ON p.order_id   = o.id
+         LEFT JOIN users u    ON o.user_id     = u.uid
+         ORDER BY r.generated_at DESC
+         LIMIT $1 OFFSET $2`,
+      [limit, offset]
+    ),
+    pool.query('SELECT COUNT(*) AS total FROM receipts'),
+  ]);
+
+  return {
+    receipts: dataResult.rows,
+    total:    parseInt(countResult.rows[0].total, 10),
+    page,
+    limit,
+  };
+}
+
 module.exports = {
   findById,
   findByPaymentId,
   findByReceiptNumber,
+  findAllAdmin,
   create,
   updatePath,
 };

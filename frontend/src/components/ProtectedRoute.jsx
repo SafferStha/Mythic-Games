@@ -19,7 +19,8 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 		const currentRole = String(currentUser.role || 'user').toLowerCase();
 
 		if (!normalizedAllowedRoles.includes(currentRole)) {
-			return <Navigate to={currentRole === 'admin' ? '/manage-games' : '/account'} replace />;
+			const adminRoles = ['admin', 'super_admin'];
+			return <Navigate to={adminRoles.includes(currentRole) ? '/admin' : '/account'} replace />;
 		}
 	}
 
