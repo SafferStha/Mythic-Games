@@ -5,9 +5,11 @@ const paymentRepository   = require('../repositories/paymentRepository');
 const invoiceRepository   = require('../repositories/invoiceRepository');
 const receiptRepository   = require('../repositories/receiptRepository');
 const orderRepository     = require('../repositories/orderRepository');
+const orderItemRepository = require('../repositories/orderItemRepository');
 const { GATEWAY_STATUS, PAYMENT_PROVIDERS } = require('../constants/paymentStatus');
 const { PAYMENT_STATUS, ORDER_STATUS }       = require('../constants/orderStatus');
 const { generateInvoiceNumber, generateReceiptNumber } = require('../utils/documentNumberGenerator');
+const { logger }          = require('../utils/logger');
 
 // ── Internal helpers ──────────────────────────────────────────────────────────
 
@@ -135,6 +137,30 @@ async function markPaymentVerified({
     createInvoiceRecord(orderId),
     createReceiptRecord(paymentId),
   ]);
+
+  // 5. Ecosystem hooks (non-fatal — payment is already secured)
+  setImmediate(async () => {
+    try {
+      const orderItems = await orderItemRepository.findByOrderId(orderId);
+
+      const [libraryService, notificationService, rewardService] = [
+        require('./libraryService'),
+        require('./notificationService'),
+        require('./rewardService'),
+      ];
+
+      await Promise.all([
+        libraryService.grantOwnershipForOrder(order.user_id, orderId, orderItems),
+        notificationService.notifyPaymentSuccess(order.user_id, order),
+        rewardService.earnPoints(order.user_id, orderId, parseFloat(order.grand_total)),
+      ]);
+    } catch (err) {
+      logger.error('[paymentService] Ecosystem hooks failed after payment verified (non-fatal)', {
+        error:   err.message,
+        orderId,
+      });
+    }
+  });
 
   return { payment, order, invoice, receipt };
 }

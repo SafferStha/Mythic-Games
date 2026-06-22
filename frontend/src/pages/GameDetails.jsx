@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
+import ReviewSection from "../components/reviews/ReviewSection";
 import "./GameDetails.css";
 import redDeadImg from "../assets/RedDead.png";
 import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
@@ -239,6 +240,10 @@ const GameDetails = () => {
             ))}
           </div>
 
+          {/* Live review section when game ID is available, legacy fallback otherwise */}
+          {detailsGame.id ? (
+            <ReviewSection gameId={detailsGame.id} />
+          ) : (
           <section className="details-reviews-section">
             <div className="details-reviews-header">
               <div>
@@ -252,44 +257,6 @@ const GameDetails = () => {
                 <span className="details-rating-count">{ratingSummary.count} reviews</span>
               </div>
             </div>
-
-            <form className="details-review-form" onSubmit={handleReviewSubmit}>
-              <div className="details-review-grid">
-                <label className="details-review-field">
-                  <span>Name</span>
-                  <input
-                    type="text"
-                    value={newReviewName}
-                    onChange={(event) => setNewReviewName(event.target.value)}
-                    placeholder="Your name"
-                  />
-                </label>
-
-                <div className="details-review-field">
-                  <span>Rating</span>
-                  <StarRating
-                    value={newReviewRating}
-                    onChange={setNewReviewRating}
-                    interactive
-                    label="Select rating"
-                  />
-                </div>
-              </div>
-
-              <label className="details-review-field">
-                <span>Review</span>
-                <textarea
-                  value={newReviewText}
-                  onChange={(event) => setNewReviewText(event.target.value)}
-                  placeholder="Share what you liked or disliked about the game"
-                  rows={4}
-                />
-              </label>
-
-              <button type="submit" className="details-review-submit">
-                Post review
-              </button>
-            </form>
 
             <div className="details-review-list">
               {reviews.map((review) => (
@@ -306,6 +273,7 @@ const GameDetails = () => {
               ))}
             </div>
           </section>
+          )}
         </div>
 
         <aside className="details-panel">

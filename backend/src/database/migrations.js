@@ -8,6 +8,7 @@ const schema002Catalog = require("./schema/002_catalog");
 const schema003Commerce = require("./schema/003_commerce");
 const schema004Payments = require("./schema/004_payments");
 const schema005Admin    = require("./schema/005_admin");
+const schema006Ecosystem = require("./schema/006_ecosystem");
 
 /**
  * Ordered list of all migrations.
@@ -16,11 +17,12 @@ const schema005Admin    = require("./schema/005_admin");
  * To change an existing migration, add a new entry instead.
  */
 const MIGRATIONS = [
-  { name: "001_auth_schema", up: schema001Auth },
-  { name: "002_catalog_schema", up: schema002Catalog },
-  { name: "003_commerce_schema", up: schema003Commerce },
-  { name: "004_payments_schema", up: schema004Payments },
-  { name: "005_admin_schema",   up: schema005Admin },
+  { name: "001_auth_schema",      up: schema001Auth },
+  { name: "002_catalog_schema",   up: schema002Catalog },
+  { name: "003_commerce_schema",  up: schema003Commerce },
+  { name: "004_payments_schema",  up: schema004Payments },
+  { name: "005_admin_schema",     up: schema005Admin },
+  { name: "006_ecosystem_schema", up: schema006Ecosystem },
 ];
 
 /**

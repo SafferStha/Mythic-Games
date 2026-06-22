@@ -13,6 +13,9 @@ const userCtrl       = require('../controllers/admin/adminUserController');
 const invoiceCtrl    = require('../controllers/admin/adminInvoiceController');
 const receiptCtrl    = require('../controllers/admin/adminReceiptController');
 const analyticsCtrl  = require('../controllers/admin/analyticsController');
+const couponCtrl     = require('../controllers/admin/adminCouponController');
+const refundCtrl     = require('../controllers/admin/adminRefundController');
+const reviewCtrl     = require('../controllers/admin/adminReviewController');
 
 const router = Router();
 
@@ -67,5 +70,20 @@ router.get('/analytics/overview', analyticsCtrl.getOverview);
 router.get('/analytics/sales',    analyticsCtrl.getSales);
 router.get('/analytics/orders',   analyticsCtrl.getOrders);
 router.get('/analytics/users',    analyticsCtrl.getUsers);
+
+// ── Coupons ───────────────────────────────────────────────────────────────────
+router.get   ('/coupons',     couponCtrl.listCoupons);
+router.post  ('/coupons',     couponCtrl.createCoupon);
+router.patch ('/coupons/:id', couponCtrl.updateCoupon);
+router.delete('/coupons/:id', couponCtrl.deleteCoupon);
+
+// ── Refunds ───────────────────────────────────────────────────────────────────
+router.get  ('/refunds',     refundCtrl.listRefunds);
+router.patch('/refunds/:id', refundCtrl.processRefund);
+
+// ── Review moderation ─────────────────────────────────────────────────────────
+router.get   ('/reviews',           reviewCtrl.listReviews);
+router.patch ('/reviews/:id',       reviewCtrl.moderateReview);
+router.delete('/reviews/:id',       reviewCtrl.deleteReview);
 
 module.exports = router;

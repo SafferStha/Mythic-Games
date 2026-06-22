@@ -3,6 +3,7 @@
 const cartRepository     = require('../repositories/cartRepository');
 const cartItemRepository = require('../repositories/cartItemRepository');
 const gameRepository     = require('../repositories/gameRepository');
+const libraryRepository  = require('../repositories/libraryRepository');
 const { AppError }       = require('../utils/AppError');
 const { GAME_STATUS }    = require('../constants/gameStatus');
 const { calculateCartTotals, effectivePrice } = require('../utils/cartCalculator');
@@ -121,6 +122,15 @@ function emptyCartResponse() {
 async function addToCart(userId, { gameId, quantity }) {
   // 1. Validate game availability and stock
   const game = await assertGameAvailable(gameId, quantity);
+
+  // 1b. Prevent re-purchase of already-owned games
+  const alreadyOwned = await libraryRepository.isOwned(userId, gameId);
+  if (alreadyOwned) {
+    throw AppError.conflict(
+      `You already own "${game.title}". It is in your library.`,
+      'GAME_ALREADY_OWNED'
+    );
+  }
 
   // 2. Find or create the user's active cart (no extra query if cart exists)
   const cart = await cartRepository.findOrCreate(userId);

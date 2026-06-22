@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import {
   ShieldCheck, ArrowRight, CreditCard, Smartphone,
   Gamepad2, CheckCircle2, AlertCircle, Loader2, Lock,
+  Tag, X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -93,9 +94,39 @@ const Checkout = () => {
   const [esewaPayload, setEsewaPayload] = useState(null);
   const [esewaPaymentUrl, setEsewaPaymentUrl] = useState('');
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
-  const tax = 0;
-  const total = subtotal + tax;
+  const [couponCode, setCouponCode]       = useState('');
+  const [couponApplied, setCouponApplied] = useState(null); // { code, discount_amount }
+  const [couponLoading, setCouponLoading] = useState(false);
+
+  const subtotal    = cartItems.reduce((sum, item) => sum + item.price * (item.quantity || 1), 0);
+  const discount    = couponApplied?.discount_amount ?? 0;
+  const tax         = 0;
+  const total       = Math.max(0, subtotal - discount + tax);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    try {
+      const res = await api.post('/checkout/apply-coupon', {
+        code:        couponCode.trim().toUpperCase(),
+        order_total: subtotal,
+      });
+      const data = res.data?.data ?? res.data;
+      setCouponApplied({ code: data.coupon.code, discount_amount: data.discount_amount });
+      toast.success(res.data?.message ?? `Coupon applied — save NPR ${data.discount_amount}`);
+    } catch (err) {
+      const msg = err?.response?.data?.message ?? 'Invalid coupon code';
+      toast.error(msg);
+      setCouponApplied(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const removeCoupon = () => {
+    setCouponApplied(null);
+    setCouponCode('');
+  };
 
   const handleConfirmPayment = async () => {
     if (cartItems.length === 0) {
@@ -252,12 +283,59 @@ const Checkout = () => {
                 )}
               </div>
 
+              {/* Coupon input */}
+              <div className="border-t border-white/8 pt-4 mb-4">
+                {couponApplied ? (
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-success/8 border border-success/20">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Tag size={14} className="text-success" />
+                      <span className="font-semibold text-success">{couponApplied.code}</span>
+                      <span className="text-subtle">— save ₹{couponApplied.discount_amount.toLocaleString()}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeCoupon}
+                      className="text-subtle hover:text-danger transition-colors"
+                      aria-label="Remove coupon"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      onKeyDown={(e) => e.key === 'Enter' && handleApplyCoupon()}
+                      className="flex-1 bg-surface border border-white/8 rounded-xl px-3 py-2 text-sm text-foreground placeholder-subtle focus:outline-none focus:border-primary/40 uppercase"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleApplyCoupon}
+                      disabled={couponLoading || !couponCode.trim()}
+                      className="px-3 py-2 rounded-xl bg-primary/15 text-primary-light text-sm font-semibold border border-primary/30 hover:bg-primary/25 transition-all disabled:opacity-50 flex items-center gap-1.5 shrink-0"
+                    >
+                      {couponLoading ? <Loader2 size={13} className="animate-spin" /> : <Tag size={13} />}
+                      Apply
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Totals */}
-              <div className="border-t border-white/8 pt-4 flex flex-col gap-2.5 mb-5">
+              <div className="flex flex-col gap-2.5 mb-5">
                 <div className="flex justify-between text-sm text-subtle">
                   <span>Subtotal ({cartItems.length} items)</span>
                   <span>₹{subtotal.toLocaleString()}</span>
                 </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-sm text-success">
+                    <span>Coupon discount</span>
+                    <span>-₹{discount.toLocaleString()}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-sm text-subtle">
                   <span>Tax</span>
                   <span className="text-success">₹0</span>

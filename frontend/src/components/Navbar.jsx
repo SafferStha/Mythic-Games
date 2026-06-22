@@ -11,6 +11,7 @@ import logo from '../assets/MythicLogo.png';
 import { useGameLibrary } from '../contexts/GameLibraryContext.jsx';
 import { clearStoredUser, getStoredUser } from '../utils/auth';
 import { useUiStore } from '../stores/uiStore';
+import NotificationBell from './notifications/NotificationBell';
 
 /* ── Badge chip ─────────────────────────────────────────── */
 const Badge = ({ count }) =>
@@ -191,6 +192,13 @@ const Navbar = () => {
               <Heart size={18} />
               <Badge count={wishlistCount} />
             </Link>
+
+            {/* Notifications (logged-in users only) */}
+            {user && !isAdmin && (
+              <div className="hidden sm:block">
+                <NotificationBell />
+              </div>
+            )}
 
             {/* Cart */}
             <Link
