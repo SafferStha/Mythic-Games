@@ -1,47 +1,107 @@
 'use strict';
 
-const env = require('../config/env');
+const path      = require('path');
+const winston   = require('winston');
+const DailyRotateFile = require('winston-daily-rotate-file');
 
-// ANSI colour codes for terminal output
-const COLOURS = Object.freeze({
-  error: '\x1b[31m', // red
-  warn:  '\x1b[33m', // yellow
-  info:  '\x1b[36m', // cyan
-  http:  '\x1b[35m', // magenta
-  debug: '\x1b[37m', // white
-  reset: '\x1b[0m',
-});
+const LOGS_DIR = path.join(__dirname, '..', '..', 'logs');
+const isProd   = process.env.NODE_ENV === 'production';
+const isTest   = process.env.NODE_ENV === 'test';
 
-const LEVEL_PRIORITY = { error: 0, warn: 1, info: 2, http: 3, debug: 4 };
-const ACTIVE_LEVEL   = env.NODE_ENV === 'production' ? 'http' : 'debug';
+// ── Formats ───────────────────────────────────────────────────────────────────
 
-/**
- * Lightweight structured logger.
- * Outputs coloured, timestamped lines to stdout/stderr.
- * Swap this module for a Winston/Pino adapter when log aggregation is needed.
- */
-function write(level, message, meta) {
-  if (LEVEL_PRIORITY[level] > LEVEL_PRIORITY[ACTIVE_LEVEL]) return;
+const jsonFormat = winston.format.combine(
+  winston.format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' }),
+  winston.format.errors({ stack: true }),
+  winston.format.json()
+);
 
-  const colour    = COLOURS[level] ?? '';
-  const reset     = COLOURS.reset;
-  const timestamp = new Date().toISOString();
-  const metaStr   = meta && Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
-  const line      = `${colour}[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr}${reset}`;
+const prettyFormat = winston.format.combine(
+  winston.format.colorize(),
+  winston.format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' }),
+  winston.format.errors({ stack: true }),
+  winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
+    const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
+    return `[${timestamp}] [${level}] ${message}${metaStr}${stack ? `\n${stack}` : ''}`;
+  })
+);
 
-  if (level === 'error') {
-    console.error(line);
-  } else {
-    console.log(line);
-  }
+// ── File transports ───────────────────────────────────────────────────────────
+
+function rotatingFile(filename, level) {
+  return new DailyRotateFile({
+    dirname:        LOGS_DIR,
+    filename:       `${filename}-%DATE%.log`,
+    datePattern:    'YYYY-MM-DD',
+    zippedArchive:  true,
+    maxSize:        '20m',
+    maxFiles:       '30d',
+    level,
+    format:         jsonFormat,
+  });
 }
 
-const logger = {
-  error: (msg, meta) => write('error', msg, meta),
-  warn:  (msg, meta) => write('warn',  msg, meta),
-  info:  (msg, meta) => write('info',  msg, meta),
-  http:  (msg, meta) => write('http',  msg, meta),
-  debug: (msg, meta) => write('debug', msg, meta),
-};
+// ── Transports ────────────────────────────────────────────────────────────────
 
-module.exports = { logger };
+const transports = [];
+
+if (!isTest) {
+  // Console: pretty in dev, JSON in prod
+  transports.push(
+    new winston.transports.Console({
+      format: isProd ? jsonFormat : prettyFormat,
+      silent: false,
+    })
+  );
+
+  // app.log — all info+ events
+  transports.push(rotatingFile('app', 'info'));
+
+  // error.log — errors only with full stack traces
+  transports.push(rotatingFile('error', 'error'));
+}
+
+// ── Main application logger ───────────────────────────────────────────────────
+
+const logger = winston.createLogger({
+  level:      isProd ? 'http' : 'debug',
+  transports,
+  // Prevent winston from exiting on uncaught exceptions in production
+  exitOnError: false,
+});
+
+// ── Specialised loggers (write to separate log files) ────────────────────────
+
+/**
+ * Payment-specific logger — writes to logs/payment-YYYY-MM-DD.log.
+ * Use for all eSewa gateway events, verification attempts, and failures.
+ */
+const paymentLogger = winston.createLogger({
+  level: 'info',
+  transports: isTest ? [] : [
+    new winston.transports.Console({
+      format: isProd ? jsonFormat : prettyFormat,
+      silent: true,
+    }),
+    rotatingFile('payment', 'info'),
+  ],
+  exitOnError: false,
+});
+
+/**
+ * Admin action logger — writes to logs/admin-YYYY-MM-DD.log.
+ * Use for all admin mutations (create/update/delete game, user role changes, etc.).
+ */
+const adminLogger = winston.createLogger({
+  level: 'info',
+  transports: isTest ? [] : [
+    new winston.transports.Console({
+      format: isProd ? jsonFormat : prettyFormat,
+      silent: true,
+    }),
+    rotatingFile('admin', 'info'),
+  ],
+  exitOnError: false,
+});
+
+module.exports = { logger, paymentLogger, adminLogger };

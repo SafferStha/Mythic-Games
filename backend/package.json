@@ -4,20 +4,58 @@
   "main": "server.js",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-mongo-sanitize": "^2.2.0",
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0",
+    "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.14",
     "pdfkit": "^0.19.1",
     "pg": "^8.21.0",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "node scripts/open-frontend.js && nodemon server.js"
+    "dev": "node scripts/open-frontend.js && nodemon server.js",
+    "test": "jest --runInBand",
+    "test:coverage": "jest --runInBand --coverage",
+    "test:watch": "jest --watch"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "setupFiles": [
+      "./tests/setup.js"
+    ],
+    "clearMocks": true,
+    "resetMocks": false,
+    "restoreMocks": false,
+    "coverageDirectory": "coverage",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/database/schema/*.js"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 60,
+        "functions": 70,
+        "lines": 70,
+        "statements": 70
+      }
+    },
+    "testTimeout": 30000
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2"
   }
 }
