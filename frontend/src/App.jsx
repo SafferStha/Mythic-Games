@@ -15,12 +15,14 @@ import Account from "./pages/Account";
 import Library from "./pages/Library";
 import GameDetails from "./pages/GameDetails";
 import Checkout from "./pages/Checkout";
+import DemoPaymentGateway from "./pages/DemoPaymentGateway";
+import PaymentSuccess from "./pages/PaymentSuccess";
 import ManageNews from "./pages/ManageNews";
 import ManageGames from "./pages/ManageGames";
+import ManagePayments from "./pages/ManagePayments";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
-
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -31,7 +33,7 @@ const App = () => {
       <Route
         path="/wishlist"
         element={
-          <ProtectedRoute allowedRoles={['user']}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <Wishlist />
           </ProtectedRoute>
         }
@@ -46,16 +48,15 @@ const App = () => {
       <Route
         path="/account"
         element={
-          <ProtectedRoute allowedRoles={['user']}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <Account />
           </ProtectedRoute>
         }
       />
-
       <Route
         path="/library"
         element={
-          <ProtectedRoute allowedRoles={['user']}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <Library />
           </ProtectedRoute>
         }
@@ -63,15 +64,31 @@ const App = () => {
       <Route
         path="/checkout"
         element={
-          <ProtectedRoute allowedRoles={['user']}>
+          <ProtectedRoute allowedRoles={["user"]}>
             <Checkout />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment/success/:paymentId"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <PaymentSuccess />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment/:method/:paymentId"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <DemoPaymentGateway />
           </ProtectedRoute>
         }
       />
       <Route
         path="/manage-news"
         element={
-          <ProtectedRoute allowedRoles={['admin']}>
+          <ProtectedRoute allowedRoles={["admin"]}>
             <ManageNews />
           </ProtectedRoute>
         }
@@ -79,8 +96,16 @@ const App = () => {
       <Route
         path="/manage-games"
         element={
-          <ProtectedRoute allowedRoles={['admin']}>
+          <ProtectedRoute allowedRoles={["admin"]}>
             <ManageGames />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-payments"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <ManagePayments />
           </ProtectedRoute>
         }
       />

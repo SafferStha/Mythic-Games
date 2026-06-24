@@ -15,33 +15,30 @@ const Navbar = () => {
   useEffect(() => {
     const syncAuthState = () => setCurrentUser(getStoredUser());
 
-    window.addEventListener('storage', syncAuthState);
-    window.addEventListener('auth-changed', syncAuthState);
-    window.addEventListener('focus', syncAuthState);
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener("auth-changed", syncAuthState);
+    window.addEventListener("focus", syncAuthState);
 
     return () => {
-      window.removeEventListener('storage', syncAuthState);
-      window.removeEventListener('auth-changed', syncAuthState);
-      window.removeEventListener('focus', syncAuthState);
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener("auth-changed", syncAuthState);
+      window.removeEventListener("focus", syncAuthState);
     };
   }, []);
 
-  const menuLabel = useMemo(
-    () => {
-      if (!currentUser) {
-        return 'Sign-in';
-      }
+  const menuLabel = useMemo(() => {
+    if (!currentUser) {
+      return "Sign-in";
+    }
 
-      return currentUser.role === 'admin' ? 'Admin panel' : 'My account';
-    },
-    [currentUser]
-  );
+    return currentUser.role === "admin" ? "Admin panel" : "My account";
+  }, [currentUser]);
 
-  const isAdmin = currentUser?.role === 'admin';
+  const isAdmin = currentUser?.role === "admin";
 
   const handleSignOut = () => {
     clearStoredUser();
-    navigate('/discover');
+    navigate("/discover");
   };
 
   return (
@@ -72,31 +69,63 @@ const Navbar = () => {
             >
               <i className="bx bx-user-circle" aria-hidden="true" />
             </button>
-            <div className="nav-profile-menu" role="menu" aria-label="Account menu">
+            <div
+              className="nav-profile-menu"
+              role="menu"
+              aria-label="Account menu"
+            >
               {currentUser ? (
                 <>
                   {isAdmin ? (
                     <>
-                      <Link to="/manage-games" className="nav-profile-menu-item" role="menuitem">
+                      <Link
+                        to="/manage-games"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
                         <i className="bx bx-game" aria-hidden="true" />
                         <span>{menuLabel}</span>
                       </Link>
-                      <Link to="/manage-news" className="nav-profile-menu-item" role="menuitem">
+                      <Link
+                        to="/manage-news"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
                         <i className="bx bx-news" aria-hidden="true" />
                         <span>Manage news</span>
+                      </Link>
+                      <Link
+                        to="/manage-payments"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-credit-card" aria-hidden="true" />
+                        <span>Manage payments</span>
                       </Link>
                     </>
                   ) : (
                     <>
-                      <Link to="/account" className="nav-profile-menu-item" role="menuitem">
+                      <Link
+                        to="/account"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
                         <i className="bx bx-user" aria-hidden="true" />
                         <span>{menuLabel}</span>
                       </Link>
-                      <Link to="/library" className="nav-profile-menu-item" role="menuitem">
+                      <Link
+                        to="/library"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
                         <i className="bx bx-library" aria-hidden="true" />
                         <span>My library</span>
                       </Link>
-                      <Link to="/wishlist" className="nav-profile-menu-item" role="menuitem">
+                      <Link
+                        to="/wishlist"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
                         <i className="bx bx-heart" aria-hidden="true" />
                         <span>Wishlist</span>
                       </Link>
@@ -113,7 +142,11 @@ const Navbar = () => {
                   </button>
                 </>
               ) : (
-                <Link to="/login" className="nav-profile-menu-item" role="menuitem">
+                <Link
+                  to="/login"
+                  className="nav-profile-menu-item"
+                  role="menuitem"
+                >
                   <i className="bx bx-log-in" aria-hidden="true" />
                   <span>{menuLabel}</span>
                 </Link>

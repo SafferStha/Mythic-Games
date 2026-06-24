@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./GameDetails.css";
 import redDeadImg from "../assets/RedDead.png";
@@ -19,19 +19,50 @@ const fallbackGames = {
 
 const reviewSeedByTitle = {
   "Elden Ring": [
-    { id: 1, name: "Aarav", rating: 5, comment: "Massive world, excellent boss design, and a great sense of discovery." },
-    { id: 2, name: "Mina", rating: 4, comment: "Very rewarding once you learn the pace. Strong atmosphere." },
-    { id: 3, name: "Rohan", rating: 5, comment: "One of the best action RPGs on the platform." },
+    {
+      id: 1,
+      name: "Aarav",
+      rating: 5,
+      comment:
+        "Massive world, excellent boss design, and a great sense of discovery.",
+    },
+    {
+      id: 2,
+      name: "Mina",
+      rating: 4,
+      comment: "Very rewarding once you learn the pace. Strong atmosphere.",
+    },
+    {
+      id: 3,
+      name: "Rohan",
+      rating: 5,
+      comment: "One of the best action RPGs on the platform.",
+    },
   ],
 };
 
 const getDefaultReviews = (title) =>
   reviewSeedByTitle[title] || [
-    { id: 1, name: "Player One", rating: 5, comment: "A solid game with room for backend-linked reviews later." },
-    { id: 2, name: "Game Hunter", rating: 4, comment: "The details page is ready for live community feedback." },
+    {
+      id: 1,
+      name: "Player One",
+      rating: 5,
+      comment: "A solid game with room for backend-linked reviews later.",
+    },
+    {
+      id: 2,
+      name: "Game Hunter",
+      rating: 4,
+      comment: "The details page is ready for live community feedback.",
+    },
   ];
 
-const StarRating = ({ value = 0, onChange, interactive = false, label = "Rating" }) => {
+const StarRating = ({
+  value = 0,
+  onChange,
+  interactive = false,
+  label = "Rating",
+}) => {
   const stars = [1, 2, 3, 4, 5];
   const [hoverValue, setHoverValue] = useState(null);
   const [focusValue, setFocusValue] = useState(null);
@@ -99,7 +130,9 @@ const StarRating = ({ value = 0, onChange, interactive = false, label = "Rating"
             key={star}
             type={interactive ? "button" : "button"}
             role={interactive ? "radio" : undefined}
-            aria-checked={interactive ? Boolean((value ?? 0) >= star) : undefined}
+            aria-checked={
+              interactive ? Boolean((value ?? 0) >= star) : undefined
+            }
             aria-label={`${star} star${star > 1 ? "s" : ""}`}
             className={`details-star ${active ? "active" : ""}`}
             onMouseEnter={() => interactive && setHoverValue(star)}
@@ -109,7 +142,10 @@ const StarRating = ({ value = 0, onChange, interactive = false, label = "Rating"
             onFocus={() => interactive && setFocusValue(star)}
             onBlur={() => interactive && setFocusValue(null)}
           >
-            <i className={active ? "bx bxs-star" : "bx bx-star"} aria-hidden="true" />
+            <i
+              className={active ? "bx bxs-star" : "bx bx-star"}
+              aria-hidden="true"
+            />
           </button>
         );
       })}
@@ -120,6 +156,7 @@ const StarRating = ({ value = 0, onChange, interactive = false, label = "Rating"
 const GameDetails = () => {
   const { gameTitle } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
   const {
     addToCart,
     toggleWishlist,
@@ -159,6 +196,7 @@ const GameDetails = () => {
 
   const savedInCart = isInCart(detailsGame);
   const savedInWishlist = isInWishlist(detailsGame);
+  const canPurchase = Boolean(detailsGame.id);
 
   const [reviews, setReviews] = useState(() => getDefaultReviews(routeTitle));
   const [newReviewName, setNewReviewName] = useState("");
@@ -215,7 +253,9 @@ const GameDetails = () => {
 
       <main className="details-main">
         <div className="details-content">
-          <p className="details-kicker">{selectedGame.game_type || "Base Game"}</p>
+          <p className="details-kicker">
+            {selectedGame.game_type || "Base Game"}
+          </p>
           <h1 className="details-title">{selectedGame.title}</h1>
 
           <div className="details-media">
@@ -247,9 +287,16 @@ const GameDetails = () => {
               </div>
 
               <div className="details-rating-summary">
-                <span className="details-rating-value">{ratingSummary.average}</span>
-                <StarRating value={Math.round(Number(ratingSummary.average))} label="Average rating" />
-                <span className="details-rating-count">{ratingSummary.count} reviews</span>
+                <span className="details-rating-value">
+                  {ratingSummary.average}
+                </span>
+                <StarRating
+                  value={Math.round(Number(ratingSummary.average))}
+                  label="Average rating"
+                />
+                <span className="details-rating-count">
+                  {ratingSummary.count} reviews
+                </span>
               </div>
             </div>
 
@@ -297,9 +344,14 @@ const GameDetails = () => {
                   <div className="details-review-top">
                     <div>
                       <h3>{review.name}</h3>
-                      <StarRating value={review.rating} label={`${review.rating} star rating`} />
+                      <StarRating
+                        value={review.rating}
+                        label={`${review.rating} star rating`}
+                      />
                     </div>
-                    <span className="details-review-badge">Verified player</span>
+                    <span className="details-review-badge">
+                      Verified player
+                    </span>
                   </div>
                   <p>{review.comment}</p>
                 </article>
@@ -322,13 +374,27 @@ const GameDetails = () => {
 
           <button
             type="button"
+            className="details-btn-buy-now"
+            onClick={() =>
+              navigate("/checkout", { state: { selectedGame: detailsGame } })
+            }
+            disabled={!canPurchase}
+          >
+            Buy Now
+          </button>
+
+          <button
+            type="button"
             className={`details-btn-cart ${savedInCart ? "is-added" : ""}`}
             onClick={() => addToCart(detailsGame)}
-            disabled={savedInCart}
+            disabled={savedInCart || !canPurchase}
           >
             {savedInCart ? (
               <>
-                <i className="bx bxs-check-circle" style={{ marginRight: "6px" }} />
+                <i
+                  className="bx bxs-check-circle"
+                  style={{ marginRight: "6px" }}
+                />
                 Added to Cart
               </>
             ) : (
@@ -341,6 +407,7 @@ const GameDetails = () => {
             className={`details-btn-wishlist ${savedInWishlist ? "is-saved" : ""}`}
             onClick={() => toggleWishlist(detailsGame)}
             aria-pressed={savedInWishlist}
+            disabled={!canPurchase}
           >
             <i className={`bx ${savedInWishlist ? "bxs-heart" : "bx-heart"}`} />
             {savedInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
@@ -352,8 +419,13 @@ const GameDetails = () => {
               <strong>{ratingSummary.average}</strong>
               <span>/ 5</span>
             </div>
-            <StarRating value={Math.round(Number(ratingSummary.average))} label="Community score" />
-            <p className="details-rating-card-count">Based on {ratingSummary.count} reviews</p>
+            <StarRating
+              value={Math.round(Number(ratingSummary.average))}
+              label="Community score"
+            />
+            <p className="details-rating-card-count">
+              Based on {ratingSummary.count} reviews
+            </p>
           </div>
         </aside>
       </main>

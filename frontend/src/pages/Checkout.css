@@ -1,7 +1,3 @@
-/* ─────────────────────────────────────────
-   Checkout page — Epic Games style
-───────────────────────────────────────── */
-
 .checkout-page {
     min-height: 100vh;
     background: var(--bg);
@@ -9,228 +5,196 @@
 }
 
 .checkout-main {
-    max-width: 1000px;
+    max-width: 1120px;
     margin: 0 auto;
-    padding: 32px 24px 64px;
+    padding: 32px 16px 56px;
 }
 
-/* ── Page header ── */
 .checkout-header {
     margin-bottom: 28px;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 16px;
+}
+
+.checkout-notice {
+    display: inline-flex;
+    margin: 0 0 14px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(255, 193, 7, 0.14);
+    color: #b07a00;
+    border: 1px solid rgba(255, 193, 7, 0.32);
 }
 
 .checkout-header h1 {
-    font-size: 24px;
-    font-weight: 700;
-    margin: 0;
+    margin: 0 0 10px;
+    font-size: 30px;
 }
 
-/* ── Two-column body ── */
+.checkout-subtitle {
+    margin: 0;
+    color: var(--text-secondary);
+}
+
 .checkout-body {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: minmax(0, 1fr) 340px;
     gap: 24px;
     align-items: start;
 }
 
-/* ── Shared section label ── */
-.checkout-section-label {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
-    margin: 0 0 14px 0;
-}
-
-/* ─────────────────────────────────────────
-   Left: Payment methods
-───────────────────────────────────────── */
-
-.checkout-methods-list {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.checkout-method-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    color: var(--text-secondary);
-    font-size: 14px;
-    font-weight: 500;
-    font-family: inherit;
-    transition:
-        background 0.15s,
-        border-color 0.15s;
-    text-align: left;
-    width: 100%;
-}
-
-.checkout-method-item:hover {
-    background: var(--surface-strong);
-}
-
-.checkout-method-item.selected {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-    color: var(--text-primary);
-}
-
-.checkout-method-icon svg {
-    width: 36px;
-    height: 28px;
-    display: block;
-}
-
-.checkout-method-name {
-    flex: 1;
-}
-
-.checkout-method-check {
-    color: var(--accent);
-    font-weight: 700;
-    font-size: 16px;
-    margin-left: auto;
-}
-
-/* ─────────────────────────────────────────
-   Right: Order summary panel
-───────────────────────────────────────── */
-
+.checkout-panel,
 .checkout-summary {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    padding: 20px;
+    padding: 22px;
+}
+
+.checkout-summary {
     position: sticky;
     top: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
 }
 
-/* ── Item list ── */
-.checkout-items-list {
+.checkout-panel-heading {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
-    max-height: 300px;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+    margin-bottom: 14px;
 }
 
-.checkout-items-list::-webkit-scrollbar {
-    width: 4px;
-}
-
-.checkout-items-list::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.checkout-items-list::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 4px;
-}
-
-.checkout-empty {
+.checkout-item-count {
+    color: var(--text-secondary);
     font-size: 14px;
+    font-weight: 600;
+}
+
+.checkout-section-label {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--text-muted);
 }
 
-/* ── Single item row ── */
-.checkout-item-row {
+.checkout-game-list {
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 12px;
 }
 
-.checkout-item-thumb {
-    width: 48px;
-    height: 48px;
+.checkout-game-card {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
     border-radius: var(--radius-md);
-    overflow: hidden;
-    background: var(--surface-strong);
-    flex-shrink: 0;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    transition:
+        border-color 0.15s ease,
+        transform 0.15s ease,
+        background 0.15s ease;
 }
 
-.checkout-item-thumb img {
+.checkout-game-card:hover {
+    transform: translateY(-1px);
+}
+
+.checkout-game-card.selected {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.checkout-game-thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    flex-shrink: 0;
+    background: var(--surface-strong);
+}
+
+.checkout-game-thumb img,
+.checkout-game-thumb-placeholder {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.checkout-item-thumb-placeholder {
-    width: 100%;
-    height: 100%;
-    background: var(--surface-strong);
-}
-
-.checkout-item-info {
-    flex: 1;
+.checkout-game-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     min-width: 0;
 }
 
-.checkout-item-title {
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: block;
+.checkout-game-info strong {
+    font-size: 15px;
 }
 
-.checkout-item-price {
-    font-size: 13px;
-    font-weight: 700;
+.checkout-game-info span {
     color: var(--text-secondary);
-    flex-shrink: 0;
+}
+
+.checkout-game-price {
+    margin-left: auto;
+    font-weight: 700;
     white-space: nowrap;
 }
 
-/* ── Totals ── */
-.checkout-totals {
-    border-top: 1px solid var(--border);
-    padding-top: 14px;
+.checkout-summary-items {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 16px;
 }
 
-.checkout-total-row {
+.checkout-summary-row,
+.checkout-summary-total-row {
     display: flex;
     justify-content: space-between;
-    font-size: 14px;
+    gap: 12px;
+}
+
+.checkout-summary-row {
     color: var(--text-secondary);
+    font-size: 14px;
 }
 
-.checkout-grand-total {
-    font-size: 16px;
-    color: var(--text-primary);
-    font-weight: 700;
-    padding-top: 8px;
+.checkout-summary-row span {
+    max-width: 70%;
+}
+
+.checkout-summary-total-row {
+    padding-top: 14px;
     border-top: 1px solid var(--border);
-    margin-top: 4px;
+    font-size: 16px;
+    font-weight: 700;
 }
 
-.checkout-grand-total strong {
-    font-size: 20px;
-    color: var(--accent);
+.checkout-summary-note {
+    margin: 14px 0 12px;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.28);
+    color: #9a6b00;
+    font-size: 14px;
+    line-height: 1.5;
 }
 
-/* ── Confirm button ── */
 .checkout-confirm-btn {
     width: 100%;
+    margin-top: 8px;
     padding: 13px;
     background: var(--accent);
     color: #fff;
@@ -239,24 +203,23 @@
     font-size: 15px;
     font-weight: 700;
     cursor: pointer;
-    font-family: inherit;
-    transition: background 0.15s;
-}
-
-.checkout-confirm-btn:hover:not(:disabled) {
-    background: var(--accent-strong);
 }
 
 .checkout-confirm-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
-/* ─────────────────────────────────────────
-   Responsive
-───────────────────────────────────────── */
+.checkout-empty {
+    color: var(--text-secondary);
+}
 
-@media (max-width: 768px) {
+.checkout-error {
+    margin: 14px 0;
+    color: #c62839;
+}
+
+@media (max-width: 860px) {
     .checkout-body {
         grid-template-columns: 1fr;
     }
@@ -267,7 +230,17 @@
 }
 
 @media (max-width: 640px) {
-    .checkout-main {
-        padding: 24px 16px 48px;
+    .checkout-game-card {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .checkout-game-price {
+        margin-left: 0;
+    }
+
+    .checkout-panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
     }
 }

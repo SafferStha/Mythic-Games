@@ -1,17 +1,23 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { getStoredUser } from '../utils/auth';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { getStoredUser } from "../utils/auth";
 
-const CART_STORAGE_KEY = 'mythic-games-cart';
-const WISHLIST_STORAGE_KEY = 'mythic-games-wishlist';
-const GUEST_CART_STORAGE_KEY = 'mythic-games-guest-cart';
-const GUEST_WISHLIST_STORAGE_KEY = 'mythic-games-guest-wishlist';
+const CART_STORAGE_KEY = "mythic-games-cart";
+const WISHLIST_STORAGE_KEY = "mythic-games-wishlist";
+const GUEST_CART_STORAGE_KEY = "mythic-games-guest-cart";
+const GUEST_WISHLIST_STORAGE_KEY = "mythic-games-guest-wishlist";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const GameLibraryContext = createContext(null);
 
 const getItemKey = (game) => {
-  const normalizedTitle = String(game?.title || 'unknown')
+  const normalizedTitle = String(game?.title || "unknown")
     .trim()
     .toLowerCase();
 
@@ -19,7 +25,7 @@ const getItemKey = (game) => {
 };
 
 const loadStoredItems = (storage, storageKey) => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return [];
   }
 
@@ -32,7 +38,7 @@ const loadStoredItems = (storage, storageKey) => {
 };
 
 const saveStoredItems = (storage, storageKey, items) => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
@@ -42,7 +48,7 @@ const saveStoredItems = (storage, storageKey, items) => {
 };
 
 const clearStoredItems = (storage, storageKey) => {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
 
@@ -57,14 +63,16 @@ const normalizeGame = (game) => {
   return {
     id: game?.id || getItemKey(game),
     key: getItemKey(game),
-    title: game?.title || 'Game Name',
-    type: game?.type || game?.game_type || 'Base Game',
+    title: game?.title || "Game Name",
+    type: game?.type || game?.game_type || "Base Game",
     price: Number.isFinite(price) ? price : 0,
     image: game?.image || game?.image_url,
-    description: game?.description || '',
+    description: game?.description || "",
     genres: game?.genres || [],
-    platform: game?.platform || 'PC / Standard Edition',
-    quantity: Number.isFinite(Number(game?.quantity)) ? Number(game.quantity) : 1,
+    platform: game?.platform || "PC / Standard Edition",
+    quantity: Number.isFinite(Number(game?.quantity))
+      ? Number(game.quantity)
+      : 1,
   };
 };
 
@@ -77,21 +85,21 @@ export const GameLibraryProvider = ({ children }) => {
     const syncAuthState = () => setCurrentUser(getStoredUser());
 
     syncAuthState();
-    window.addEventListener('storage', syncAuthState);
-    window.addEventListener('auth-changed', syncAuthState);
-    window.addEventListener('focus', syncAuthState);
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener("auth-changed", syncAuthState);
+    window.addEventListener("focus", syncAuthState);
 
     return () => {
-      window.removeEventListener('storage', syncAuthState);
-      window.removeEventListener('auth-changed', syncAuthState);
-      window.removeEventListener('focus', syncAuthState);
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener("auth-changed", syncAuthState);
+      window.removeEventListener("focus", syncAuthState);
     };
   }, []);
 
   const isSignedIn = Boolean(currentUser?.uid ?? currentUser?.user_id);
 
   const storageKeys = useMemo(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return {
         cartKey: GUEST_CART_STORAGE_KEY,
         wishlistKey: GUEST_WISHLIST_STORAGE_KEY,
@@ -115,7 +123,7 @@ export const GameLibraryProvider = ({ children }) => {
   }, [currentUser?.uid, currentUser?.user_id, isSignedIn]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -140,14 +148,20 @@ export const GameLibraryProvider = ({ children }) => {
         }
 
         // Fetch Wishlist items from backend
-        const wishlistRes = await fetch(`${API_BASE_URL}/api/users/${userId}/wishlist`);
+        const wishlistRes = await fetch(
+          `${API_BASE_URL}/api/users/${userId}/wishlist`,
+        );
         const wishlistPayload = await wishlistRes.json();
         if (wishlistRes.ok) {
-          setWishlistItems(wishlistPayload.data.map((item) => normalizeGame(item)));
+          setWishlistItems(
+            wishlistPayload.data.map((item) => normalizeGame(item)),
+          );
         }
-
       } catch (error) {
-        console.error('Failed to sync user library (cart and wishlist):', error);
+        console.error(
+          "Failed to sync user library (cart and wishlist):",
+          error,
+        );
       }
     };
 
@@ -155,7 +169,7 @@ export const GameLibraryProvider = ({ children }) => {
   }, [isSignedIn, storageKeys.cartKey, storageKeys.wishlistKey]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
@@ -168,12 +182,16 @@ export const GameLibraryProvider = ({ children }) => {
   }, [cartItems, isSignedIn, storageKeys.cartKey]);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return;
     }
 
     if (!isSignedIn) {
-      saveStoredItems(window.sessionStorage, GUEST_WISHLIST_STORAGE_KEY, wishlistItems);
+      saveStoredItems(
+        window.sessionStorage,
+        GUEST_WISHLIST_STORAGE_KEY,
+        wishlistItems,
+      );
       return;
     }
 
@@ -181,7 +199,7 @@ export const GameLibraryProvider = ({ children }) => {
   }, [wishlistItems, isSignedIn, storageKeys.wishlistKey]);
 
   const redirectToSignIn = () => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return false;
     }
 
@@ -209,19 +227,20 @@ export const GameLibraryProvider = ({ children }) => {
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
       const response = await fetch(`${API_BASE_URL}/api/users/${userId}/cart`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ gameId: item.id }),
       });
 
       if (response.ok) {
         setCartItems((currentItems) => {
-          if (currentItems.some((entry) => entry.key === item.key)) return currentItems;
+          if (currentItems.some((entry) => entry.key === item.key))
+            return currentItems;
           return [...currentItems, item];
         });
       }
     } catch (error) {
-      console.error('Error adding to cart:', error);
+      console.error("Error adding to cart:", error);
     }
   };
 
@@ -243,20 +262,24 @@ export const GameLibraryProvider = ({ children }) => {
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/wishlist`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ gameId: item.id }),
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/users/${userId}/wishlist`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gameId: item.id }),
+        },
+      );
 
       if (response.ok) {
         setWishlistItems((currentItems) => {
-          if (currentItems.some((entry) => entry.key === item.key)) return currentItems;
+          if (currentItems.some((entry) => entry.key === item.key))
+            return currentItems;
           return [...currentItems, item];
         });
       }
     } catch (error) {
-      console.error('Error adding to wishlist:', error);
+      console.error("Error adding to wishlist:", error);
     }
   };
 
@@ -288,16 +311,27 @@ export const GameLibraryProvider = ({ children }) => {
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/cart/${item.id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/users/${userId}/cart/${item.id}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (response.ok) {
-        setCartItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
+        setCartItems((currentItems) =>
+          currentItems.filter((entry) => entry.key !== itemKey),
+        );
       }
     } catch (error) {
-      console.error('Error removing from cart:', error);
+      console.error("Error removing from cart:", error);
     }
+  };
+
+  const removeCartItemByGameId = (gameId) => {
+    setCartItems((currentItems) =>
+      currentItems.filter((entry) => String(entry.id) !== String(gameId)),
+    );
   };
 
   const removeFromWishlist = async (itemKey) => {
@@ -310,15 +344,20 @@ export const GameLibraryProvider = ({ children }) => {
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/wishlist/${item.id}`, {
-        method: 'DELETE',
-      });
+      const response = await fetch(
+        `${API_BASE_URL}/api/users/${userId}/wishlist/${item.id}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (response.ok) {
-        setWishlistItems((currentItems) => currentItems.filter((entry) => entry.key !== itemKey));
+        setWishlistItems((currentItems) =>
+          currentItems.filter((entry) => entry.key !== itemKey),
+        );
       }
     } catch (error) {
-      console.error('Error removing from wishlist:', error);
+      console.error("Error removing from wishlist:", error);
     }
   };
 
@@ -359,7 +398,9 @@ export const GameLibraryProvider = ({ children }) => {
       }
 
       setCartItems((currentCart) => {
-        const existingIndex = currentCart.findIndex((entry) => entry.key === itemKey);
+        const existingIndex = currentCart.findIndex(
+          (entry) => entry.key === itemKey,
+        );
 
         if (existingIndex === -1) {
           return [...currentCart, { ...itemToMove, quantity: 1 }];
@@ -374,7 +415,11 @@ export const GameLibraryProvider = ({ children }) => {
   };
 
   const cartCount = useMemo(
-    () => cartItems.reduce((total, item) => total + (Number(item.quantity) || 1), 0),
+    () =>
+      cartItems.reduce(
+        (total, item) => total + (Number(item.quantity) || 1),
+        0,
+      ),
     [cartItems],
   );
 
@@ -392,6 +437,7 @@ export const GameLibraryProvider = ({ children }) => {
       isInWishlist,
       toggleWishlist,
       removeFromCart,
+      removeCartItemByGameId,
       removeFromWishlist,
       moveCartItemToWishlist,
       moveWishlistItemToCart,
@@ -399,14 +445,18 @@ export const GameLibraryProvider = ({ children }) => {
     [cartItems, wishlistItems, cartCount, wishlistCount],
   );
 
-  return <GameLibraryContext.Provider value={value}>{children}</GameLibraryContext.Provider>;
+  return (
+    <GameLibraryContext.Provider value={value}>
+      {children}
+    </GameLibraryContext.Provider>
+  );
 };
 
 export const useGameLibrary = () => {
   const context = useContext(GameLibraryContext);
 
   if (!context) {
-    throw new Error('useGameLibrary must be used within a GameLibraryProvider');
+    throw new Error("useGameLibrary must be used within a GameLibraryProvider");
   }
 
   return context;

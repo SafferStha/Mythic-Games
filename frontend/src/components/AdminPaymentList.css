@@ -1,0 +1,128 @@
+.admin-payments {
+  padding: 24px;
+}
+
+.admin-payments-subtitle {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+}
+
+.admin-payments-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-payments-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-payments-filter {
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-payments-filter.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.admin-payments-search {
+  min-width: 280px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.admin-payments-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.admin-payments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-payments-table th,
+.admin-payments-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-payments-table th {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.admin-payments-table tbody tr:hover {
+  background: var(--bg);
+}
+
+.admin-payments-state {
+  color: var(--text-secondary);
+}
+
+.admin-payments-error {
+  color: #c62839;
+}
+
+.payment-status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.payment-status-chip.paid {
+  background: rgba(45, 122, 58, 0.16);
+  color: #2d7a3a;
+}
+
+.payment-status-chip.failed {
+  background: rgba(220, 53, 69, 0.14);
+  color: #c62839;
+}
+
+.payment-status-chip.pending {
+  background: rgba(255, 193, 7, 0.14);
+  color: #a56d00;
+}
+
+.payment-status-chip.cancelled {
+  background: rgba(108, 117, 125, 0.16);
+  color: #55606a;
+}
+
+@media (max-width: 768px) {
+  .admin-payments {
+    padding: 16px;
+  }
+
+  .admin-payments-search {
+    min-width: 100%;
+    width: 100%;
+  }
+}

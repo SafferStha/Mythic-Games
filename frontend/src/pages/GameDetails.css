@@ -200,11 +200,13 @@
 
 .details-stars.interactive .details-star {
     cursor: pointer;
-    transition: transform 0.08s ease, color 0.12s ease;
+    transition:
+        transform 0.08s ease,
+        color 0.12s ease;
 }
 
 .details-stars.interactive .details-star:focus {
-    outline: 2px solid rgba(125,56,255,0.18);
+    outline: 2px solid rgba(125, 56, 255, 0.18);
     outline-offset: 4px;
     transform: translateY(-2px);
 }
@@ -270,7 +272,9 @@
     font-weight: 700;
     font-size: 14px;
     cursor: pointer;
-    transition: background 0.15s ease, transform 0.15s ease;
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
 }
 
 .details-review-submit:hover {
@@ -411,6 +415,7 @@
 }
 
 /* ── CTA buttons ── */
+.details-btn-buy-now,
 .details-btn-cart {
     width: 100%;
     padding: 13px;
@@ -429,11 +434,21 @@
     gap: 8px;
 }
 
+.details-btn-buy-now:hover:not(:disabled),
 .details-btn-cart:hover:not(:disabled) {
     background: var(--accent-strong);
     transform: translateY(-2px);
 }
 
+.details-btn-buy-now {
+    background: linear-gradient(135deg, #60bb46, #4da63a);
+}
+
+.details-btn-buy-now:hover:not(:disabled) {
+    background: linear-gradient(135deg, #4da63a, #3f8f30);
+}
+
+.details-btn-buy-now:disabled,
 .details-btn-cart:disabled {
     background: #2d7a3a;
     cursor: default;
