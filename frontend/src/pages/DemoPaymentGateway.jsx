@@ -3,8 +3,11 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
 import {
+  claimFreeGames,
   getPaymentDetails,
+  processBulkDemoPayment,
   processDemoPayment,
+  updateBulkDemoPaymentMethod,
   updateDemoPaymentMethod,
 } from "../services/paymentService";
 import { getStoredUser } from "../utils/auth";
@@ -104,15 +107,49 @@ const normalizeItem = (item) => ({
   title: item?.title || item?.game_title || "Game Name",
   price: Number(item?.price ?? item?.amount ?? 0),
   image: item?.image || item?.image_url || item?.game_image || "",
+  isFree:
+    Boolean(item?.isFree ?? item?.is_free ?? item?.payment_method === "free") ||
+    Number(item?.price ?? item?.amount ?? 0) <= 0,
 });
+
+const parseBatchIds = (search) => {
+  const params = new URLSearchParams(search);
+  const rawBatch = params.get("batch") || "";
+
+  return [
+    ...new Set(
+      rawBatch
+        .split(",")
+        .map((value) => Number(value.trim()))
+        .filter((value) => Number.isInteger(value) && value > 0),
+    ),
+  ];
+};
 
 const DemoPaymentGateway = () => {
   const { method, paymentId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { removeCartItemByGameId } = useGameLibrary();
+  const { removeCartItemByGameId, markGamesAsOwned } = useGameLibrary();
   const currentUser = getStoredUser();
   const userId = currentUser?.uid ?? currentUser?.user_id;
+
+  const statePaymentIds = Array.isArray(location.state?.paymentIds)
+    ? location.state.paymentIds
+    : [];
+  const queryPaymentIds = parseBatchIds(location.search);
+  const paymentIds = useMemo(() => {
+    const fallbackId = Number(paymentId);
+    const merged = [...statePaymentIds, ...queryPaymentIds, fallbackId];
+
+    return [
+      ...new Set(
+        merged.filter((value) => Number.isInteger(value) && value > 0),
+      ),
+    ];
+  }, [paymentId, queryPaymentIds, statePaymentIds]);
+
+  const isBulkCheckout = paymentIds.length > 1;
 
   const [payment, setPayment] = useState(null);
   const [selectedOption, setSelectedOption] = useState(method || "esewa");
@@ -144,22 +181,37 @@ const DemoPaymentGateway = () => {
     return [];
   }, [location.state, payment]);
 
+  const freeItems = useMemo(
+    () =>
+      (Array.isArray(location.state?.freeItems)
+        ? location.state.freeItems
+        : checkoutItems.filter((item) => item.isFree)
+      ).map(normalizeItem),
+    [checkoutItems, location.state],
+  );
+
+  const paidItems = useMemo(
+    () =>
+      (Array.isArray(location.state?.paidItems)
+        ? location.state.paidItems
+        : checkoutItems.filter((item) => !item.isFree)
+      ).map(normalizeItem),
+    [checkoutItems, location.state],
+  );
+
   const checkoutTotal = useMemo(() => {
     if (typeof location.state?.totalAmount === "number") {
       return location.state.totalAmount;
     }
 
-    return checkoutItems.reduce(
-      (sum, item) => sum + Number(item.price || 0),
-      0,
-    );
-  }, [checkoutItems, location.state]);
+    return paidItems.reduce((sum, item) => sum + Number(item.price || 0), 0);
+  }, [location.state, paidItems]);
 
   useEffect(() => {
     if (!userId) {
       navigate("/login", {
         replace: true,
-        state: { from: `/payment/${method}/${paymentId}` },
+        state: { from: `/payment/${method}/${paymentId}${location.search}` },
       });
       return;
     }
@@ -179,7 +231,7 @@ const DemoPaymentGateway = () => {
     };
 
     loadPayment();
-  }, [method, navigate, paymentId, userId]);
+  }, [location.search, method, navigate, paymentId, userId]);
 
   const paymentCompleted = useMemo(
     () => Boolean(payment && payment.payment_status !== "PENDING"),
@@ -205,7 +257,7 @@ const DemoPaymentGateway = () => {
     setSelectedOption(optionId);
 
     if (!payment || paymentCompleted || payment.payment_method === optionId) {
-      navigate(`/payment/${optionId}/${paymentId}`, {
+      navigate(`/payment/${optionId}/${paymentId}${location.search}`, {
         replace: true,
         state: location.state,
       });
@@ -214,14 +266,25 @@ const DemoPaymentGateway = () => {
 
     try {
       setSwitchingMethod(true);
-      const payload = await updateDemoPaymentMethod({
-        paymentId,
-        userId,
-        paymentMethod: optionId,
-      });
-      setPayment(payload.data);
+      const payload = isBulkCheckout
+        ? await updateBulkDemoPaymentMethod({
+            paymentIds,
+            userId,
+            paymentMethod: optionId,
+          })
+        : await updateDemoPaymentMethod({
+            paymentId,
+            userId,
+            paymentMethod: optionId,
+          });
+
+      const updatedPrimaryPayment = isBulkCheckout
+        ? payload.data.payments?.[0]
+        : payload.data;
+
+      setPayment(updatedPrimaryPayment || null);
       setFormValues({ account: "", secret: "" });
-      navigate(`/payment/${optionId}/${paymentId}`, {
+      navigate(`/payment/${optionId}/${paymentId}${location.search}`, {
         replace: true,
         state: location.state,
       });
@@ -249,20 +312,62 @@ const DemoPaymentGateway = () => {
     try {
       setSubmitting(true);
       setMessage("");
-      const payload = await processDemoPayment({ paymentId, userId, action });
-      setPayment(payload.data);
-      setSelectedOption(payload.data.payment_method || selectedOption);
+
+      const payload = isBulkCheckout
+        ? await processBulkDemoPayment({ paymentIds, userId, action })
+        : await processDemoPayment({ paymentId, userId, action });
+
+      let updatedPayments = isBulkCheckout
+        ? payload.data.payments || []
+        : [payload.data];
+      let updatedPrimaryPayment = updatedPayments[0] || null;
+      let successPayments = [...updatedPayments];
+
+      setPayment(updatedPrimaryPayment);
+      setSelectedOption(
+        updatedPrimaryPayment?.payment_method || selectedOption,
+      );
       setFormValues({ account: "", secret: "" });
 
-      if (payload.data.payment_status === "PAID") {
-        removeCartItemByGameId(payload.data.game_id);
-        navigate(`/payment/success/${paymentId}`);
+      if (updatedPrimaryPayment?.payment_status === "PAID") {
+        updatedPayments.forEach((processedPayment) => {
+          removeCartItemByGameId(processedPayment.game_id);
+        });
+
+        if (freeItems.length > 0) {
+          const freeClaimPayload = await claimFreeGames({
+            userId,
+            gameIds: freeItems.map((item) => item.id),
+          });
+
+          successPayments = [
+            ...updatedPayments,
+            ...(freeClaimPayload.data.payments || []),
+          ];
+
+          freeItems.forEach((item) => removeCartItemByGameId(item.id));
+        }
+
+        markGamesAsOwned(checkoutItems);
+
+        navigate(`/payment/success/${paymentId}${location.search}`, {
+          state: {
+            payments: successPayments,
+            checkoutItems,
+            totalAmount: successPayments.reduce(
+              (sum, item) => sum + Number(item.amount || 0),
+              0,
+            ),
+          },
+        });
         return;
       }
 
       setMessage(payload.message);
       setMessageType(
-        payload.data.payment_status === "FAILED" ? "error" : "warning",
+        updatedPrimaryPayment?.payment_status === "FAILED"
+          ? "error"
+          : "warning",
       );
     } catch (error) {
       setMessage(error.message || "Failed to process demo payment.");
@@ -342,7 +447,9 @@ const DemoPaymentGateway = () => {
                         <div className="gateway-order-copy">
                           <strong>{item.title}</strong>
                         </div>
-                        <span>{formatAmount(item.price)}</span>
+                        <span>
+                          {item.isFree ? "Free" : formatAmount(item.price)}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -362,7 +469,26 @@ const DemoPaymentGateway = () => {
                       <span>Status</span>
                       <strong>{payment.payment_status}</strong>
                     </div>
+                    <div>
+                      <span>Paid Items</span>
+                      <strong>{paidItems.length}</strong>
+                    </div>
+                    <div>
+                      <span>Paying Now</span>
+                      <strong>{formatAmount(checkoutTotal)}</strong>
+                    </div>
                   </div>
+
+                  {freeItems.length > 0 && (
+                    <div className="gateway-status gateway-status-warning">
+                      <strong>Free games included</strong>
+                      <span>
+                        {freeItems.length} free game
+                        {freeItems.length !== 1 ? "s" : ""} in this order will
+                        be claimed automatically after successful payment.
+                      </span>
+                    </div>
+                  )}
 
                   {paymentCompleted && (
                     <div

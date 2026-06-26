@@ -1,106 +1,141 @@
 .payment-success-page {
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text-primary);
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text-primary);
 }
 
 .payment-success-main {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 32px 16px 56px;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 16px 56px;
 }
 
 .payment-success-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px;
 }
 
 .payment-success-badge {
-  display: inline-flex;
-  margin: 0 0 12px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  background: rgba(255, 193, 7, 0.14);
-  color: #b07a00;
-  border: 1px solid rgba(255, 193, 7, 0.32);
+    display: inline-flex;
+    margin: 0 0 12px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(255, 193, 7, 0.14);
+    color: #b07a00;
+    border: 1px solid rgba(255, 193, 7, 0.32);
 }
 
 .payment-success-card h1 {
-  margin: 0 0 24px;
-  font-size: 32px;
-  color: #2d7a3a;
+    margin: 0 0 24px;
+    font-size: 32px;
+    color: #2d7a3a;
 }
 
 .payment-success-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
 }
 
 .payment-success-grid div {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 16px;
-  border-radius: var(--radius-md);
-  background: var(--bg);
-  border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    border: 1px solid var(--border);
 }
 
 .payment-success-grid span {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.payment-success-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.payment-success-list-item {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 16px;
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    border: 1px solid var(--border);
+}
+
+.payment-success-list-item div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.payment-success-list-item span {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
 }
 
 .payment-success-actions {
-  display: flex;
-  gap: 12px;
-  margin-top: 24px;
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
 }
 
 .payment-success-btn {
-  text-decoration: none;
-  padding: 12px 18px;
-  border-radius: var(--radius-md);
-  font-weight: 700;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    font-weight: 700;
 }
 
 .payment-success-btn-primary {
-  background: var(--accent);
-  color: #fff;
+    background: var(--accent);
+    color: #fff;
 }
 
 .payment-success-btn-secondary {
-  border: 1px solid var(--border);
-  color: var(--text-primary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
 }
 
 .payment-success-info,
 .payment-success-error {
-  color: var(--text-secondary);
+    color: var(--text-secondary);
 }
 
 .payment-success-error {
-  color: #c62839;
+    color: #c62839;
 }
 
 @media (max-width: 640px) {
-  .payment-success-card {
-    padding: 20px;
-  }
+    .payment-success-card {
+        padding: 20px;
+    }
 
-  .payment-success-grid {
-    grid-template-columns: 1fr;
-  }
+    .payment-success-grid {
+        grid-template-columns: 1fr;
+    }
 
-  .payment-success-actions {
-    flex-direction: column;
-  }
+    .payment-success-list-item {
+        grid-template-columns: 1fr;
+    }
+
+    .payment-success-actions {
+        flex-direction: column;
+    }
 }

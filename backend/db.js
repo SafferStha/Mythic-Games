@@ -130,7 +130,7 @@ async function ensureDatabaseSchema() {
       user_id BIGINT NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
       game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE,
       amount NUMERIC(10, 2) NOT NULL DEFAULT 0,
-      payment_method VARCHAR(20) NOT NULL,
+      payment_method VARCHAR(20) NOT NULL CHECK (payment_method IN ('esewa', 'khalti', 'free')),
       transaction_id VARCHAR(50) UNIQUE,
       payment_status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
       created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -143,11 +143,48 @@ async function ensureDatabaseSchema() {
     ALTER TABLE payments ADD COLUMN IF NOT EXISTS payment_status VARCHAR(20) NOT NULL DEFAULT 'PENDING';
     ALTER TABLE payments ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
     ALTER TABLE payments ADD COLUMN IF NOT EXISTS order_id INTEGER REFERENCES orders(id) ON DELETE SET NULL;
+    ALTER TABLE payments DROP CONSTRAINT IF EXISTS payments_payment_method_check;
+    ALTER TABLE payments ADD CONSTRAINT payments_payment_method_check
+      CHECK (payment_method IN ('esewa', 'khalti', 'free'));
 
     CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(payment_status);
     CREATE INDEX IF NOT EXISTS idx_payments_transaction_id ON payments(transaction_id);
     CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
     CREATE INDEX IF NOT EXISTS idx_payments_game_id ON payments(game_id);
+
+    CREATE TABLE IF NOT EXISTS library (
+      id SERIAL PRIMARY KEY,
+      user_id BIGINT NOT NULL REFERENCES users(uid) ON DELETE CASCADE,
+      game_id INTEGER NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+      payment_id INTEGER REFERENCES payments(id) ON DELETE SET NULL,
+      added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      install_status VARCHAR(20) NOT NULL DEFAULT 'NOT_INSTALLED',
+      UNIQUE (user_id, game_id)
+    );
+
+    ALTER TABLE library ADD COLUMN IF NOT EXISTS payment_id INTEGER REFERENCES payments(id) ON DELETE SET NULL;
+    ALTER TABLE library ADD COLUMN IF NOT EXISTS added_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+    ALTER TABLE library ADD COLUMN IF NOT EXISTS install_status VARCHAR(20) NOT NULL DEFAULT 'NOT_INSTALLED';
+
+    CREATE INDEX IF NOT EXISTS idx_library_user_id ON library(user_id);
+    CREATE INDEX IF NOT EXISTS idx_library_game_id ON library(game_id);
+
+    CREATE TABLE IF NOT EXISTS news (
+      id SERIAL PRIMARY KEY,
+      date_label VARCHAR(50),
+      title VARCHAR(255) NOT NULL,
+      excerpt TEXT,
+      image_url TEXT,
+      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+    );
+
+    ALTER TABLE news ADD COLUMN IF NOT EXISTS date_label VARCHAR(50);
+    ALTER TABLE news ADD COLUMN IF NOT EXISTS title VARCHAR(255);
+    ALTER TABLE news ADD COLUMN IF NOT EXISTS excerpt TEXT;
+    ALTER TABLE news ADD COLUMN IF NOT EXISTS image_url TEXT;
+    ALTER TABLE news ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+    ALTER TABLE news ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
   `);
 }
 

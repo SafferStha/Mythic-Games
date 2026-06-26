@@ -7,21 +7,23 @@ require("dotenv").config();
 
 const gameRoutes = require("./routes/gameRoutes");
 const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
+const newsRoutes = require("./routes/newsRoutes");
 const db = require("./db");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Ensure uploads directory exists
-const uploadDir = "uploads/";
+const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir);
+  fs.mkdirSync(uploadDir, { recursive: true });
 }
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
+  destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) =>
     cb(null, Date.now() + path.extname(file.originalname)),
 });
@@ -36,10 +38,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
-app.use("/api/games", gameRoutes);
+app.use("/api/games", gameRoutes(upload));
 app.use("/api/users", userRoutes(upload));
-app.use("/api/auth", userRoutes(upload)); // Ensure frontend auth calls work
+app.use("/api/auth", authRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/news", newsRoutes(upload));
 
 // Standardize root response to JSON
 app.get("/", (req, res) =>

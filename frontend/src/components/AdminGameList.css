@@ -15,6 +15,24 @@
   font-size: 24px;
 }
 
+.admin-error,
+.admin-status {
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.admin-error {
+  color: #dc2626;
+}
+
+.admin-status {
+  color: #4b5563;
+}
+
+.form-status {
+  padding: 0 20px 16px;
+}
+
 .games-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

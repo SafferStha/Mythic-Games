@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import "./GameDetails.css";
 import redDeadImg from "../assets/RedDead.png";
 import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
+import { resolveAssetUrl } from "../utils/api";
 
 const fallbackGames = {
   "Elden Ring": {
@@ -162,6 +163,7 @@ const GameDetails = () => {
     toggleWishlist,
     isInWishlist,
     isInCart,
+    isOwned,
     wishlistItems,
     cartItems,
   } = useGameLibrary();
@@ -182,6 +184,9 @@ const GameDetails = () => {
         "Game details are being prepared. This page is ready to receive title, artwork, and purchase information from the list view.",
       genres: ["Action", "Adventure"],
     };
+  const selectedImageUrl = resolveAssetUrl(
+    selectedGame.image_url || selectedGame.image,
+  );
 
   const price = Number(selectedGame.price || 0).toLocaleString();
   const detailsGame = {
@@ -189,14 +194,15 @@ const GameDetails = () => {
     title: selectedGame.title,
     game_type: selectedGame.game_type || "Base Game",
     price: selectedGame.price || 0,
-    image_url: selectedGame.image_url,
+    image_url: selectedImageUrl || redDeadImg,
     description: selectedGame.description,
     genres: selectedGame.genres,
   };
 
   const savedInCart = isInCart(detailsGame);
   const savedInWishlist = isInWishlist(detailsGame);
-  const canPurchase = Boolean(detailsGame.id);
+  const owned = isOwned(detailsGame);
+  const canPurchase = Boolean(detailsGame.id) && !owned;
 
   const [reviews, setReviews] = useState(() => getDefaultReviews(routeTitle));
   const [newReviewName, setNewReviewName] = useState("");
@@ -244,7 +250,7 @@ const GameDetails = () => {
 
       <div className="details-banner">
         <img
-          src={selectedGame.image_url}
+          src={detailsGame.image_url}
           alt={selectedGame.title}
           className="details-banner-img"
         />
@@ -260,7 +266,7 @@ const GameDetails = () => {
 
           <div className="details-media">
             <img
-              src={selectedGame.image_url}
+              src={detailsGame.image_url}
               alt={selectedGame.title}
               className="details-media-img"
             />
@@ -362,34 +368,48 @@ const GameDetails = () => {
 
         <aside className="details-panel">
           <div className="details-panel-thumb">
-            <img src={selectedGame.image_url} alt={selectedGame.title} />
+            <img src={detailsGame.image_url} alt={selectedGame.title} />
           </div>
 
           <h2 className="details-panel-title">{selectedGame.title}</h2>
 
           <div className="details-panel-price-row">
-            <span className="details-panel-price-label">Base Game</span>
-            <span className="details-panel-price">{price} NPR</span>
+            <span
+              className={`details-panel-price-label ${owned ? "owned" : ""}`}
+            >
+              {owned ? "Status" : "Base Game"}
+            </span>
+            <span className={`details-panel-price ${owned ? "owned" : ""}`}>
+              {owned ? "Owned" : `${price} NPR`}
+            </span>
           </div>
 
           <button
             type="button"
-            className="details-btn-buy-now"
+            className={`details-btn-buy-now ${owned ? "is-owned" : ""}`}
             onClick={() =>
               navigate("/checkout", { state: { selectedGame: detailsGame } })
             }
             disabled={!canPurchase}
           >
-            Buy Now
+            {owned ? "Owned" : "Buy Now"}
           </button>
 
           <button
             type="button"
-            className={`details-btn-cart ${savedInCart ? "is-added" : ""}`}
+            className={`details-btn-cart ${savedInCart ? "is-added" : ""} ${owned ? "is-owned" : ""}`}
             onClick={() => addToCart(detailsGame)}
             disabled={savedInCart || !canPurchase}
           >
-            {savedInCart ? (
+            {owned ? (
+              <>
+                <i
+                  className="bx bxs-check-circle"
+                  style={{ marginRight: "6px" }}
+                />
+                Owned
+              </>
+            ) : savedInCart ? (
               <>
                 <i
                   className="bx bxs-check-circle"
@@ -404,13 +424,19 @@ const GameDetails = () => {
 
           <button
             type="button"
-            className={`details-btn-wishlist ${savedInWishlist ? "is-saved" : ""}`}
+            className={`details-btn-wishlist ${savedInWishlist ? "is-saved" : ""} ${owned ? "is-owned" : ""}`}
             onClick={() => toggleWishlist(detailsGame)}
             aria-pressed={savedInWishlist}
-            disabled={!canPurchase}
+            disabled={!detailsGame.id || owned}
           >
-            <i className={`bx ${savedInWishlist ? "bxs-heart" : "bx-heart"}`} />
-            {savedInWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+            <i
+              className={`bx ${owned ? "bxs-check-circle" : savedInWishlist ? "bxs-heart" : "bx-heart"}`}
+            />
+            {owned
+              ? "Owned"
+              : savedInWishlist
+                ? "Remove from Wishlist"
+                : "Add to Wishlist"}
           </button>
 
           <div className="details-rating-card">

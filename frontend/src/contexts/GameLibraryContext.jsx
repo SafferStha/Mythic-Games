@@ -6,13 +6,12 @@ import React, {
   useState,
 } from "react";
 import { getStoredUser } from "../utils/auth";
+import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
 
 const CART_STORAGE_KEY = "mythic-games-cart";
 const WISHLIST_STORAGE_KEY = "mythic-games-wishlist";
 const GUEST_CART_STORAGE_KEY = "mythic-games-guest-cart";
 const GUEST_WISHLIST_STORAGE_KEY = "mythic-games-guest-wishlist";
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const GameLibraryContext = createContext(null);
 
@@ -66,7 +65,7 @@ const normalizeGame = (game) => {
     title: game?.title || "Game Name",
     type: game?.type || game?.game_type || "Base Game",
     price: Number.isFinite(price) ? price : 0,
-    image: game?.image || game?.image_url,
+    image: resolveAssetUrl(game?.image || game?.image_url),
     description: game?.description || "",
     genres: game?.genres || [],
     platform: game?.platform || "PC / Standard Edition",
@@ -80,6 +79,7 @@ export const GameLibraryProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
   const [cartItems, setCartItems] = useState(() => []);
   const [wishlistItems, setWishlistItems] = useState(() => []);
+  const [ownedGames, setOwnedGames] = useState(() => []);
 
   useEffect(() => {
     const syncAuthState = () => setCurrentUser(getStoredUser());
@@ -130,6 +130,7 @@ export const GameLibraryProvider = ({ children }) => {
     if (!isSignedIn) {
       setCartItems([]);
       setWishlistItems([]);
+      setOwnedGames([]);
       clearStoredItems(window.sessionStorage, GUEST_CART_STORAGE_KEY);
       clearStoredItems(window.sessionStorage, GUEST_WISHLIST_STORAGE_KEY);
       return;
@@ -137,29 +138,38 @@ export const GameLibraryProvider = ({ children }) => {
 
     const userId = currentUser.uid ?? currentUser.user_id;
 
-    // Consolidate fetching for both cart and wishlist
+    // Consolidate fetching for cart, wishlist, and owned library
     const syncLibrary = async () => {
       try {
-        // Fetch Cart items from backend
-        const cartRes = await fetch(`${API_BASE_URL}/api/users/${userId}/cart`);
-        const cartPayload = await cartRes.json();
+        const [cartRes, wishlistRes, libraryRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/users/${userId}/cart`),
+          fetch(`${API_BASE_URL}/api/users/${userId}/wishlist`),
+          fetch(`${API_BASE_URL}/api/users/${userId}/library`),
+        ]);
+
+        const [cartPayload, wishlistPayload, libraryPayload] =
+          await Promise.all([
+            cartRes.json(),
+            wishlistRes.json(),
+            libraryRes.json(),
+          ]);
+
         if (cartRes.ok) {
           setCartItems(cartPayload.data.map((item) => normalizeGame(item)));
         }
 
-        // Fetch Wishlist items from backend
-        const wishlistRes = await fetch(
-          `${API_BASE_URL}/api/users/${userId}/wishlist`,
-        );
-        const wishlistPayload = await wishlistRes.json();
         if (wishlistRes.ok) {
           setWishlistItems(
             wishlistPayload.data.map((item) => normalizeGame(item)),
           );
         }
+
+        if (libraryRes.ok) {
+          setOwnedGames(libraryPayload.data.map((item) => normalizeGame(item)));
+        }
       } catch (error) {
         console.error(
-          "Failed to sync user library (cart and wishlist):",
+          "Failed to sync user library (cart, wishlist, and owned games):",
           error,
         );
       }
@@ -217,12 +227,65 @@ export const GameLibraryProvider = ({ children }) => {
     return false;
   };
 
+  const isOwned = (game) => {
+    if (!isSignedIn) {
+      return false;
+    }
+
+    const item = normalizeGame(game);
+
+    return ownedGames.some(
+      (entry) =>
+        String(entry.id) === String(item.id) ||
+        String(entry.key) === String(item.key),
+    );
+  };
+
+  const markGamesAsOwned = (games) => {
+    const normalizedItems = (Array.isArray(games) ? games : [games])
+      .filter(Boolean)
+      .map((game) => normalizeGame(game));
+
+    setOwnedGames((currentItems) => {
+      const nextItems = [...currentItems];
+
+      normalizedItems.forEach((item) => {
+        if (
+          !nextItems.some(
+            (entry) =>
+              String(entry.id) === String(item.id) ||
+              String(entry.key) === String(item.key),
+          )
+        ) {
+          nextItems.push(item);
+        }
+      });
+
+      return nextItems;
+    });
+
+    setWishlistItems((currentItems) =>
+      currentItems.filter(
+        (entry) =>
+          !normalizedItems.some(
+            (item) =>
+              String(entry.id) === String(item.id) ||
+              String(entry.key) === String(item.key),
+          ),
+      ),
+    );
+  };
+
   const addToCart = async (game) => {
     if (!requireSignedInUser()) {
       return;
     }
 
     const item = normalizeGame(game);
+
+    if (isOwned(item)) {
+      return;
+    }
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
@@ -259,6 +322,10 @@ export const GameLibraryProvider = ({ children }) => {
     }
 
     const item = normalizeGame(game);
+
+    if (isOwned(item)) {
+      return;
+    }
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
@@ -429,10 +496,13 @@ export const GameLibraryProvider = ({ children }) => {
     () => ({
       cartItems,
       wishlistItems,
+      ownedGames,
       cartCount,
       wishlistCount,
       addToCart,
       isInCart,
+      isOwned,
+      markGamesAsOwned,
       addToWishlist,
       isInWishlist,
       toggleWishlist,
@@ -442,7 +512,7 @@ export const GameLibraryProvider = ({ children }) => {
       moveCartItemToWishlist,
       moveWishlistItemToCart,
     }),
-    [cartItems, wishlistItems, cartCount, wishlistCount],
+    [cartItems, wishlistItems, ownedGames, cartCount, wishlistCount],
   );
 
   return (

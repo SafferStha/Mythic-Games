@@ -1,45 +1,97 @@
-import React, { useState, useEffect } from 'react';
-import GameCard from './GameCard';
-import GameForm from './GameForm';
-import './AdminGameList.css';
+import React, { useEffect, useState } from "react";
+import GameCard from "./GameCard";
+import GameForm from "./GameForm";
+import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
+import "./AdminGameList.css";
 
-const sampleGames = [
-  {
-    id: 1,
-    title: 'Legend of the Forge',
-    price: '499',
-    originalPrice: '599',
-    type: 'RPG',
-    image: '/assets/placeholder-game.png',
-    isUpcoming: false,
-  },
-  {
-    id: 2,
-    title: 'Skyward Battles',
-    price: '299',
-    originalPrice: '0',
-    type: 'Strategy',
-    image: '/assets/placeholder-game.png',
-    isUpcoming: true,
-  },
-];
+const API_URL = `${API_BASE_URL}/api/games`;
+const PLACEHOLDER_IMAGE = "/assets/placeholder-game.png";
+
+function toFormGame(game) {
+  return {
+    id: game.id,
+    title: game.title || "",
+    price: game.price || "",
+    originalPrice: game.original_price || "",
+    type: game.game_type || "",
+    image: resolveAssetUrl(game.image_url),
+    description: game.description || "",
+    isUpcoming: Boolean(game.is_upcoming),
+  };
+}
+
+function toCardGame(game) {
+  return {
+    id: game.id,
+    title: game.title,
+    price: game.price,
+    originalPrice: game.original_price,
+    type: game.game_type,
+    image: resolveAssetUrl(game.image_url) || PLACEHOLDER_IMAGE,
+    isUpcoming: Boolean(game.is_upcoming),
+    detailState: {
+      ...game,
+      image_url: resolveAssetUrl(game.image_url),
+    },
+  };
+}
+
+function buildGameFormData(data, isNewGame = false) {
+  const formData = new FormData();
+
+  formData.append("title", data.title);
+  formData.append("game_type", data.type || "Base Game");
+  formData.append("price", data.price || 0);
+  formData.append("original_price", data.originalPrice || 0);
+  formData.append("description", data.description || "");
+  formData.append("is_upcoming", data.isUpcoming ? "true" : "false");
+
+  if (isNewGame) {
+    formData.append("is_new_release", "true");
+  }
+
+  if (data.imageFile) {
+    formData.append("image", data.imageFile);
+  }
+
+  return formData;
+}
 
 const AdminGameList = () => {
-  const [games, setGames] = useState(() => {
-    try {
-      const raw = localStorage.getItem('admin_games');
-      return raw ? JSON.parse(raw) : sampleGames;
-    } catch (e) {
-      return sampleGames;
-    }
-  });
-
+  const [games, setGames] = useState([]);
   const [editing, setEditing] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  const loadGames = async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const response = await fetch(API_URL);
+
+      if (!response.ok) {
+        throw new Error("Failed to load games.");
+      }
+
+      const data = await response.json();
+      setGames(Array.isArray(data) ? data : []);
+    } catch (err) {
+      setError(err.message || "Failed to load games.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem('admin_games', JSON.stringify(games));
-  }, [games]);
+    loadGames();
+  }, []);
+
+  const closeForm = () => {
+    setShowForm(false);
+    setEditing(null);
+  };
 
   const handleAdd = () => {
     setEditing(null);
@@ -51,54 +103,113 @@ const AdminGameList = () => {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    if (!window.confirm('Delete this game?')) return;
-    setGames((g) => g.filter((x) => x.id !== id));
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this game?")) return;
+
+    try {
+      setError("");
+      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete game.");
+      }
+
+      setGames((current) => current.filter((game) => game.id !== id));
+    } catch (err) {
+      setError(err.message || "Failed to delete game.");
+    }
   };
 
-  const saveGame = (data) => {
-    if (editing) {
-      setGames((g) => g.map((item) => (item.id === editing.id ? { ...item, ...data } : item)));
-    } else {
-      const next = Math.max(0, ...games.map((g) => g.id)) + 1;
-      setGames((g) => [{ id: next, ...data }, ...g]);
+  const saveGame = async (data) => {
+    try {
+      setSaving(true);
+      setError("");
+
+      const response = await fetch(
+        editing ? `${API_URL}/${editing.id}` : API_URL,
+        {
+          method: editing ? "PUT" : "POST",
+          body: buildGameFormData(data, !editing),
+        },
+      );
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null);
+        throw new Error(payload?.error || "Failed to save game.");
+      }
+
+      const savedGame = await response.json();
+
+      setGames((current) =>
+        editing
+          ? current.map((game) => (game.id === savedGame.id ? savedGame : game))
+          : [savedGame, ...current],
+      );
+      closeForm();
+    } catch (err) {
+      setError(err.message || "Failed to save game.");
+    } finally {
+      setSaving(false);
     }
-    setShowForm(false);
-    setEditing(null);
   };
 
   return (
     <div className="admin-games">
       <div className="admin-header">
         <h2>Manage Games</h2>
-        <div>
-          <button className="btn btn-primary" onClick={handleAdd}>Add Game</button>
-        </div>
+        <button className="btn btn-primary" onClick={handleAdd}>
+          Add Game
+        </button>
       </div>
+
+      {error && <p className="admin-error">{error}</p>}
+      {loading && <p className="admin-status">Loading games...</p>}
 
       {showForm && (
         <>
-          <div className="form-overlay" onClick={() => { setShowForm(false); setEditing(null); }} />
+          <div className="form-overlay" onClick={closeForm} />
           <div className="form-panel">
             <div className="form-panel-header">
-              <h3>{editing ? 'Edit Game' : 'Add Game'}</h3>
-              <button className="close-tab" onClick={() => { setShowForm(false); setEditing(null); }} aria-label="Close">×</button>
+              <h3>{editing ? "Edit Game" : "Add Game"}</h3>
+              <button
+                className="close-tab"
+                onClick={closeForm}
+                aria-label="Close"
+              >
+                x
+              </button>
             </div>
-            <GameForm initialData={editing} onCancel={() => { setShowForm(false); setEditing(null); }} onSubmit={saveGame} />
+            <GameForm
+              initialData={editing ? toFormGame(editing) : null}
+              onCancel={closeForm}
+              onSubmit={saveGame}
+            />
+            {saving && <p className="admin-status form-status">Saving...</p>}
           </div>
         </>
       )}
 
       <div className="games-grid">
-        {games.map((g) => (
-          <div className="admin-game-item" key={g.id}>
-            <GameCard {...g} id={g.id} />
-            <div className="admin-actions">
-              <button className="btn btn-edit" onClick={() => handleEdit(g)}>Edit</button>
-              <button className="btn btn-danger" onClick={() => handleDelete(g.id)}>Delete</button>
+        {games.map((game) => {
+          const cardGame = toCardGame(game);
+
+          return (
+            <div className="admin-game-item" key={game.id}>
+              <GameCard {...cardGame} />
+              <div className="admin-actions">
+                <button className="btn btn-edit" onClick={() => handleEdit(game)}>
+                  Edit
+                </button>
+                <button
+                  className="btn btn-danger"
+                  onClick={() => handleDelete(game.id)}
+                >
+                  Delete
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

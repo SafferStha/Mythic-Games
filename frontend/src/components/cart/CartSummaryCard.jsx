@@ -1,12 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import "./CartSummaryCard.css";
 
-const CartSummaryCard = ({ title, rows, actionLabel, onAction }) => {
+const CartSummaryCard = ({
+  title,
+  rows,
+  actionLabel,
+  onAction,
+  navigateTo = "/checkout",
+}) => {
   const navigate = useNavigate();
 
   const handleAction = () => {
     if (onAction) onAction();
-    navigate("/checkout");
+    if (navigateTo) navigate(navigateTo);
   };
 
   return (

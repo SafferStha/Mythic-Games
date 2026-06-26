@@ -1,26 +1,60 @@
-import React from 'react';
-import NewsItem from './NewsItem';
-import { defaultNewsArticles, newsStorageKey } from '../data/news';
+import React, { useEffect, useState } from "react";
+import NewsItem from "./NewsItem";
+import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
 
-const getNewsItems = () => {
-  try {
-    const raw = localStorage.getItem(newsStorageKey);
-    if (!raw) return defaultNewsArticles;
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length ? parsed : defaultNewsArticles;
-  } catch (error) {
-    return defaultNewsArticles;
-  }
-};
+const API_URL = `${API_BASE_URL}/api/news`;
 
 const NewsList = () => {
-  const articles = getNewsItems();
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadNews = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await fetch(API_URL);
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload?.message || "Failed to load news.");
+        }
+
+        setArticles(
+          (payload.data || []).map((item) => ({
+            ...item,
+            image: resolveAssetUrl(item.image),
+          })),
+        );
+      } catch (loadError) {
+        setError(loadError.message || "Failed to load news.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNews();
+  }, []);
+
+  if (loading) {
+    return <p className="news-empty">Loading news...</p>;
+  }
+
+  if (error) {
+    return <p className="news-empty">{error}</p>;
+  }
+
+  if (!articles.length) {
+    return <p className="news-empty">No news has been published yet.</p>;
+  }
 
   return (
     <section className="news-list">
-      {articles.map((a) => (
-        <React.Fragment key={a.id}>
-          <NewsItem {...a} />
+      {articles.map((article) => (
+        <React.Fragment key={article.id}>
+          <NewsItem {...article} />
         </React.Fragment>
       ))}
     </section>

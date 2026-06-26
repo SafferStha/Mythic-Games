@@ -1,10 +1,12 @@
 import React from 'react';
 
 const NewsItem = ({ dateLabel, title, excerpt, image }) => {
+  const imageSrc = image || '/assets/placeholder-game.png';
+
   return (
     <article className="news-item">
       <div className="news-thumb">
-        <img src={image} alt={title} />
+        <img src={imageSrc} alt={title} />
       </div>
 
       <div className="news-content">

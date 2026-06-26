@@ -414,6 +414,11 @@
     color: var(--text-primary);
 }
 
+.details-panel-price-label.owned,
+.details-panel-price.owned {
+    color: #2d7a3a;
+}
+
 /* ── CTA buttons ── */
 .details-btn-buy-now,
 .details-btn-cart {
@@ -460,6 +465,11 @@
     cursor: not-allowed;
 }
 
+.details-btn-buy-now.is-owned,
+.details-btn-cart.is-owned {
+    background: #2d7a3a;
+}
+
 .details-btn-wishlist {
     width: 100%;
     padding: 12px;
@@ -483,6 +493,17 @@
 .details-btn-wishlist:hover {
     border-color: var(--text-secondary);
     color: var(--text-primary);
+}
+
+.details-btn-wishlist.is-owned {
+    border-color: rgba(45, 122, 58, 0.28);
+    color: #2d7a3a;
+    background: rgba(45, 122, 58, 0.08);
+}
+
+.details-btn-wishlist:disabled {
+    cursor: not-allowed;
+    opacity: 1;
 }
 
 /* ── Responsive ── */

@@ -3,6 +3,8 @@
 .news-form .form-row label{font-size:13px;margin-bottom:6px;color:var(--text,#111827)}
 .news-form input,.news-form textarea{padding:10px 12px;border-radius:15px;border:1px solid var(--input-border,#d1d5db);background:var(--input-bg,#fff);color:var(--text,#111827);outline:none}
 .news-form textarea{resize:vertical;min-height:120px}
+.news-form input[type="file"]{height:auto;min-height:44px}
+.news-image-preview{width:100%;max-width:240px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;border:1px solid var(--input-border,#d1d5db);margin-top:10px;background:#f3f4f6}
 .form-actions{display:flex;gap:8px;justify-content:flex-end}
 .btn{padding:8px 12px;border-radius:8px;cursor:pointer}
 .btn-primary{background:#2563eb;color:#fff;border:none}

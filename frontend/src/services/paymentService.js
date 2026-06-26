@@ -20,6 +20,30 @@ export async function createDemoCheckout({ userId, gameId, paymentMethod }) {
   return parseResponse(response);
 }
 
+export async function createBulkDemoCheckout({
+  userId,
+  gameIds,
+  paymentMethod,
+}) {
+  const response = await fetch(`${API_BASE_URL}/api/payments/checkout/bulk`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, gameIds, paymentMethod }),
+  });
+
+  return parseResponse(response);
+}
+
+export async function claimFreeGames({ userId, gameIds }) {
+  const response = await fetch(`${API_BASE_URL}/api/payments/claim-free`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, gameIds }),
+  });
+
+  return parseResponse(response);
+}
+
 export async function updateDemoPaymentMethod({
   paymentId,
   userId,
@@ -37,6 +61,20 @@ export async function updateDemoPaymentMethod({
   return parseResponse(response);
 }
 
+export async function updateBulkDemoPaymentMethod({
+  paymentIds,
+  userId,
+  paymentMethod,
+}) {
+  const response = await fetch(`${API_BASE_URL}/api/payments/bulk/method`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paymentIds, userId, paymentMethod }),
+  });
+
+  return parseResponse(response);
+}
+
 export async function processDemoPayment({ paymentId, userId, action }) {
   const response = await fetch(
     `${API_BASE_URL}/api/payments/${paymentId}/process`,
@@ -46,6 +84,16 @@ export async function processDemoPayment({ paymentId, userId, action }) {
       body: JSON.stringify({ userId, action }),
     },
   );
+
+  return parseResponse(response);
+}
+
+export async function processBulkDemoPayment({ paymentIds, userId, action }) {
+  const response = await fetch(`${API_BASE_URL}/api/payments/bulk/process`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paymentIds, userId, action }),
+  });
 
   return parseResponse(response);
 }
