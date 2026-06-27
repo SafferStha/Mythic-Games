@@ -31,7 +31,7 @@ const Navbar = () => {
       return "Sign-in";
     }
 
-    return currentUser.role === "admin" ? "Admin panel" : "My account";
+    return currentUser.role === "admin" ? "Manage games" : "My account";
   }, [currentUser]);
 
   const isAdmin = currentUser?.role === "admin";
@@ -102,6 +102,14 @@ const Navbar = () => {
                         <i className="bx bx-credit-card" aria-hidden="true" />
                         <span>Manage payments</span>
                       </Link>
+                      <Link
+                        to="/manage-users"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-user-x" aria-hidden="true" />
+                        <span>Manage users</span>
+                      </Link>
                     </>
                   ) : (
                     <>
@@ -128,6 +136,14 @@ const Navbar = () => {
                       >
                         <i className="bx bx-heart" aria-hidden="true" />
                         <span>Wishlist</span>
+                      </Link>
+                      <Link
+                        to="/purchase-history"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-receipt" aria-hidden="true" />
+                        <span>Purchase history</span>
                       </Link>
                     </>
                   )}

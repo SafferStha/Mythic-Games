@@ -6,6 +6,99 @@ const libraryModel = require("../model/libraryModel");
 module.exports = (upload) => {
   const router = express.Router();
 
+  const requireActiveUser = async (uid, res) => {
+    const result = await db.query("SELECT status FROM users WHERE uid = $1", [
+      uid,
+    ]);
+
+    if (result.rows.length === 0) {
+      res.status(404).json({ success: false, message: "User not found" });
+      return false;
+    }
+
+    if (result.rows[0].status !== "active") {
+      res.status(403).json({
+        success: false,
+        message: "Your account has been banned by admin.",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  // --- Admin User Management Routes ---
+
+  // List all users for admin management
+  router.get("/admin/users", async (req, res) => {
+    try {
+      const result = await db.query(
+        "SELECT uid, username, email, status, created_at, updated_at, profile_image, bio FROM users ORDER BY created_at DESC",
+      );
+
+      res.status(200).json({ success: true, data: result.rows });
+    } catch (error) {
+      console.error("Error fetching users for admin:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
+    }
+  });
+
+  // Ban a user account
+  router.patch("/admin/users/:uid/ban", async (req, res) => {
+    const { uid } = req.params;
+
+    try {
+      const result = await db.query(
+        "UPDATE users SET status = 'banned', updated_at = CURRENT_TIMESTAMP WHERE uid = $1 RETURNING uid, username, email, status, created_at, updated_at",
+        [uid],
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "User banned successfully",
+        data: result.rows[0],
+      });
+    } catch (error) {
+      console.error("Error banning user:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
+    }
+  });
+
+  // Unban a user account
+  router.patch("/admin/users/:uid/unban", async (req, res) => {
+    const { uid } = req.params;
+
+    try {
+      const result = await db.query(
+        "UPDATE users SET status = 'active', updated_at = CURRENT_TIMESTAMP WHERE uid = $1 RETURNING uid, username, email, status, created_at, updated_at",
+        [uid],
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: "User unbanned successfully",
+        data: result.rows[0],
+      });
+    } catch (error) {
+      console.error("Error unbanning user:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
+    }
+  });
+
   // 1. REGISTRATION (JSON only, no image)
   router.post("/register", async (req, res) => {
     const { username, email, password } = req.body;
@@ -72,6 +165,12 @@ module.exports = (upload) => {
           .json({ success: false, message: "Invalid email or password" });
       }
 
+      if (user.status !== "active") {
+        return res
+          .status(403)
+          .json({ success: false, message: "This account is banned or inactive" });
+      }
+
       // Compare the provided password with the hashed password in DB
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
@@ -120,6 +219,8 @@ module.exports = (upload) => {
     upload.single("profileImage"),
     async (req, res) => {
       const { uid } = req.params;
+      if (!(await requireActiveUser(uid, res))) return;
+
       if (!req.file) {
         return res
           .status(400)
@@ -156,6 +257,8 @@ module.exports = (upload) => {
     const { username, email, bio } = req.body;
 
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       const result = await db.query(
         "UPDATE users SET username = $1, email = $2, bio = $3, updated_at = CURRENT_TIMESTAMP WHERE uid = $4 RETURNING uid, username, email, status, created_at, profile_image, bio",
         [username, email, bio, uid],
@@ -185,6 +288,8 @@ module.exports = (upload) => {
   router.get("/:uid/cart", async (req, res) => {
     const { uid } = req.params;
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       const result = await db.query(
         "SELECT g.*, c.quantity FROM cart c JOIN games g ON c.game_id = g.id WHERE c.user_id = $1",
         [uid],
@@ -203,6 +308,8 @@ module.exports = (upload) => {
     const { uid } = req.params;
     const { gameId } = req.body;
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       await db.query(
         "INSERT INTO cart (user_id, game_id) VALUES ($1, $2) ON CONFLICT (user_id, game_id) DO NOTHING",
         [uid, gameId],
@@ -220,6 +327,8 @@ module.exports = (upload) => {
   router.delete("/:uid/cart/:gameId", async (req, res) => {
     const { uid, gameId } = req.params;
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       await db.query("DELETE FROM cart WHERE user_id = $1 AND game_id = $2", [
         uid,
         gameId,
@@ -241,6 +350,8 @@ module.exports = (upload) => {
   router.get("/:uid/library", async (req, res) => {
     const { uid } = req.params;
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       const libraryItems = await libraryModel.getUserLibrary(uid);
       res.status(200).json({ success: true, data: libraryItems });
     } catch (error) {
@@ -270,6 +381,8 @@ module.exports = (upload) => {
     }
 
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       const updated = await libraryModel.updateInstallStatus(
         uid,
         gameId,
@@ -303,6 +416,8 @@ module.exports = (upload) => {
   router.get("/:uid/wishlist", async (req, res) => {
     const { uid } = req.params;
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       const result = await db.query(
         "SELECT g.* FROM wishlist w JOIN games g ON w.game_id = g.id WHERE w.user_id = $1",
         [uid],
@@ -321,6 +436,8 @@ module.exports = (upload) => {
     const { uid } = req.params;
     const { gameId } = req.body;
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       await db.query(
         "INSERT INTO wishlist (user_id, game_id) VALUES ($1, $2) ON CONFLICT (user_id, game_id) DO NOTHING",
         [uid, gameId],
@@ -340,6 +457,8 @@ module.exports = (upload) => {
   router.delete("/:uid/wishlist/:gameId", async (req, res) => {
     const { uid, gameId } = req.params;
     try {
+      if (!(await requireActiveUser(uid, res))) return;
+
       await db.query(
         "DELETE FROM wishlist WHERE user_id = $1 AND game_id = $2",
         [uid, gameId],

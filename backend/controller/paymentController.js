@@ -665,6 +665,32 @@ async function getAdminPayments(req, res) {
   }
 }
 
+async function getUserPaymentHistory(req, res) {
+  const { userId } = req.params;
+
+  if (!userId) {
+    return res.status(400).json({
+      success: false,
+      message: "userId is required.",
+    });
+  }
+
+  try {
+    const payments = await paymentModel.getUserPaymentHistory(userId);
+
+    return res.json({
+      success: true,
+      data: payments.map((payment) => toPaymentResponse(payment)),
+    });
+  } catch (error) {
+    console.error("User payment history error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch purchase history.",
+    });
+  }
+}
+
 module.exports = {
   createCheckout,
   createBulkCheckout,
@@ -675,4 +701,5 @@ module.exports = {
   updateBulkPaymentMethod,
   getPaymentDetails,
   getAdminPayments,
+  getUserPaymentHistory,
 };

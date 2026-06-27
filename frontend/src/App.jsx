@@ -17,9 +17,11 @@ import GameDetails from "./pages/GameDetails";
 import Checkout from "./pages/Checkout";
 import DemoPaymentGateway from "./pages/DemoPaymentGateway";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import PurchaseHistory from "./pages/PurchaseHistory";
 import ManageNews from "./pages/ManageNews";
 import ManageGames from "./pages/ManageGames";
 import ManagePayments from "./pages/ManagePayments";
+import ManageUsers from "./pages/ManageUsers";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
@@ -78,6 +80,14 @@ const App = () => {
         }
       />
       <Route
+        path="/purchase-history"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <PurchaseHistory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/payment/:method/:paymentId"
         element={
           <ProtectedRoute allowedRoles={["user"]}>
@@ -106,6 +116,14 @@ const App = () => {
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <ManagePayments />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-users"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <ManageUsers />
           </ProtectedRoute>
         }
       />

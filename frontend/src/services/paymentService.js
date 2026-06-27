@@ -117,3 +117,11 @@ export async function getAdminPayments({ status = "ALL", search = "" } = {}) {
   );
   return parseResponse(response);
 }
+
+export async function getUserPaymentHistory({ userId }) {
+  const response = await fetch(
+    `${API_BASE_URL}/api/payments/user/${encodeURIComponent(userId)}/history`,
+  );
+
+  return parseResponse(response);
+}

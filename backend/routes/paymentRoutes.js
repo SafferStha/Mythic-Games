@@ -4,6 +4,7 @@ const paymentController = require("../controller/paymentController");
 const router = express.Router();
 
 router.get("/admin", paymentController.getAdminPayments);
+router.get("/user/:userId/history", paymentController.getUserPaymentHistory);
 router.post("/checkout", paymentController.createCheckout);
 router.post("/checkout/bulk", paymentController.createBulkCheckout);
 router.post("/claim-free", paymentController.claimFreeGames);

@@ -123,10 +123,26 @@ async function getAdminPayments({ status, search }) {
   return result.rows;
 }
 
+async function getUserPaymentHistory(userId) {
+  const result = await db.query(
+    `SELECT ${PAYMENT_SELECT}
+     FROM payments p
+     LEFT JOIN orders o ON o.id = p.order_id
+     LEFT JOIN games g ON g.id = p.game_id
+     LEFT JOIN users u ON u.uid = p.user_id
+     WHERE p.user_id = $1
+     ORDER BY p.created_at DESC`,
+    [userId],
+  );
+
+  return result.rows;
+}
+
 module.exports = {
   createPayment,
   getPaymentById,
   updatePaymentStatus,
   updatePaymentMethod,
   getAdminPayments,
+  getUserPaymentHistory,
 };
