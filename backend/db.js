@@ -185,6 +185,17 @@ async function ensureDatabaseSchema() {
     ALTER TABLE news ADD COLUMN IF NOT EXISTS image_url TEXT;
     ALTER TABLE news ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
     ALTER TABLE news ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+    CREATE TABLE IF NOT EXISTS otp_verifications (
+      id SERIAL PRIMARY KEY,
+      email VARCHAR(100) NOT NULL,
+      otp_code VARCHAR(6) NOT NULL,
+      expires_at TIMESTAMP NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_otp_email ON otp_verifications(email);
+    CREATE INDEX IF NOT EXISTS idx_otp_expires_at ON otp_verifications(expires_at);
   `);
 }
 
