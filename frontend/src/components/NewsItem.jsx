@@ -13,7 +13,6 @@ const NewsItem = ({ dateLabel, title, excerpt, image }) => {
         <div className="news-meta">{dateLabel}</div>
         <h2 className="news-title">{title}</h2>
         <p className="news-excerpt">{excerpt}</p>
-        <a className="read-more" href="#">Read more</a>
       </div>
     </article>
   );

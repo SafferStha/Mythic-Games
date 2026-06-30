@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import GameCard from '../components/GameCard';
 import GameForm from '../components/GameForm';
@@ -12,12 +13,13 @@ const Browse = () => {
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
   const [editingGame, setEditingGame] = useState(null);
   const [showEditor, setShowEditor] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const eventFilters = ['Offers', 'Sales', 'Discounts'];
   const genreFilters = ['Action Games', 'Action-Adventure Games', 'Adventure Games', 'Casual Games'];
   const priceFilters = ['All Prices', 'Free', 'Under 2000 NPR', '2000 - 3999 NPR', '4000+ NPR'];
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '');
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedPrice, setSelectedPrice] = useState('All Prices');
@@ -45,6 +47,10 @@ const Browse = () => {
     fetchGames();
   }, []);
 
+  useEffect(() => {
+    setSearchTerm(searchParams.get('search') || '');
+  }, [searchParams]);
+
   const filteredGames = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
 
@@ -56,11 +62,16 @@ const Browse = () => {
           .toLowerCase()
           .includes(normalizedSearch);
 
+      const normalizedEvents = (game.events || []).map((event) => String(event).toLowerCase());
+      const normalizedGenres = (game.genres || []).map((genre) => String(genre).toLowerCase());
+
       const matchesEvents =
-        selectedEvents.length === 0 || selectedEvents.some((event) => game.events?.includes(event));
+        selectedEvents.length === 0 ||
+        selectedEvents.some((event) => normalizedEvents.includes(String(event).toLowerCase()));
 
       const matchesGenres =
-        selectedGenres.length === 0 || selectedGenres.some((genre) => game.genres?.includes(genre));
+        selectedGenres.length === 0 ||
+        selectedGenres.some((genre) => normalizedGenres.includes(String(genre).toLowerCase()));
 
       const price = Number(game.price);
       const matchesPrice =
@@ -82,9 +93,25 @@ const Browse = () => {
 
   const clearFilters = () => {
     setSearchTerm('');
+    setSearchParams({});
     setSelectedEvents([]);
     setSelectedGenres([]);
     setSelectedPrice('All Prices');
+  };
+
+  const updateSearchTerm = (value) => {
+    setSearchTerm(value);
+
+    const nextParams = new URLSearchParams(searchParams);
+    const normalizedValue = value.trim();
+
+    if (normalizedValue) {
+      nextParams.set('search', normalizedValue);
+    } else {
+      nextParams.delete('search');
+    }
+
+    setSearchParams(nextParams, { replace: true });
   };
 
   const handleEdit = (game) => {
@@ -175,7 +202,7 @@ const Browse = () => {
             <input
               type="search"
               value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
+              onChange={(event) => updateSearchTerm(event.target.value)}
               placeholder="Keywords"
               aria-label="Search games"
             />

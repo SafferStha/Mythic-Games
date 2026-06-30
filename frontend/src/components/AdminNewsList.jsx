@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import NewsItem from "./NewsItem";
 import NewsForm from "./NewsForm";
 import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
+import { NEWS_UPDATED_EVENT } from "../utils/newsNotifications";
 import "./AdminNewsList.css";
 
 const API_URL = `${API_BASE_URL}/api/news`;
@@ -112,6 +113,9 @@ const AdminNewsList = () => {
           ? current.map((item) => (item.id === savedNews.id ? savedNews : item))
           : [savedNews, ...current],
       );
+      if (!editing) {
+        window.dispatchEvent(new Event(NEWS_UPDATED_EVENT));
+      }
       closeForm();
     } catch (saveError) {
       setError(saveError.message || "Failed to save news.");

@@ -1,16 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/MythicLogo.png";
 import { useTheme } from "../contexts/ThemeContext";
 import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
 import { clearStoredUser, getStoredUser } from "../utils/auth";
+import { API_BASE_URL } from "../utils/api";
+import {
+  NEWS_UPDATED_EVENT,
+  countUnreadNews,
+  markNewsSeen,
+} from "../utils/newsNotifications";
+
+const NEWS_API_URL = `${API_BASE_URL}/api/news`;
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
   const { cartCount, wishlistCount } = useGameLibrary();
   const navigate = useNavigate();
+  const location = useLocation();
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  const [storeSearch, setStoreSearch] = useState("");
+  const [unreadNewsCount, setUnreadNewsCount] = useState(0);
 
   useEffect(() => {
     const syncAuthState = () => setCurrentUser(getStoredUser());
@@ -36,9 +47,62 @@ const Navbar = () => {
 
   const isAdmin = currentUser?.role === "admin";
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadUnreadNewsCount = async () => {
+      try {
+        const response = await fetch(NEWS_API_URL);
+        const payload = await response.json();
+
+        if (!response.ok) return;
+
+        const articles = payload.data || [];
+
+        if (location.pathname === "/news") {
+          markNewsSeen(articles, false);
+          if (!cancelled) setUnreadNewsCount(0);
+          return;
+        }
+
+        if (!cancelled) {
+          setUnreadNewsCount(countUnreadNews(articles));
+        }
+      } catch {
+        if (!cancelled) setUnreadNewsCount(0);
+      }
+    };
+
+    loadUnreadNewsCount();
+
+    const intervalId = window.setInterval(loadUnreadNewsCount, 30000);
+
+    window.addEventListener("focus", loadUnreadNewsCount);
+    window.addEventListener(NEWS_UPDATED_EVENT, loadUnreadNewsCount);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", loadUnreadNewsCount);
+      window.removeEventListener(NEWS_UPDATED_EVENT, loadUnreadNewsCount);
+    };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setStoreSearch(params.get("search") || "");
+  }, [location.search]);
+
   const handleSignOut = () => {
     clearStoredUser();
     navigate("/discover");
+  };
+
+  const handleStoreSearch = (event) => {
+    event.preventDefault();
+    const query = storeSearch.trim();
+
+    navigate(query ? `/browse?search=${encodeURIComponent(query)}` : "/browse");
   };
 
   return (
@@ -175,14 +239,23 @@ const Navbar = () => {
       {/* ── Row 2: Search + links (indented to align with brand name) ── */}
       <div className="nav-bottom">
         <span className="nav-bottom-spacer" aria-hidden="true" />
-        <div className="nav-search-wrap">
+        <form className="nav-search-wrap" onSubmit={handleStoreSearch}>
           <input
-            type="text"
+            type="search"
             placeholder="Search store"
             className="nav-search"
+            value={storeSearch}
+            onChange={(event) => setStoreSearch(event.target.value)}
+            aria-label="Search store"
           />
-          <i className="bx bx-search nav-search-icon" />
-        </div>
+          <button
+            type="submit"
+            className="nav-search-icon"
+            aria-label="Search store"
+          >
+            <i className="bx bx-search" aria-hidden="true" />
+          </button>
+        </form>
 
         <nav className="nav-links">
           <NavLink
@@ -208,6 +281,9 @@ const Navbar = () => {
             }
           >
             News
+            {!isAdmin && unreadNewsCount > 0 && (
+              <span className="nav-news-badge">{unreadNewsCount}</span>
+            )}
           </NavLink>
         </nav>
 

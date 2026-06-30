@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NewsItem from "./NewsItem";
 import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
+import { markNewsSeen } from "../utils/newsNotifications";
 
 const API_URL = `${API_BASE_URL}/api/news`;
 
@@ -22,12 +23,13 @@ const NewsList = () => {
           throw new Error(payload?.message || "Failed to load news.");
         }
 
-        setArticles(
-          (payload.data || []).map((item) => ({
+        const loadedArticles = (payload.data || []).map((item) => ({
             ...item,
             image: resolveAssetUrl(item.image),
-          })),
-        );
+          }));
+
+        setArticles(loadedArticles);
+        markNewsSeen(loadedArticles);
       } catch (loadError) {
         setError(loadError.message || "Failed to load news.");
       } finally {

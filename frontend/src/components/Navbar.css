@@ -206,9 +206,20 @@
     right: 13px;
     top: 50%;
     transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
     font-size: 18px;
     color: var(--text-muted);
-    pointer-events: none;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.nav-search-icon:hover {
+    color: var(--text-primary);
 }
 
 /* Center links */
