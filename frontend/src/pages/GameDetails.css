@@ -299,3 +299,142 @@
     }
 
 }
+
+/* ── Coming Soon badge (left column) ── */
+.details-upcoming-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 999px;
+    letter-spacing: 0.03em;
+    width: fit-content;
+    box-shadow: 0 4px 14px rgba(168, 85, 247, 0.35);
+}
+
+.details-upcoming-badge i {
+    font-size: 15px;
+}
+
+/* ── "Coming Soon" price variant ── */
+.details-panel-price.upcoming {
+    font-size: 16px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ── Upcoming / locked buttons ── */
+.details-btn-upcoming {
+    background: linear-gradient(135deg, #4c1d95, #6d28d9) !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    border: 1px solid rgba(167, 139, 250, 0.3) !important;
+    transition: background 0.2s ease, transform 0.15s ease !important;
+}
+
+.details-btn-upcoming:hover {
+    background: linear-gradient(135deg, #5b21b6, #7c3aed) !important;
+    transform: translateY(-1px) !important;
+    color: #fff !important;
+}
+
+/* ── Upcoming modal backdrop ── */
+.upcoming-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: fadeInBackdrop 0.2s ease;
+}
+
+@keyframes fadeInBackdrop {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* ── Upcoming modal card ── */
+.upcoming-modal {
+    background: var(--surface, #1e1e2e);
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    border-radius: 20px;
+    padding: 36px 32px 28px;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(167, 139, 250, 0.15);
+    animation: scaleInModal 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleInModal {
+    from { opacity: 0; transform: scale(0.88); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.upcoming-modal-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4c1d95, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.45);
+    flex-shrink: 0;
+}
+
+.upcoming-modal h2 {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--text-primary, #fff);
+    margin: 0;
+}
+
+.upcoming-modal p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text-secondary, rgba(255,255,255,0.65));
+    margin: 0;
+}
+
+.upcoming-modal p strong {
+    color: var(--text-primary, #fff);
+}
+
+.upcoming-modal-btn {
+    margin-top: 6px;
+    padding: 12px 32px;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    color: #fff;
+    border: 0;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4);
+}
+
+.upcoming-modal-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(168, 85, 247, 0.55);
+}
+

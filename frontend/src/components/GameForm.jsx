@@ -69,15 +69,23 @@ const GameForm = ({ initialData = null, onCancel, onSubmit }) => {
 
       <div className="form-row">
         <label>Price</label>
-        <input name="price" value={form.price} onChange={handleChange} />
+        <input
+          name="price"
+          value={form.isUpcoming ? "" : form.price}
+          onChange={handleChange}
+          disabled={form.isUpcoming}
+          placeholder={form.isUpcoming ? "N/A — Coming Soon" : "e.g. 2999"}
+        />
       </div>
 
       <div className="form-row">
         <label>Original Price</label>
         <input
           name="originalPrice"
-          value={form.originalPrice}
+          value={form.isUpcoming ? "" : form.originalPrice}
           onChange={handleChange}
+          disabled={form.isUpcoming}
+          placeholder={form.isUpcoming ? "N/A — Coming Soon" : "e.g. 3999"}
         />
       </div>
 
@@ -105,13 +113,16 @@ const GameForm = ({ initialData = null, onCancel, onSubmit }) => {
       </div>
 
       <div className="form-row checkbox-row">
-        <label>Upcoming</label>
+        <label>Upcoming game</label>
         <input
           name="isUpcoming"
           type="checkbox"
           checked={form.isUpcoming}
           onChange={handleChange}
         />
+        {form.isUpcoming && (
+          <span className="upcoming-hint">Price will display as &ldquo;Coming Soon&rdquo;</span>
+        )}
       </div>
 
       <div className="form-actions">

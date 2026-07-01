@@ -16,3 +16,15 @@
 /* Dark theme adjustments */
 body[data-theme="dark"] .game-form{--form-bg:#071023;--form-border:rgba(255,255,255,0.06);--input-bg:#071823;--input-border:rgba(255,255,255,0.06);--text:#e6eef8}
 
+.game-form input:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: var(--input-bg, #f3f4f6);
+}
+
+.upcoming-hint {
+    font-size: 12px;
+    color: #a855f7;
+    font-weight: 600;
+    white-space: nowrap;
+}

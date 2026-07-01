@@ -131,7 +131,19 @@ const Navbar = () => {
               className="nav-profile-btn"
               aria-label="Open account menu"
             >
-              <i className="bx bx-user-circle" aria-hidden="true" />
+              {currentUser?.profile_image ? (
+                <img
+                  src={
+                    currentUser.profile_image.startsWith("http")
+                      ? currentUser.profile_image
+                      : `${API_BASE_URL}${currentUser.profile_image}`
+                  }
+                  alt="Profile"
+                  className="nav-profile-avatar"
+                />
+              ) : (
+                <i className="bx bx-user-circle" aria-hidden="true" />
+              )}
             </button>
             <div
               className="nav-profile-menu"

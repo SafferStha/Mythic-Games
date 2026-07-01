@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import "./GameDetails.css";
@@ -31,6 +32,8 @@ const GameDetails = () => {
     cartItems,
   } = useGameLibrary();
 
+  const [showUpcomingModal, setShowUpcomingModal] = useState(false);
+
   const routeTitle = decodeURIComponent(gameTitle || "Game Name");
   const libraryMatch = [...wishlistItems, ...cartItems].find(
     (entry) => String(entry.title).toLowerCase() === routeTitle.toLowerCase(),
@@ -51,6 +54,7 @@ const GameDetails = () => {
     selectedGame.image_url || selectedGame.image,
   );
 
+  const isUpcoming = Boolean(selectedGame.is_upcoming || selectedGame.isUpcoming);
   const price = Number(selectedGame.price || 0).toLocaleString();
   const detailsGame = {
     id: selectedGame.id,
@@ -60,16 +64,54 @@ const GameDetails = () => {
     image_url: selectedImageUrl || redDeadImg,
     description: selectedGame.description,
     genres: selectedGame.genres,
+    is_upcoming: isUpcoming,
   };
 
   const savedInCart = isInCart(detailsGame);
   const savedInWishlist = isInWishlist(detailsGame);
   const owned = isOwned(detailsGame);
-  const canPurchase = Boolean(detailsGame.id) && !owned;
+  const canPurchase = Boolean(detailsGame.id) && !owned && !isUpcoming;
+
+  const handleUpcomingClick = () => {
+    setShowUpcomingModal(true);
+  };
 
   return (
     <div className="details-page">
       <Navbar />
+
+      {/* ── Coming Soon popup modal ── */}
+      {showUpcomingModal && (
+        <div
+          className="upcoming-modal-backdrop"
+          onClick={() => setShowUpcomingModal(false)}
+        >
+          <div
+            className="upcoming-modal"
+            onClick={(e) => e.stopPropagation()}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="upcoming-modal-title"
+          >
+            <div className="upcoming-modal-icon">
+              <i className="bx bx-time-five" />
+            </div>
+            <h2 id="upcoming-modal-title">Game Not Yet Released</h2>
+            <p>
+              <strong>{selectedGame.title}</strong> hasn&apos;t been released
+              yet. You can&apos;t buy it right now — check back when it
+              launches!
+            </p>
+            <button
+              type="button"
+              className="upcoming-modal-btn"
+              onClick={() => setShowUpcomingModal(false)}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="details-banner">
         <img
@@ -86,6 +128,12 @@ const GameDetails = () => {
             {selectedGame.game_type || "Base Game"}
           </p>
           <h1 className="details-title">{selectedGame.title}</h1>
+
+          {isUpcoming && (
+            <span className="details-upcoming-badge">
+              <i className="bx bx-time-five" /> Coming Soon
+            </span>
+          )}
 
           <div className="details-media">
             <img
@@ -122,64 +170,89 @@ const GameDetails = () => {
             >
               {owned ? "Status" : "Base Game"}
             </span>
-            <span className={`details-panel-price ${owned ? "owned" : ""}`}>
-              {owned ? "Owned" : `${price} NPR`}
+            <span className={`details-panel-price ${owned ? "owned" : ""} ${isUpcoming ? "upcoming" : ""}`}>
+              {owned ? "Owned" : isUpcoming ? "Coming Soon" : `${price} NPR`}
             </span>
           </div>
 
-          <button
-            type="button"
-            className={`details-btn-buy-now ${owned ? "is-owned" : ""}`}
-            onClick={() =>
-              navigate("/checkout", { state: { selectedGame: detailsGame } })
-            }
-            disabled={!canPurchase}
-          >
-            {owned ? "Owned" : "Buy Now"}
-          </button>
+          {isUpcoming ? (
+            <>
+              <button
+                type="button"
+                className="details-btn-buy-now details-btn-upcoming"
+                onClick={handleUpcomingClick}
+              >
+                <i className="bx bx-time-five" style={{ marginRight: "6px" }} />
+                Not Yet Released
+              </button>
+              <button
+                type="button"
+                className="details-btn-cart details-btn-upcoming"
+                onClick={handleUpcomingClick}
+              >
+                <i className="bx bx-time-five" style={{ marginRight: "6px" }} />
+                Coming Soon
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                type="button"
+                className={`details-btn-buy-now ${owned ? "is-owned" : ""}`}
+                onClick={() =>
+                  navigate("/checkout", { state: { selectedGame: detailsGame } })
+                }
+                disabled={!canPurchase}
+              >
+                {owned ? "Owned" : "Buy Now"}
+              </button>
 
-          <button
-            type="button"
-            className={`details-btn-cart ${savedInCart ? "is-added" : ""} ${owned ? "is-owned" : ""}`}
-            onClick={() => addToCart(detailsGame)}
-            disabled={savedInCart || !canPurchase}
-          >
-            {owned ? (
-              <>
-                <i
-                  className="bx bxs-check-circle"
-                  style={{ marginRight: "6px" }}
-                />
-                Owned
-              </>
-            ) : savedInCart ? (
-              <>
-                <i
-                  className="bx bxs-check-circle"
-                  style={{ marginRight: "6px" }}
-                />
-                Added to Cart
-              </>
-            ) : (
-              "Add to Cart"
-            )}
-          </button>
+              <button
+                type="button"
+                className={`details-btn-cart ${savedInCart ? "is-added" : ""} ${owned ? "is-owned" : ""}`}
+                onClick={() => addToCart(detailsGame)}
+                disabled={savedInCart || !canPurchase}
+              >
+                {owned ? (
+                  <>
+                    <i
+                      className="bx bxs-check-circle"
+                      style={{ marginRight: "6px" }}
+                    />
+                    Owned
+                  </>
+                ) : savedInCart ? (
+                  <>
+                    <i
+                      className="bx bxs-check-circle"
+                      style={{ marginRight: "6px" }}
+                    />
+                    Added to Cart
+                  </>
+                ) : (
+                  "Add to Cart"
+                )}
+              </button>
+            </>
+          )}
 
           <button
             type="button"
             className={`details-btn-wishlist ${savedInWishlist ? "is-saved" : ""} ${owned ? "is-owned" : ""}`}
             onClick={() => toggleWishlist(detailsGame)}
             aria-pressed={savedInWishlist}
-            disabled={!detailsGame.id || owned}
+            disabled={!detailsGame.id || owned || isUpcoming}
           >
             <i
               className={`bx ${owned ? "bxs-check-circle" : savedInWishlist ? "bxs-heart" : "bx-heart"}`}
             />
             {owned
               ? "Owned"
-              : savedInWishlist
-                ? "Remove from Wishlist"
-                : "Add to Wishlist"}
+              : isUpcoming
+                ? "Not Available Yet"
+                : savedInWishlist
+                  ? "Remove from Wishlist"
+                  : "Add to Wishlist"}
           </button>
         </aside>
       </main>
