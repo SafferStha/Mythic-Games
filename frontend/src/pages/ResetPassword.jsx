@@ -5,17 +5,53 @@ import './Auth.css';
 
 import logo from '../assets/MythicLogo.png';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const ResetPassword = () => {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
 
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return;
 
-    console.log(email);
+    setMessage('');
+    setMessageType('');
+    setLoading(true);
 
-    navigate('/otp-verification');
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Something went wrong.');
+      }
+
+      setMessageType('success');
+      setMessage(data.message || 'OTP verification code sent to your email.');
+
+      // Wait 1.5 seconds so user can read the success message before transition
+      setTimeout(() => {
+        navigate('/otp-verification', { state: { email } });
+      }, 1500);
+
+    } catch (err) {
+      setMessageType('error');
+      setMessage(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -31,6 +67,12 @@ const ResetPassword = () => {
           Reset Password
         </h2>
 
+        {message && (
+          <div className={`auth-message ${messageType}`}>
+            {message}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           <input
             type="email"
@@ -40,19 +82,22 @@ const ResetPassword = () => {
             onChange={(e) =>
               setEmail(e.target.value)
             }
+            disabled={loading}
             required
           />
 
           <button
             type="submit"
             className="auth-button"
+            disabled={loading}
           >
-            Continue
+            {loading ? 'Sending...' : 'Continue'}
           </button>
         </form>
       </div>
     </div>
   );
 };
+
 
 export default ResetPassword;

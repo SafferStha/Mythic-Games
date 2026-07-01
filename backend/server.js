@@ -1,55 +1,91 @@
-const express = require('express');
-const cors = require('cors');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const multer = require("multer");
+const fs = require("fs");
+require("dotenv").config();
 
-const userRoutes = require('./routes/userRoutes');
-const authRoutes = require('./routes/authRoutes');
-const { initializeDatabase, getConnectionInfo } = require('./database/db');
+const gameRoutes = require("./routes/gameRoutes");
+const userRoutes = require("./routes/userRoutes");
+const authRoutes = require("./routes/authRoutes");
+const paymentRoutes = require("./routes/paymentRoutes");
+const newsRoutes = require("./routes/newsRoutes");
+const db = require("./db");
 
 const app = express();
-const port = Number(process.env.PORT || 5000);
+const PORT = process.env.PORT || 5000;
 
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Configure Multer for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) =>
+    cb(null, Date.now() + path.extname(file.originalname)),
+});
+const upload = multer({ storage });
+
+// Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // Essential for parsing req.body
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/health', (req, res) => {
-	res.json({ success: true, message: 'Mythic Games backend is running' });
-});
+// Serve static files from the 'uploads' directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-app.get('/', (req, res) => {
-	res.json({ success: true, message: 'Mythic Games backend is running' });
-});
+// Routes
+app.use("/api/games", gameRoutes(upload));
+app.use("/api/users", userRoutes(upload));
+app.use("/api/auth", authRoutes);
+app.use("/api/payments", paymentRoutes);
+app.use("/api/news", newsRoutes(upload));
 
-app.use('/api/users', userRoutes);
-app.use('/api/auth', authRoutes);
+// Standardize root response to JSON
+app.get("/", (req, res) =>
+  res.json({ message: "Mythic Games API is running" }),
+);
 
+// Catch-all 404 handler for any request that doesn't match existing routes
 app.use((req, res) => {
-	res.status(404).json({ success: false, message: 'Route not found' });
+  res
+    .status(404)
+    .json({
+      error: `Route ${req.originalUrl} not found. Ensure your frontend is hitting the correct /api/... endpoint.`,
+    });
 });
 
-app.use((error, req, res, next) => {
-	console.error(error);
-	res.status(500).json({
-		success: false,
-		message: 'Internal server error',
-	});
+// Global Error Handler to catch any server-side crashes and return JSON
+app.use((err, req, res, next) => {
+  console.error("Server Error:", err.stack);
+  res.status(err.status || 500).json({
+    error: err.message || "Internal Server Error",
+  });
 });
 
 async function startServer() {
-	try {
-		await initializeDatabase();
-		const connectionInfo = await getConnectionInfo();
-		console.log(
-			`Server connected successfully to PostgreSQL database "${connectionInfo.database}" at ${connectionInfo.host}:${connectionInfo.port}`
-		);
+  try {
+    await db.ensureDatabaseSchema();
 
-		app.listen(port, () => {
-			console.log(`Server is running on http://localhost:${port}`);
-		});
-	} catch (error) {
-		console.error('Server failed to connect to PostgreSQL:', error.message || error);
-		process.exit(1);
-	}
+    const server = app.listen(PORT, () => {
+      console.log(`Server running on http://localhost:${PORT}`);
+    });
+
+    server.on("error", (e) => {
+      if (e.code === "EADDRINUSE") {
+        console.error(
+          `Error: Port ${PORT} is already in use. Please kill the process or use a different port.`,
+        );
+        process.exit(1);
+      }
+    });
+  } catch (error) {
+    console.error("Failed to initialize database schema:", error);
+    process.exit(1);
+  }
 }
 
 startServer();

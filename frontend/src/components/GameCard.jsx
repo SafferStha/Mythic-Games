@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useGameLibrary } from "../contexts/GameLibraryContext";
+import { resolveAssetUrl } from "../utils/api";
 import "./GameCard.css";
 
 const GameCard = ({
@@ -17,7 +18,11 @@ const GameCard = ({
   onEdit,
   onDelete,
 }) => {
-  const { toggleWishlist, isInWishlist } = useGameLibrary();
+  const { toggleWishlist, isInWishlist, isOwned } = useGameLibrary();
+  const resolvedImage = resolveAssetUrl(image);
+  const resolvedStateImage = resolveAssetUrl(
+    detailState?.image_url || detailState?.image || image,
+  );
 
   const gameData = detailState
     ? {
@@ -25,20 +30,23 @@ const GameCard = ({
         id: detailState.id ?? id,
         title: detailState.title ?? title,
         price: detailState.price ?? price,
-        image: detailState.image ?? image,
+        image: resolvedStateImage,
+        image_url: resolvedStateImage,
         type: detailState.type ?? type,
       }
     : {
         id,
         title,
         price,
-        image,
+        image: resolvedImage,
+        image_url: resolvedImage,
         type,
         originalPrice,
       };
 
-  // Get current wishlist state from context (not local state)
+  // Get current library state from context (not local state)
   const isWishlisted = isInWishlist(gameData);
+  const owned = isOwned(gameData);
 
   const handleWishlistClick = (e) => {
     e.preventDefault();
@@ -79,9 +87,11 @@ const GameCard = ({
 
   const overlayLabel = isUpcoming
     ? releaseLabel
-    : hasSalePrice
-      ? `${price} NPR`
-      : `${price} NPR`;
+    : owned
+      ? "Owned"
+      : hasSalePrice
+        ? `${price} NPR`
+        : `${price} NPR`;
 
   return (
     <div className="game-card">
@@ -92,24 +102,32 @@ const GameCard = ({
         className="game-image-wrapper"
         aria-label={`Open ${title}`}
       >
-        <img src={image} alt={title} className="game-image" />
+        <img src={gameData.image} alt={title} className="game-image" />
         <div className="game-hover-overlay">
           <p className="game-hover-price">{overlayLabel}</p>
         </div>
         <button
           type="button"
-          className={`game-wishlist-btn ${isWishlisted ? 'active' : ''}`}
+          className={`game-wishlist-btn ${isWishlisted ? "active" : ""}`}
           onClick={handleWishlistClick}
           aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-          title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          title={
+            owned
+              ? "Game already owned"
+              : isWishlisted
+                ? "Remove from wishlist"
+                : "Add to wishlist"
+          }
+          disabled={owned}
         >
-          <i className={`bx ${isWishlisted ? 'bxs-heart' : 'bx-heart'}`} />
+          <i className={`bx ${isWishlisted ? "bxs-heart" : "bx-heart"}`} />
         </button>
       </Link>
 
       {/* ── Info below image ── */}
       <div className="game-info">
         {type && <p className="game-type">{type}</p>}
+        {owned && <p className="game-owned-badge">Owned</p>}
 
         <Link
           to={detailPath || `/game/${encodeURIComponent(title)}`}
@@ -124,6 +142,8 @@ const GameCard = ({
           <button type="button" className="release-btn">
             {releaseLabel}
           </button>
+        ) : owned ? (
+          <p className="game-price game-price-owned">Owned</p>
         ) : hasSalePrice ? (
           <div className="sale-price-wrap">
             <span className="sale-badge">-{autoDiscountPercent}%</span>
@@ -137,12 +157,20 @@ const GameCard = ({
         {showAdminActions && (onEdit || onDelete) && (
           <div className="game-admin-actions" aria-label="Admin game actions">
             {onEdit && (
-              <button type="button" className="game-admin-btn game-admin-btn-edit" onClick={handleEditClick}>
+              <button
+                type="button"
+                className="game-admin-btn game-admin-btn-edit"
+                onClick={handleEditClick}
+              >
                 Edit
               </button>
             )}
             {onDelete && (
-              <button type="button" className="game-admin-btn game-admin-btn-delete" onClick={handleDeleteClick}>
+              <button
+                type="button"
+                className="game-admin-btn game-admin-btn-delete"
+                onClick={handleDeleteClick}
+              >
                 Delete
               </button>
             )}

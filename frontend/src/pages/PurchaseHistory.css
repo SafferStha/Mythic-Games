@@ -1,0 +1,87 @@
+.purchase-history-main {
+  max-width: 1100px;
+  margin: 18px auto;
+  padding: 0 12px 32px;
+}
+
+.purchase-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 0;
+}
+
+.purchase-history-header h1 {
+  margin: 0;
+}
+
+.purchase-history-header p {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+}
+
+.purchase-history-total {
+  min-width: 180px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.purchase-history-total span {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.purchase-history-total strong {
+  color: var(--text-primary);
+  font-size: 20px;
+}
+
+.purchase-history-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.purchase-history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.purchase-history-table th,
+.purchase-history-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.purchase-history-table th {
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.purchase-history-table tbody tr:hover {
+  background: var(--bg);
+}
+
+.purchase-history-state {
+  color: var(--text-secondary);
+}
+
+.purchase-history-error {
+  color: #c62839;
+}
+
+@media (max-width: 768px) {
+  .purchase-history-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -75,6 +75,21 @@ async function deleteUser(userId) {
 	return result.rowCount > 0;
 }
 
+async function updateUserPassword(email, hashedPassword) {
+	const result = await pool.query(
+		`
+			UPDATE users
+			SET password = $1,
+				updated_at = NOW()
+			WHERE LOWER(email) = LOWER($2)
+			RETURNING uid, username, email
+		`,
+		[hashedPassword, email]
+	);
+
+	return result.rows[0] || null;
+}
+
 module.exports = {
 	getAllUsers,
 	getUserById,
@@ -83,4 +98,5 @@ module.exports = {
 	createUser,
 	updateUser,
 	deleteUser,
+	updateUserPassword,
 };

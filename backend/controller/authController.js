@@ -1,6 +1,8 @@
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const adminModel = require('../model/adminModel');
 const userModel = require('../model/userModel');
+const otpModel = require('../model/otpModel');
+const emailService = require('../service/emailService');
 
 function isBlank(value) {
 	return !value || !String(value).trim();
@@ -181,7 +183,127 @@ async function login(req, res, next) {
 	}
 }
 
+async function forgotPassword(req, res, next) {
+	try {
+		const { email } = req.body;
+
+		if (!email || !email.trim()) {
+			return res.status(400).json({
+				success: false,
+				message: 'Email is required',
+			});
+		}
+
+		const normalizedEmail = email.trim().toLowerCase();
+
+		// Check if user exists
+		const user = await userModel.getUserByEmailOrUsername(normalizedEmail, '');
+		if (!user) {
+			return res.status(404).json({
+				success: false,
+				message: 'No user account found with this email address',
+			});
+		}
+
+		// Generate 6-digit OTP
+		const otp = Math.floor(100000 + Math.random() * 900000).toString();
+		const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes expiry
+
+		// Save OTP to DB
+		await otpModel.saveOTP(normalizedEmail, otp, expiresAt);
+
+		// Send OTP via Email
+		await emailService.sendOTPEmail(normalizedEmail, otp);
+
+		return res.status(200).json({
+			success: true,
+			message: 'OTP verification code sent to your email',
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+async function verifyOtp(req, res, next) {
+	try {
+		const { email, otp } = req.body;
+
+		if (!email || !email.trim() || !otp || !otp.trim()) {
+			return res.status(400).json({
+				success: false,
+				message: 'Email and OTP code are required',
+			});
+		}
+
+		const normalizedEmail = email.trim().toLowerCase();
+		const validOtp = await otpModel.getValidOTP(normalizedEmail, otp.trim());
+
+		if (!validOtp) {
+			return res.status(400).json({
+				success: false,
+				message: 'Invalid or expired OTP code',
+			});
+		}
+
+		return res.status(200).json({
+			success: true,
+			message: 'OTP verified successfully',
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
+async function resetPassword(req, res, next) {
+	try {
+		const { email, otp, newPassword } = req.body;
+
+		if (!email || !email.trim() || !otp || !otp.trim() || !newPassword) {
+			return res.status(400).json({
+				success: false,
+				message: 'Email, OTP code, and new password are required',
+			});
+		}
+
+		const normalizedEmail = email.trim().toLowerCase();
+		
+		// Verify OTP again before resetting password
+		const validOtp = await otpModel.getValidOTP(normalizedEmail, otp.trim());
+		if (!validOtp) {
+			return res.status(400).json({
+				success: false,
+				message: 'Invalid or expired OTP code. Please request a new code.',
+			});
+		}
+
+		// Hash new password
+		const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+		// Update in database
+		const updatedUser = await userModel.updateUserPassword(normalizedEmail, hashedPassword);
+		if (!updatedUser) {
+			return res.status(500).json({
+				success: false,
+				message: 'Failed to update password. Please try again.',
+			});
+		}
+
+		// Consume the OTP
+		await otpModel.deleteOTP(normalizedEmail);
+
+		return res.status(200).json({
+			success: true,
+			message: 'Password has been reset successfully',
+		});
+	} catch (error) {
+		next(error);
+	}
+}
+
 module.exports = {
 	register,
 	login,
+	forgotPassword,
+	verifyOtp,
+	resetPassword,
 };

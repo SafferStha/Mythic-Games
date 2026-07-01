@@ -4,7 +4,7 @@ import './Login.css';
 
 import logo from '../assets/MythicLogo.png';
 
-import { FaEnvelope, FaUser, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEnvelope, FaUser, FaEye, FaEyeSlash, FaImage } from 'react-icons/fa';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 

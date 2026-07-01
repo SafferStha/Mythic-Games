@@ -1,99 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import GameCard from '../components/GameCard';
 import GameForm from '../components/GameForm';
 import { getStoredUser } from '../utils/auth';
 import './Browse.css';
-
-const BROWSE_STORAGE_KEY = 'mythic-games-browse-games';
-
-const defaultGames = [
-  {
-    id: '1',
-    title: 'Crimson Skies: Legacy',
-    price: 3499,
-    originalPrice: 3499,
-    image: new URL('../assets/RedDead.png', import.meta.url).toString(),
-    type: 'Action-Adventure',
-    events: ['Offers', 'Sales'],
-    genres: ['Action Games', 'Action-Adventure Games']
-  },
-  {
-    id: '2',
-    title: 'Twilight Chronicles',
-    price: 2799,
-    originalPrice: 3499,
-    image: new URL('../assets/react.svg', import.meta.url).toString(),
-    type: 'RPG',
-    events: ['Discounts'],
-    genres: ['Adventure Games']
-  },
-  {
-    id: '3',
-    title: 'Neon Pulse Racing',
-    price: 1899,
-    originalPrice: 2499,
-    image: new URL('../assets/vite.svg', import.meta.url).toString(),
-    type: 'Racing',
-    events: ['Sales'],
-    genres: ['Casual Games']
-  },
-  {
-    id: '4',
-    title: 'Shadow Circuit',
-    price: 0,
-    originalPrice: 0,
-    image: new URL('../assets/RedDead.png', import.meta.url).toString(),
-    type: 'Action',
-    events: ['Offers'],
-    genres: ['Action Games']
-  },
-  {
-    id: '5',
-    title: 'Aurora Drift',
-    price: 4299,
-    originalPrice: 5299,
-    image: new URL('../assets/react.svg', import.meta.url).toString(),
-    type: 'Adventure',
-    events: ['Discounts'],
-    genres: ['Adventure Games']
-  },
-  {
-    id: '6',
-    title: 'Pixel Harbor',
-    price: 1599,
-    originalPrice: 2199,
-    image: new URL('../assets/vite.svg', import.meta.url).toString(),
-    type: 'Casual',
-    events: ['Sales', 'Discounts'],
-    genres: ['Casual Games']
-  }
-];
-
-const loadGames = () => {
-  if (typeof window === 'undefined') {
-    return defaultGames;
-  }
-
-  try {
-    const raw = window.localStorage.getItem(BROWSE_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : defaultGames;
-  } catch {
-    return defaultGames;
-  }
-};
+const API_URL = 'http://localhost:5000/api/games';
 
 const Browse = () => {
-  const [games, setGames] = useState(loadGames);
+  const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(() => getStoredUser());
   const [editingGame, setEditingGame] = useState(null);
   const [showEditor, setShowEditor] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const eventFilters = ['Offers', 'Sales', 'Discounts'];
   const genreFilters = ['Action Games', 'Action-Adventure Games', 'Adventure Games', 'Casual Games'];
   const priceFilters = ['All Prices', 'Free', 'Under 2000 NPR', '2000 - 3999 NPR', '4000+ NPR'];
 
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '');
   const [selectedEvents, setSelectedEvents] = useState([]);
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [selectedPrice, setSelectedPrice] = useState('All Prices');
@@ -107,8 +33,23 @@ const Browse = () => {
   }, []);
 
   useEffect(() => {
-    window.localStorage.setItem(BROWSE_STORAGE_KEY, JSON.stringify(games));
-  }, [games]);
+    const fetchGames = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        setGames(data);
+      } catch (error) {
+        console.error('Failed to fetch games:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGames();
+  }, []);
+
+  useEffect(() => {
+    setSearchTerm(searchParams.get('search') || '');
+  }, [searchParams]);
 
   const filteredGames = useMemo(() => {
     const normalizedSearch = searchTerm.trim().toLowerCase();
@@ -116,16 +57,21 @@ const Browse = () => {
     return games.filter((game) => {
       const matchesSearch =
         !normalizedSearch ||
-        [game.title, game.type, ...(game.events || []), ...(game.genres || [])]
+        [game.title, game.game_type, ...(game.events || []), ...(game.genres || [])]
           .join(' ')
           .toLowerCase()
           .includes(normalizedSearch);
 
+      const normalizedEvents = (game.events || []).map((event) => String(event).toLowerCase());
+      const normalizedGenres = (game.genres || []).map((genre) => String(genre).toLowerCase());
+
       const matchesEvents =
-        selectedEvents.length === 0 || selectedEvents.some((event) => game.events?.includes(event));
+        selectedEvents.length === 0 ||
+        selectedEvents.some((event) => normalizedEvents.includes(String(event).toLowerCase()));
 
       const matchesGenres =
-        selectedGenres.length === 0 || selectedGenres.some((genre) => game.genres?.includes(genre));
+        selectedGenres.length === 0 ||
+        selectedGenres.some((genre) => normalizedGenres.includes(String(genre).toLowerCase()));
 
       const price = Number(game.price);
       const matchesPrice =
@@ -147,9 +93,25 @@ const Browse = () => {
 
   const clearFilters = () => {
     setSearchTerm('');
+    setSearchParams({});
     setSelectedEvents([]);
     setSelectedGenres([]);
     setSelectedPrice('All Prices');
+  };
+
+  const updateSearchTerm = (value) => {
+    setSearchTerm(value);
+
+    const nextParams = new URLSearchParams(searchParams);
+    const normalizedValue = value.trim();
+
+    if (normalizedValue) {
+      nextParams.set('search', normalizedValue);
+    } else {
+      nextParams.delete('search');
+    }
+
+    setSearchParams(nextParams, { replace: true });
   };
 
   const handleEdit = (game) => {
@@ -157,24 +119,35 @@ const Browse = () => {
     setShowEditor(true);
   };
 
-  const handleDelete = (game) => {
+  const handleDelete = async (game) => {
     if (!window.confirm(`Delete ${game.title}?`)) {
       return;
     }
 
-    setGames((current) => current.filter((item) => item.id !== game.id));
+    try {
+      await fetch(`${API_URL}/${game.id}`, { method: 'DELETE' });
+      setGames((current) => current.filter((item) => item.id !== game.id));
+    } catch (err) {
+      alert('Failed to delete game from server');
+    }
   };
 
-  const handleSave = (data) => {
-    if (!editingGame) {
-      return;
-    }
+  const handleSave = async (data) => {
+    if (!editingGame) return;
 
-    setGames((current) =>
-      current.map((item) => (item.id === editingGame.id ? { ...item, ...data } : item))
-    );
-    setEditingGame(null);
-    setShowEditor(false);
+    try {
+      const response = await fetch(`${API_URL}/${editingGame.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const updated = await response.json();
+      setGames((current) => current.map((item) => (item.id === updated.id ? updated : item)));
+      setEditingGame(null);
+      setShowEditor(false);
+    } catch (err) {
+      alert('Failed to save changes to server');
+    }
   };
 
   return (
@@ -190,16 +163,19 @@ const Browse = () => {
             <p className="browse-count">{filteredGames.length} results</p>
           </div>
 
-          <div className="browse-grid">
+          {loading ? (
+            <div className="browse-loading">Loading games...</div>
+          ) : (
+            <div className="browse-grid">
             {filteredGames.map((game) => (
               <div key={game.id} className="browse-card-wrap">
                 <GameCard
                   id={game.id}
                   title={game.title}
                   price={game.price}
-                  originalPrice={game.originalPrice}
-                  image={game.image}
-                  type={game.type}
+                  originalPrice={game.original_price}
+                  image={game.image_url}
+                  type={game.game_type}
                   detailState={game}
                   showAdminActions={isAdmin}
                   onEdit={isAdmin ? handleEdit : undefined}
@@ -208,8 +184,9 @@ const Browse = () => {
               </div>
             ))}
           </div>
+          )}
 
-          {!filteredGames.length && <p className="browse-empty">No games match the selected filters.</p>}
+          {!loading && !filteredGames.length && <p className="browse-empty">No games match the selected filters.</p>}
         </section>
 
         <aside className="browse-filters-card" aria-label="Browse filters">
@@ -225,7 +202,7 @@ const Browse = () => {
             <input
               type="search"
               value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
+              onChange={(event) => updateSearchTerm(event.target.value)}
               placeholder="Keywords"
               aria-label="Search games"
             />
@@ -337,4 +314,3 @@ const Browse = () => {
 };
 
 export default Browse;
-

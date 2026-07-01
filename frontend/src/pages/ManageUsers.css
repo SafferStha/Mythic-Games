@@ -1,0 +1,170 @@
+.manage-users-page .container {
+  max-width: 1100px;
+  margin: 18px auto;
+  padding: 0 12px;
+}
+
+.admin-users {
+  padding: 24px;
+}
+
+.admin-users-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-users-header h2 {
+  margin: 0;
+}
+
+.admin-users-subtitle {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+}
+
+.admin-users-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-users-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-users-filter {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-users-filter.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.admin-users-search {
+  min-width: 280px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.admin-users-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-users-table th {
+  color: var(--text-muted);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.admin-users-table tbody tr:hover {
+  background: var(--bg);
+}
+
+.user-status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.user-status-chip.active {
+  background: rgba(45, 122, 58, 0.16);
+  color: #2d7a3a;
+}
+
+.user-status-chip.banned {
+  background: rgba(220, 53, 69, 0.14);
+  color: #c62839;
+}
+
+.admin-users-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 96px;
+  justify-content: center;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.admin-users-action:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.admin-users-action.danger {
+  background: #c62839;
+}
+
+.admin-users-action.restore {
+  background: #2d7a3a;
+}
+
+.admin-users-state {
+  color: var(--text-secondary);
+}
+
+.admin-users-success {
+  color: #2d7a3a;
+  font-weight: 700;
+}
+
+.admin-users-error {
+  color: #c62839;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .admin-users {
+    padding: 16px;
+  }
+
+  .admin-users-search {
+    min-width: 100%;
+    width: 100%;
+  }
+}

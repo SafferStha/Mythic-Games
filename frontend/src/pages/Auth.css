@@ -57,3 +57,47 @@
   font-weight: bold;
   cursor: pointer;
 }
+
+.auth-message {
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.auth-message.success {
+  color: #00ff99;
+}
+
+.auth-message.error {
+  color: #ff6b6b;
+}
+
+.auth-input-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+.auth-input-wrapper .auth-input {
+  margin-bottom: 0;
+  padding-right: 45px;
+}
+
+.auth-eye-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.auth-eye-toggle:hover {
+  color: white;
+}
+

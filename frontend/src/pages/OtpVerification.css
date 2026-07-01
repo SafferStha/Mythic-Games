@@ -1,0 +1,70 @@
+.auth-subtitle {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 24px;
+}
+
+.otp-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 32px;
+    padding: 0 10px;
+}
+
+.otp-input {
+    width: 48px;
+    height: 50px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    background: var(--surface-strong);
+    border: 2px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.otp-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--surface);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    transform: translateY(-2px);
+}
+
+.auth-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.resend-wrapper {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.resend-wrapper p {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.resend-link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.2s;
+}
+
+.resend-link:hover {
+    color: var(--accent-strong);
+    text-decoration: underline;
+}

@@ -83,7 +83,7 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ identifier: email, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const payload = await response.json();

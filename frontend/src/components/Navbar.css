@@ -121,6 +121,22 @@
     display: block;
 }
 
+/* ── Profile avatar image in navbar button ── */
+.nav-profile-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 2px solid var(--accent, #6366f1);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nav-profile-btn:hover .nav-profile-avatar {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4);
+}
+
 .nav-profile-wrap:hover .nav-profile-menu,
 .nav-profile-wrap:focus-within .nav-profile-menu {
     opacity: 1;
@@ -206,9 +222,20 @@
     right: 13px;
     top: 50%;
     transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
     font-size: 18px;
     color: var(--text-muted);
-    pointer-events: none;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.nav-search-icon:hover {
+    color: var(--text-primary);
 }
 
 /* Center links */
@@ -256,6 +283,22 @@
 
 /* Cart badge */
 .nav-cart-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    margin-left: 3px;
+}
+
+/* News notification badge */
+.nav-news-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
