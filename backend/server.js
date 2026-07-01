@@ -10,7 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const paymentRoutes = require("./routes/paymentRoutes");
 const newsRoutes = require("./routes/newsRoutes");
-const db = require("./db");
+const db = require("./database/db");
 
 const app = express();
 const PORT = process.env.PORT || 5000;

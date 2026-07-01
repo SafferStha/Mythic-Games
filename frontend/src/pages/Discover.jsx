@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import GameSlider from "../components/GameSlider";
 import GameForm from "../components/GameForm";
 import { getStoredUser } from "../utils/auth";
+import { apiFetch } from "../utils/api";
 import "./Discover.css";
 const API_URL = "http://localhost:5000/api/games";
 
@@ -49,7 +50,7 @@ const Discover = () => {
   const handleDelete = async (game) => {
     if (!window.confirm(`Delete ${game.title}?`)) return;
     try {
-      await fetch(`${API_URL}/${game.id}`, { method: "DELETE" });
+      await apiFetch(`${API_URL}/${game.id}`, { method: "DELETE" });
       setAllGames((prev) => prev.filter((g) => g.id !== game.id));
     } catch (err) {
       alert("Delete failed");
@@ -59,7 +60,7 @@ const Discover = () => {
 
   const handleSave = async (data) => {
     try {
-      const response = await fetch(`${API_URL}/${editingGame.id}`, {
+      const response = await apiFetch(`${API_URL}/${editingGame.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

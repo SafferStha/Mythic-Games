@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
-import { API_BASE_URL } from "../utils/api";
+import { API_BASE_URL, apiFetch } from "../utils/api";
 import "./ManageUsers.css";
 
 const STATUS_FILTERS = ["ALL", "ACTIVE", "BANNED"];
@@ -18,7 +18,7 @@ const ManageUsers = () => {
     try {
       setLoading(true);
       setError("");
-      const response = await fetch(`${API_BASE_URL}/api/users/admin/users`);
+      const response = await apiFetch(`${API_BASE_URL}/api/users/admin/users`);
       const payload = await response.json();
 
       if (!response.ok) {
@@ -62,7 +62,7 @@ const ManageUsers = () => {
       setMessage("");
       setError("");
 
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_BASE_URL}/api/users/admin/users/${user.uid}/${action}`,
         { method: "PATCH" },
       );

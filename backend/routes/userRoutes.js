@@ -1,7 +1,8 @@
 const express = require("express");
-const db = require("../db");
+const db = require("../database/db");
 const bcrypt = require("bcrypt");
 const libraryModel = require("../model/libraryModel");
+const { authenticateToken, requireAdmin } = require("../middleware/authMiddleware");
 
 module.exports = (upload) => {
   const router = express.Router();
@@ -30,7 +31,7 @@ module.exports = (upload) => {
   // --- Admin User Management Routes ---
 
   // List all users for admin management
-  router.get("/admin/users", async (req, res) => {
+  router.get("/admin/users", authenticateToken, requireAdmin, async (req, res) => {
     try {
       const result = await db.query(
         "SELECT uid, username, email, status, created_at, updated_at, profile_image, bio FROM users ORDER BY created_at DESC",
@@ -46,7 +47,7 @@ module.exports = (upload) => {
   });
 
   // Ban a user account
-  router.patch("/admin/users/:uid/ban", async (req, res) => {
+  router.patch("/admin/users/:uid/ban", authenticateToken, requireAdmin, async (req, res) => {
     const { uid } = req.params;
 
     try {
@@ -73,7 +74,7 @@ module.exports = (upload) => {
   });
 
   // Unban a user account
-  router.patch("/admin/users/:uid/unban", async (req, res) => {
+  router.patch("/admin/users/:uid/unban", authenticateToken, requireAdmin, async (req, res) => {
     const { uid } = req.params;
 
     try {
@@ -193,7 +194,7 @@ module.exports = (upload) => {
   });
 
   // Route to get user details
-  router.get("/:uid", async (req, res) => {
+  router.get("/:uid", authenticateToken, async (req, res) => {
     const { uid } = req.params;
     try {
       const result = await db.query(
@@ -216,6 +217,7 @@ module.exports = (upload) => {
   // Route to update user profile image
   router.put(
     "/:uid/avatar",
+    authenticateToken,
     upload.single("profileImage"),
     async (req, res) => {
       const { uid } = req.params;
@@ -252,7 +254,7 @@ module.exports = (upload) => {
   );
 
   // Route to update user profile details (username, email, bio)
-  router.put("/:uid/profile", async (req, res) => {
+  router.put("/:uid/profile", authenticateToken, async (req, res) => {
     const { uid } = req.params;
     const { username, email, bio } = req.body;
 
@@ -285,7 +287,7 @@ module.exports = (upload) => {
   // --- Cart Routes ---
 
   // Get user cart
-  router.get("/:uid/cart", async (req, res) => {
+  router.get("/:uid/cart", authenticateToken, async (req, res) => {
     const { uid } = req.params;
     try {
       if (!(await requireActiveUser(uid, res))) return;
@@ -304,7 +306,7 @@ module.exports = (upload) => {
   });
 
   // Add to cart
-  router.post("/:uid/cart", async (req, res) => {
+  router.post("/:uid/cart", authenticateToken, async (req, res) => {
     const { uid } = req.params;
     const { gameId } = req.body;
     try {
@@ -324,7 +326,7 @@ module.exports = (upload) => {
   });
 
   // Remove from cart
-  router.delete("/:uid/cart/:gameId", async (req, res) => {
+  router.delete("/:uid/cart/:gameId", authenticateToken, async (req, res) => {
     const { uid, gameId } = req.params;
     try {
       if (!(await requireActiveUser(uid, res))) return;
@@ -347,7 +349,7 @@ module.exports = (upload) => {
   // --- Library Routes ---
 
   // Get user library
-  router.get("/:uid/library", async (req, res) => {
+  router.get("/:uid/library", authenticateToken, async (req, res) => {
     const { uid } = req.params;
     try {
       if (!(await requireActiveUser(uid, res))) return;
@@ -363,7 +365,7 @@ module.exports = (upload) => {
   });
 
   // Update install status
-  router.put("/:uid/library/:gameId", async (req, res) => {
+  router.put("/:uid/library/:gameId", authenticateToken, async (req, res) => {
     const { uid, gameId } = req.params;
     const { installStatus } = req.body;
 
@@ -413,7 +415,7 @@ module.exports = (upload) => {
   // --- Wishlist Routes ---
 
   // Get user wishlist
-  router.get("/:uid/wishlist", async (req, res) => {
+  router.get("/:uid/wishlist", authenticateToken, async (req, res) => {
     const { uid } = req.params;
     try {
       if (!(await requireActiveUser(uid, res))) return;
@@ -432,7 +434,7 @@ module.exports = (upload) => {
   });
 
   // Add to wishlist
-  router.post("/:uid/wishlist", async (req, res) => {
+  router.post("/:uid/wishlist", authenticateToken, async (req, res) => {
     const { uid } = req.params;
     const { gameId } = req.body;
     try {
@@ -454,7 +456,7 @@ module.exports = (upload) => {
   });
 
   // Remove from wishlist
-  router.delete("/:uid/wishlist/:gameId", async (req, res) => {
+  router.delete("/:uid/wishlist/:gameId", authenticateToken, async (req, res) => {
     const { uid, gameId } = req.params;
     try {
       if (!(await requireActiveUser(uid, res))) return;

@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../database/db');
 
 async function createOrder({ userId, gameId, amount }, client = db) {
   const result = await client.query(

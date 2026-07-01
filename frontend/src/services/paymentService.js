@@ -1,3 +1,5 @@
+import { apiFetch } from "../utils/api";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 async function parseResponse(response) {
@@ -11,7 +13,7 @@ async function parseResponse(response) {
 }
 
 export async function createDemoCheckout({ userId, gameId, paymentMethod }) {
-  const response = await fetch(`${API_BASE_URL}/api/payments/checkout`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/payments/checkout`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId, gameId, paymentMethod }),
@@ -25,7 +27,7 @@ export async function createBulkDemoCheckout({
   gameIds,
   paymentMethod,
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/payments/checkout/bulk`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/payments/checkout/bulk`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId, gameIds, paymentMethod }),
@@ -35,7 +37,7 @@ export async function createBulkDemoCheckout({
 }
 
 export async function claimFreeGames({ userId, gameIds }) {
-  const response = await fetch(`${API_BASE_URL}/api/payments/claim-free`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/payments/claim-free`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ userId, gameIds }),
@@ -49,7 +51,7 @@ export async function updateDemoPaymentMethod({
   userId,
   paymentMethod,
 }) {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/payments/${paymentId}/method`,
     {
       method: "PUT",
@@ -66,7 +68,7 @@ export async function updateBulkDemoPaymentMethod({
   userId,
   paymentMethod,
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/payments/bulk/method`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/payments/bulk/method`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ paymentIds, userId, paymentMethod }),
@@ -76,7 +78,7 @@ export async function updateBulkDemoPaymentMethod({
 }
 
 export async function processDemoPayment({ paymentId, userId, action }) {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/payments/${paymentId}/process`,
     {
       method: "POST",
@@ -89,7 +91,7 @@ export async function processDemoPayment({ paymentId, userId, action }) {
 }
 
 export async function processBulkDemoPayment({ paymentIds, userId, action }) {
-  const response = await fetch(`${API_BASE_URL}/api/payments/bulk/process`, {
+  const response = await apiFetch(`${API_BASE_URL}/api/payments/bulk/process`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ paymentIds, userId, action }),
@@ -99,7 +101,7 @@ export async function processBulkDemoPayment({ paymentIds, userId, action }) {
 }
 
 export async function getPaymentDetails({ paymentId, userId }) {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/payments/${paymentId}?userId=${encodeURIComponent(userId)}`,
   );
 
@@ -112,14 +114,14 @@ export async function getAdminPayments({ status = "ALL", search = "" } = {}) {
   if (status) query.set("status", status);
   if (search) query.set("search", search);
 
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/payments/admin?${query.toString()}`,
   );
   return parseResponse(response);
 }
 
 export async function getUserPaymentHistory({ userId }) {
-  const response = await fetch(
+  const response = await apiFetch(
     `${API_BASE_URL}/api/payments/user/${encodeURIComponent(userId)}/history`,
   );
 

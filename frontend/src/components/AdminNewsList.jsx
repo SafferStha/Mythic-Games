@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import NewsItem from "./NewsItem";
 import NewsForm from "./NewsForm";
-import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
+import { API_BASE_URL, resolveAssetUrl, apiFetch } from "../utils/api";
 import { NEWS_UPDATED_EVENT } from "../utils/newsNotifications";
 import "./AdminNewsList.css";
 
@@ -78,7 +78,7 @@ const AdminNewsList = () => {
 
     try {
       setError("");
-      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      const response = await apiFetch(`${API_URL}/${id}`, { method: "DELETE" });
       const payload = await response.json().catch(() => null);
 
       if (!response.ok) {
@@ -96,7 +96,7 @@ const AdminNewsList = () => {
       setSaving(true);
       setError("");
 
-      const response = await fetch(editing ? `${API_URL}/${editing.id}` : API_URL, {
+      const response = await apiFetch(editing ? `${API_URL}/${editing.id}` : API_URL, {
         method: editing ? "PUT" : "POST",
         body: buildNewsFormData(data),
       });

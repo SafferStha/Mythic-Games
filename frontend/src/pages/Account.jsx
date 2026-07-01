@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getStoredUser, setStoredUser } from "../utils/auth";
+import { apiFetch } from "../utils/api";
 import Navbar from "../components/Navbar";
 import { FaEnvelope, FaUser, FaCamera, FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Account.css";
@@ -90,7 +91,7 @@ const Account = () => {
       }
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/users/${userId}`);
+        const response = await apiFetch(`${API_BASE_URL}/api/users/${userId}`);
         const payload = await response.json();
 
         if (!response.ok) {
@@ -128,7 +129,7 @@ const Account = () => {
       }
 
       // Update profile details (username, email, bio)
-      const profileResponse = await fetch(`${API_BASE_URL}/api/users/${uid}/profile`, {
+      const profileResponse = await apiFetch(`${API_BASE_URL}/api/users/${uid}/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, bio }),
@@ -176,7 +177,7 @@ const Account = () => {
     formData.append('profileImage', file); // 'profileImage' must match the fieldname in multer config
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/users/${uid}/avatar`, {
+      const response = await apiFetch(`${API_BASE_URL}/api/users/${uid}/avatar`, {
         method: 'PUT',
         // No 'Content-Type' header needed for FormData, browser sets it automatically
         body: formData,

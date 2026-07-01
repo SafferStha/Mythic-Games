@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import GameCard from '../components/GameCard';
 import GameForm from '../components/GameForm';
 import { getStoredUser } from '../utils/auth';
+import { apiFetch } from '../utils/api';
 import './Browse.css';
 const API_URL = 'http://localhost:5000/api/games';
 
@@ -125,7 +126,7 @@ const Browse = () => {
     }
 
     try {
-      await fetch(`${API_URL}/${game.id}`, { method: 'DELETE' });
+      await apiFetch(`${API_URL}/${game.id}`, { method: 'DELETE' });
       setGames((current) => current.filter((item) => item.id !== game.id));
     } catch (err) {
       alert('Failed to delete game from server');
@@ -136,7 +137,7 @@ const Browse = () => {
     if (!editingGame) return;
 
     try {
-      const response = await fetch(`${API_URL}/${editingGame.id}`, {
+      const response = await apiFetch(`${API_URL}/${editingGame.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

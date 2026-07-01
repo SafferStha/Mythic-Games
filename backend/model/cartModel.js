@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('../database/db');
 
 async function removeGameFromCart(userId, gameId, client = db) {
   await client.query(

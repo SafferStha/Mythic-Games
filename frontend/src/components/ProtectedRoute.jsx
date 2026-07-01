@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { API_BASE_URL } from '../utils/api';
+import { API_BASE_URL, apiFetch } from '../utils/api';
 import { clearStoredUser, getStoredUser } from '../utils/auth';
 
 const normalizeRoles = (roles) =>
@@ -37,7 +37,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
 			}
 
 			try {
-				const response = await fetch(`${API_BASE_URL}/api/users/${userId}`);
+				const response = await apiFetch(`${API_BASE_URL}/api/users/${userId}`);
 				const payload = await response.json();
 
 				if (!response.ok || payload?.data?.status !== 'active') {
