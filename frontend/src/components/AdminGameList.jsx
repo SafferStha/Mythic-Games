@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import GameCard from "./GameCard";
 import GameForm from "./GameForm";
-import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
+import { API_BASE_URL, resolveAssetUrl, apiFetch } from "../utils/api";
 import "./AdminGameList.css";
 
 const API_URL = `${API_BASE_URL}/api/games`;
@@ -108,7 +108,7 @@ const AdminGameList = () => {
 
     try {
       setError("");
-      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      const response = await apiFetch(`${API_URL}/${id}`, { method: "DELETE" });
 
       if (!response.ok) {
         throw new Error("Failed to delete game.");
@@ -125,7 +125,7 @@ const AdminGameList = () => {
       setSaving(true);
       setError("");
 
-      const response = await fetch(
+      const response = await apiFetch(
         editing ? `${API_URL}/${editing.id}` : API_URL,
         {
           method: editing ? "PUT" : "POST",

@@ -1,4 +1,4 @@
-const db = require("../db");
+const db = require("../database/db");
 const gameModel = require("../model/gameModel");
 const orderModel = require("../model/orderModel");
 const paymentModel = require("../model/paymentModel");

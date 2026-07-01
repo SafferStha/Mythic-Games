@@ -1,5 +1,6 @@
 const express = require("express");
-const db = require("../db");
+const db = require("../database/db");
+const { authenticateToken, requireAdmin } = require("../middleware/authMiddleware");
 
 function toBoolean(value) {
   return value === true || value === "true" || value === "on" || value === "1";
@@ -135,7 +136,7 @@ module.exports = (upload) => {
   });
 
   // Create a new game
-  router.post("/", upload.single("image"), async (req, res) => {
+  router.post("/", authenticateToken, requireAdmin, upload.single("image"), async (req, res) => {
     const game = buildGamePayload(req.body, req.file, true);
 
     const query = `
@@ -171,7 +172,7 @@ module.exports = (upload) => {
   });
 
   // Update a game
-  router.put("/:id", upload.single("image"), async (req, res) => {
+  router.put("/:id", authenticateToken, requireAdmin, upload.single("image"), async (req, res) => {
     const { id } = req.params;
     const game = buildGamePayload(req.body, req.file);
 
@@ -200,7 +201,7 @@ module.exports = (upload) => {
   });
 
   // Delete a game
-  router.delete("/:id", async (req, res) => {
+  router.delete("/:id", authenticateToken, requireAdmin, async (req, res) => {
     try {
       const result = await db.query("DELETE FROM games WHERE id = $1", [
         req.params.id,

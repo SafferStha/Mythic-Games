@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { getStoredUser } from "../utils/auth";
-import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
+import { API_BASE_URL, resolveAssetUrl, apiFetch } from "../utils/api";
 
 const CART_STORAGE_KEY = "mythic-games-cart";
 const WISHLIST_STORAGE_KEY = "mythic-games-wishlist";
@@ -142,9 +142,9 @@ export const GameLibraryProvider = ({ children }) => {
     const syncLibrary = async () => {
       try {
         const [cartRes, wishlistRes, libraryRes] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/users/${userId}/cart`),
-          fetch(`${API_BASE_URL}/api/users/${userId}/wishlist`),
-          fetch(`${API_BASE_URL}/api/users/${userId}/library`),
+          apiFetch(`${API_BASE_URL}/api/users/${userId}/cart`),
+          apiFetch(`${API_BASE_URL}/api/users/${userId}/wishlist`),
+          apiFetch(`${API_BASE_URL}/api/users/${userId}/library`),
         ]);
 
         const [cartPayload, wishlistPayload, libraryPayload] =
@@ -289,7 +289,7 @@ export const GameLibraryProvider = ({ children }) => {
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
-      const response = await fetch(`${API_BASE_URL}/api/users/${userId}/cart`, {
+      const response = await apiFetch(`${API_BASE_URL}/api/users/${userId}/cart`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ gameId: item.id }),
@@ -329,7 +329,7 @@ export const GameLibraryProvider = ({ children }) => {
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_BASE_URL}/api/users/${userId}/wishlist`,
         {
           method: "POST",
@@ -378,7 +378,7 @@ export const GameLibraryProvider = ({ children }) => {
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_BASE_URL}/api/users/${userId}/cart/${item.id}`,
         {
           method: "DELETE",
@@ -411,7 +411,7 @@ export const GameLibraryProvider = ({ children }) => {
 
     try {
       const userId = currentUser.uid ?? currentUser.user_id;
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_BASE_URL}/api/users/${userId}/wishlist/${item.id}`,
         {
           method: "DELETE",

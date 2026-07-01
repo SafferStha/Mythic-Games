@@ -1,8 +1,13 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const adminModel = require('../model/adminModel');
 const userModel = require('../model/userModel');
 const otpModel = require('../model/otpModel');
 const emailService = require('../service/emailService');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_mythic_games_jwt_key_2026';
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
+
 
 function isBlank(value) {
 	return !value || !String(value).trim();
@@ -149,10 +154,19 @@ async function login(req, res, next) {
 			}
 
 			if (await comparePassword(loginPayload.password, admin.password)) {
+				const sanitizedAdmin = sanitizeAdmin(admin);
+				const token = jwt.sign(
+					{ uid: admin.admin_id, email: admin.email, role: 'admin' },
+					JWT_SECRET,
+					{ expiresIn: JWT_EXPIRES_IN }
+				);
 				return res.json({
 					success: true,
 					message: 'Login successful',
-					data: sanitizeAdmin(admin),
+					data: {
+						...sanitizedAdmin,
+						token,
+					},
 				});
 			}
 		}
@@ -166,10 +180,19 @@ async function login(req, res, next) {
 			}
 
 			if (await comparePassword(loginPayload.password, user.password)) {
+				const sanitizedUser = sanitizeUser(user);
+				const token = jwt.sign(
+					{ uid: user.uid, email: user.email, role: 'user' },
+					JWT_SECRET,
+					{ expiresIn: JWT_EXPIRES_IN }
+				);
 				return res.json({
 					success: true,
 					message: 'Login successful',
-					data: sanitizeUser(user),
+					data: {
+						...sanitizedUser,
+						token,
+					},
 				});
 			}
 		}
