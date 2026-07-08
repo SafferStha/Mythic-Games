@@ -4,11 +4,14 @@ import { BrowserRouter } from 'react-router-dom'
 import 'boxicons/css/boxicons.min.css'
 import './index.css'
 import App from './App.jsx'
+import { GameLibraryProvider } from './contexts/GameLibraryContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <GameLibraryProvider>
+        <App />
+      </GameLibraryProvider>
     </BrowserRouter>
   </StrictMode>,
 )

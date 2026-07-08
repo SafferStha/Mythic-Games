@@ -1,0 +1,174 @@
+.admin-games {
+  padding: 24px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.admin-header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.admin-error,
+.admin-status {
+  margin: 0 0 16px;
+  font-size: 14px;
+}
+
+.admin-error {
+  color: #dc2626;
+}
+
+.admin-status {
+  color: #4b5563;
+}
+
+.form-status {
+  padding: 0 20px 16px;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.admin-game-item {
+  background: transparent;
+  border: 1px solid #f0f0f0;
+  padding: 12px;
+  border-radius: 8px;
+  position: relative;
+}
+
+.admin-game-item .game-card {
+  width: 100%;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-edit,
+.btn-danger {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-edit {
+  background: #4a90e2;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #357abd;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+/* Overlay and modal form */
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+}
+
+.form-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 999;
+  padding: 0;
+}
+
+.form-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.form-panel-header h3 {
+  margin: 0;
+}
+
+.form-panel .game-form {
+  border: none;
+  border-radius: 0;
+  padding: 20px;
+  background: transparent;
+}
+
+.close-tab {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-tab:hover {
+  color: #000;
+}
+
+body[data-theme="dark"] .admin-game-item {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+body[data-theme="dark"] .form-panel {
+  background: #1e1e1e;
+  color: #fff;
+}
+
+body[data-theme="dark"] .form-panel-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+body[data-theme="dark"] .close-tab {
+  color: #aaa;
+}
+
+body[data-theme="dark"] .close-tab:hover {
+  color: #fff;
+}
+

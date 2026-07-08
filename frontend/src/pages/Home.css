@@ -1,20 +1,28 @@
 .home-page {
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text-primary);
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text-primary);
 }
 
-.home-content {
-  padding: 60px 40px;
-  text-align: center;
+.home-page--welcome {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.home-content h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
+.home-welcome-content {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 24px 24px 24px 104px;
 }
 
-.home-content p {
-  font-size: 20px;
-  opacity: 0.8;
+.home-welcome-title {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    text-align: center;
 }

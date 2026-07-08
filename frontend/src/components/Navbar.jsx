@@ -1,121 +1,333 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useEffect, useMemo, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import "./Navbar.css";
 import logo from "../assets/MythicLogo.png";
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from "../contexts/ThemeContext";
+import { useGameLibrary } from "../contexts/GameLibraryContext.jsx";
+import { clearStoredUser, getStoredUser } from "../utils/auth";
+import { API_BASE_URL } from "../utils/api";
+import {
+  NEWS_UPDATED_EVENT,
+  countUnreadNews,
+  markNewsSeen,
+} from "../utils/newsNotifications";
+
+const NEWS_API_URL = `${API_BASE_URL}/api/news`;
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
-  
-    return (
-   <header>
-       {/* TOP NAV */}
-    <nav className="upper-nav">
-        <div className="nav-div">
-            <div className="logo"><Link to="/"><img src={logo} alt="MythicLogo"/></Link></div>
+  const { cartCount, wishlistCount } = useGameLibrary();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  const [storeSearch, setStoreSearch] = useState("");
+  const [unreadNewsCount, setUnreadNewsCount] = useState(0);
 
-            {/* LEFT SIDE Menu */}
-            <ul className="left-menu">
-                <li>
-                    <NavLink
-                        to="/store"
-                        className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
-                    >
-                        Mythic Games
-                    </NavLink>
-                </li>
+  useEffect(() => {
+    const syncAuthState = () => setCurrentUser(getStoredUser());
 
-            </ul>
+    window.addEventListener("storage", syncAuthState);
+    window.addEventListener("auth-changed", syncAuthState);
+    window.addEventListener("focus", syncAuthState);
 
-            {/* RIGHT SIDE */}
+    return () => {
+      window.removeEventListener("storage", syncAuthState);
+      window.removeEventListener("auth-changed", syncAuthState);
+      window.removeEventListener("focus", syncAuthState);
+    };
+  }, []);
 
-            <ul className="right-menu">
-                                <li
-                                    className="theme-toggle"
-                                    onClick={toggleTheme}
-                                    role="button"
-                                    aria-label="Toggle theme"
-                                >
-                                    <i className={`bx ${theme === 'dark' ? 'bx-sun' : 'bx-moon'} theme-icon`}></i>
-                                </li>
-                <li><Link className="btn" to="/login">Sign-In</Link></li>
-            </ul>
+  const menuLabel = useMemo(() => {
+    if (!currentUser) {
+      return "Sign-in";
+    }
+
+    return currentUser.role === "admin" ? "Manage games" : "My account";
+  }, [currentUser]);
+
+  const isAdmin = currentUser?.role === "admin";
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadUnreadNewsCount = async () => {
+      try {
+        const response = await fetch(NEWS_API_URL);
+        const payload = await response.json();
+
+        if (!response.ok) return;
+
+        const articles = payload.data || [];
+
+        if (location.pathname === "/news") {
+          markNewsSeen(articles, false);
+          if (!cancelled) setUnreadNewsCount(0);
+          return;
+        }
+
+        if (!cancelled) {
+          setUnreadNewsCount(countUnreadNews(articles));
+        }
+      } catch {
+        if (!cancelled) setUnreadNewsCount(0);
+      }
+    };
+
+    loadUnreadNewsCount();
+
+    const intervalId = window.setInterval(loadUnreadNewsCount, 30000);
+
+    window.addEventListener("focus", loadUnreadNewsCount);
+    window.addEventListener(NEWS_UPDATED_EVENT, loadUnreadNewsCount);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", loadUnreadNewsCount);
+      window.removeEventListener(NEWS_UPDATED_EVENT, loadUnreadNewsCount);
+    };
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setStoreSearch(params.get("search") || "");
+  }, [location.search]);
+
+  const handleSignOut = () => {
+    clearStoredUser();
+    navigate("/discover");
+  };
+
+  const handleStoreSearch = (event) => {
+    event.preventDefault();
+    const query = storeSearch.trim();
+
+    navigate(query ? `/browse?search=${encodeURIComponent(query)}` : "/browse");
+  };
+
+  return (
+    <header className="navbar">
+      {/* ── Row 1: Logo + right actions ── */}
+      <div className="nav-top">
+        <div className="nav-brand-wrap">
+          <Link to="/" className="nav-logo">
+            <img src={logo} alt="Mythic Games" />
+          </Link>
+          <span className="nav-brand-name">Mythic Games</span>
         </div>
-    </nav>
 
-    {/* LOWER NAV */}
-    <nav className="lower-nav">
-        <div className="nav-div">
-
-            <div className="wrapper">
-            <input type="text" placeholder="Search store" className="search-bar"/>
-             <i className="bx bx-search search-icon" ></i>
-
-             </div>
-            
-        <ul className="lower-menu">
-            <li>
-                <NavLink
-                    to="/discover"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
+        <div className="nav-top-right">
+          <button
+            type="button"
+            className="nav-icon-btn"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+          >
+            <i className={`bx ${theme === "dark" ? "bx-sun" : "bx-moon"}`} />
+          </button>
+          <div className="nav-profile-wrap">
+            <button
+              type="button"
+              className="nav-profile-btn"
+              aria-label="Open account menu"
+            >
+              {currentUser?.profile_image ? (
+                <img
+                  src={
+                    currentUser.profile_image.startsWith("http")
+                      ? currentUser.profile_image
+                      : `${API_BASE_URL}${currentUser.profile_image}`
+                  }
+                  alt="Profile"
+                  className="nav-profile-avatar"
+                />
+              ) : (
+                <i className="bx bx-user-circle" aria-hidden="true" />
+              )}
+            </button>
+            <div
+              className="nav-profile-menu"
+              role="menu"
+              aria-label="Account menu"
+            >
+              {currentUser ? (
+                <>
+                  {isAdmin ? (
+                    <>
+                      <Link
+                        to="/manage-games"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-game" aria-hidden="true" />
+                        <span>{menuLabel}</span>
+                      </Link>
+                      <Link
+                        to="/manage-news"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-news" aria-hidden="true" />
+                        <span>Manage news</span>
+                      </Link>
+                      <Link
+                        to="/manage-payments"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-credit-card" aria-hidden="true" />
+                        <span>Manage payments</span>
+                      </Link>
+                      <Link
+                        to="/manage-users"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-user-x" aria-hidden="true" />
+                        <span>Manage users</span>
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        to="/account"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-user" aria-hidden="true" />
+                        <span>{menuLabel}</span>
+                      </Link>
+                      <Link
+                        to="/library"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-library" aria-hidden="true" />
+                        <span>My library</span>
+                      </Link>
+                      <Link
+                        to="/wishlist"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-heart" aria-hidden="true" />
+                        <span>Wishlist</span>
+                      </Link>
+                      <Link
+                        to="/purchase-history"
+                        className="nav-profile-menu-item"
+                        role="menuitem"
+                      >
+                        <i className="bx bx-receipt" aria-hidden="true" />
+                        <span>Purchase history</span>
+                      </Link>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    className="nav-profile-menu-item nav-profile-menu-button"
+                    role="menuitem"
+                    onClick={handleSignOut}
+                  >
+                    <i className="bx bx-log-out" aria-hidden="true" />
+                    <span>Sign-out</span>
+                  </button>
+                </>
+              ) : (
+                <Link
+                  to="/login"
+                  className="nav-profile-menu-item"
+                  role="menuitem"
                 >
-                    Discover
-                </NavLink>
-            </li>
-            <li>
-                <NavLink
-                    to="/browse"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
-                >
-                    Browse
-                </NavLink>
-            </li>
-            <li>
-                <NavLink
-                    to="/news"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
-                >
-                    News
-                </NavLink>
-            </li>
-        </ul>
-
-        {/* Right side of lower menu */}
-        <ul className="lower-menu-right">
-            <li>
-                <NavLink
-                    to="/wishlist"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
-                >
-                    Wishlist
-                </NavLink>
-            </li>
-            <li>
-                <NavLink
-                    to="/gifts"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
-                >
-                    Gifts
-                </NavLink>
-            </li>
-            <li>
-                <NavLink
-                    to="/cart"
-                    className={({ isActive }) => (isActive ? 'nav-link active-link' : 'nav-link')}
-                >
-                    Cart
-                </NavLink>
-            </li>
-        </ul>
-
+                  <i className="bx bx-log-in" aria-hidden="true" />
+                  <span>{menuLabel}</span>
+                </Link>
+              )}
+            </div>
+          </div>
         </div>
-    </nav>
+      </div>
 
+      {/* ── Row 2: Search + links (indented to align with brand name) ── */}
+      <div className="nav-bottom">
+        <span className="nav-bottom-spacer" aria-hidden="true" />
+        <form className="nav-search-wrap" onSubmit={handleStoreSearch}>
+          <input
+            type="search"
+            placeholder="Search store"
+            className="nav-search"
+            value={storeSearch}
+            onChange={(event) => setStoreSearch(event.target.value)}
+            aria-label="Search store"
+          />
+          <button
+            type="submit"
+            className="nav-search-icon"
+            aria-label="Search store"
+          >
+            <i className="bx bx-search" aria-hidden="true" />
+          </button>
+        </form>
+
+        <nav className="nav-links">
+          <NavLink
+            to="/discover"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Discover
+          </NavLink>
+          <NavLink
+            to="/browse"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Browse
+          </NavLink>
+          <NavLink
+            to="/news"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            News
+            {!isAdmin && unreadNewsCount > 0 && (
+              <span className="nav-news-badge">{unreadNewsCount}</span>
+            )}
+          </NavLink>
+        </nav>
+
+        <div className="nav-right-links">
+          <NavLink
+            to="/wishlist"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            <span className="nav-link-text">Wishlist</span>
+            <i className="bx bx-heart nav-link-icon" aria-hidden="true" />
+            {wishlistCount > 0 && (
+              <span className="nav-cart-badge">{wishlistCount}</span>
+            )}
+          </NavLink>
+          <NavLink
+            to="/cart"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            <span className="nav-link-text">Cart</span>
+            <i className="bx bx-cart nav-link-icon" aria-hidden="true" />
+            {cartCount > 0 && (
+              <span className="nav-cart-badge">{cartCount}</span>
+            )}
+          </NavLink>
+        </div>
+      </div>
     </header>
+  );
+};
 
-    
-  )
-}
-
-export default Navbar
-
+export default Navbar;

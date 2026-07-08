@@ -1,15 +1,13 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
-import './Home.css';
+import Navbar from "../components/Navbar";
+import "./Home.css";
 
 const Home = () => {
   return (
-    <div className="home-page">
+    <div className="home-page home-page--welcome">
       <Navbar />
-      <div className="home-content">
-        <h1>Welcome to Mythic Games</h1>
-        <p>Your ultimate gaming destination</p>
-      </div>
+      <main className="home-welcome-content">
+        <h1 className="home-welcome-title">Welcome to Mythic Games Store</h1>
+      </main>
     </div>
   );
 };

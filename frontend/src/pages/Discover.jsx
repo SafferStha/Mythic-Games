@@ -1,467 +1,167 @@
-import React from 'react';
-import Navbar from '../components/Navbar';
-import GameCard from '../components/GameCard';
-import './Discover.css';
-import redDeadImg from '../assets/RedDead.png';
-import mythicLogoImg from '../assets/MythicLogo.png';
-import GameSlider from '../components/GameSlider';
-
-const UpcomingGames = [
-  {
-    id: 1,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-    isUpcoming: true,
-  },
-  {
-    id: 2,
-    title: 'Cyberpunk 2077',
-    type: 'Base Game',
-    price: 3499,
-    isUpcoming: true,
-    image:
-      'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 3,
-    title: 'Hades II',
-    type: 'Early Access',
-    price: 2199,
-    isUpcoming: true,
-    image:
-      'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?auto=format&fit=crop&w=800&q=80',
-  },
-  {
-    id: 4,
-    title: 'FIFA 25',
-    type: 'Sports',
-    price: 2999,
-    isUpcoming: true,
-    image:
-      'https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=800&q=80',
-  },
-
-  {
-    id:5,
-    title:'Assasins creed',
-    price: 2500,
-    image:redDeadImg,
-    type:'Base Game',
-    isUpcoming: true,
-  },
-
-  {
-    id:6,
-    title:'God of war',
-    price:3000,
-    image:redDeadImg,
-    isUpcoming: true,
-  },
-  {
-    id:7,
-    title:'Far-cry Primal',
-    price:3000,
-    image:redDeadImg,
-    isUpcoming: true,
-  },
-  {
-    id:8,
-    title:'Night falls',
-    price:3000,
-    image:redDeadImg,
-    isUpcoming: true,
-  },
-  {
-    id:9,
-    title:'watch dogs',
-    price:3000,
-    image:redDeadImg,
-    isUpcoming: true,
-  },
-  {
-    id:10,
-    title:'Gta v',
-    price:3000,
-    image:redDeadImg,
-    isUpcoming: true,
-  },
-
-];
-
-
-const TopNewRelease = [
-  {
-    id: 1,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 2,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 3,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 4,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 5,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 6,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 7,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 8,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 9,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 10,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  
-]
-
-
-const Trending = [
-  {
-    id: 1,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 2,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 3,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 4,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 5,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 6,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 7,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 8,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 9,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 10,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  
-]
-const FreeGames = [
-  {
-    id: 1,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 2,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 3,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 4,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-
-  {
-    id: 5,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 6,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 7,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 8,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 9,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  {
-    id: 10,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 4999,
-    image: redDeadImg,
-  },
-  
-]
-const SalesSpotlight = [
-  {
-    id: 1,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-
-  {
-    id: 2,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-
-  {
-    id: 3,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 2000,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-
-  {
-    id: 4,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-
-  {
-    id: 5,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-  {
-    id: 6,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-  {
-    id: 7,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-  {
-    id: 8,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-  {
-    id: 9,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-  {
-    id: 10,
-    title: 'Elden Ring',
-    type: 'Base Game',
-    price: 3999,
-    originalPrice: 4999,
-    discountPercent: 20,
-    image: redDeadImg,
-  },
-  
-]
+import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import GameSlider from "../components/GameSlider";
+import GameForm from "../components/GameForm";
+import { getStoredUser } from "../utils/auth";
+import { apiFetch } from "../utils/api";
+import "./Discover.css";
+const API_URL = "http://localhost:5000/api/games";
 
 const Discover = () => {
+  const [allGames, setAllGames] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(() => getStoredUser());
+  const [editingGame, setEditingGame] = useState(null);
+
+  useEffect(() => {
+    const syncAuth = () => setCurrentUser(getStoredUser());
+    window.addEventListener("auth-changed", syncAuth);
+    return () => window.removeEventListener("auth-changed", syncAuth);
+  }, []);
+
+  useEffect(() => {
+    const fetchGames = async () => {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        setAllGames(data);
+      } catch (error) {
+        console.error("Failed to fetch discover games:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGames();
+  }, []);
+
+  const isAdmin = currentUser?.role === "admin";
+
+  // Derived sections based on database flags
+  const sections = {
+    upcoming: allGames.filter((g) => g.is_upcoming),
+    topNewRelease: allGames.filter((g) => g.is_new_release),
+    trending: allGames.filter((g) => g.is_trending),
+    freeGames: allGames.filter((g) => g.is_free || g.price === 0),
+    salesSpotlight: allGames.filter((g) => g.discount_percent > 0),
+  };
+
+  const closeEditor = () => setEditingGame(null);
+
+  const handleDelete = async (game) => {
+    if (!window.confirm(`Delete ${game.title}?`)) return;
+    try {
+      await apiFetch(`${API_URL}/${game.id}`, { method: "DELETE" });
+      setAllGames((prev) => prev.filter((g) => g.id !== game.id));
+    } catch (err) {
+      alert("Delete failed");
+      console.error("Delete failed:", err);
+    }
+  };
+
+  const handleSave = async (data) => {
+    try {
+      const response = await apiFetch(`${API_URL}/${editingGame.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const updated = await response.json();
+      setAllGames((prev) => prev.map((g) => (g.id === updated.id ? updated : g)));
+      closeEditor();
+    } catch (err) {
+      alert("Save failed");
+      console.error("Save failed:", err);
+    }
+  };
+
   return (
     <div className="discover-page">
       <Navbar />
+      {loading ? (
+        <div className="browse-loading" style={{ marginTop: "100px" }}>
+          Loading discovery...
+        </div>
+      ) : (
+        <main className="discover-main">
+          <GameSlider
+            title="Upcoming Games"
+            games={sections.upcoming.map((g) => ({
+              ...g,
+              image: g.image_url,
+              type: g.game_type,
+            }))}
+            sliderId="Upcoming"
+            showAdminActions={isAdmin}
+            onEdit={setEditingGame}
+            onDelete={handleDelete}
+          />
+          <GameSlider
+            title="Top New Release"
+            games={sections.topNewRelease.map((g) => ({
+              ...g,
+              image: g.image_url,
+              type: g.game_type,
+            }))}
+            sliderId="TopNewRelease"
+            showAdminActions={isAdmin}
+            onEdit={setEditingGame}
+            onDelete={handleDelete}
+          />
+          <GameSlider
+            title="Trending Games"
+            games={sections.trending.map((g) => ({
+              ...g,
+              image: g.image_url,
+              type: g.game_type,
+            }))}
+            sliderId="Trending"
+            showAdminActions={isAdmin}
+            onEdit={setEditingGame}
+            onDelete={handleDelete}
+          />
+          <GameSlider
+            title="Free Games"
+            games={sections.freeGames.map((g) => ({
+              ...g,
+              image: g.image_url,
+              type: g.game_type,
+            }))}
+            sliderId="FreeGames"
+            showAdminActions={isAdmin}
+            onEdit={setEditingGame}
+            onDelete={handleDelete}
+          />
+          <GameSlider
+            title="Sales Spotlight"
+            games={sections.salesSpotlight.map((g) => ({
+              ...g,
+              image: g.image_url,
+              type: g.game_type,
+            }))}
+            sliderId="SalesSpotlight"
+            showAdminActions={isAdmin}
+            onEdit={setEditingGame}
+            onDelete={handleDelete}
+          />
+        </main>
+      )}
 
-      <GameSlider 
-      title="Upcoming Games"
-      games={UpcomingGames}
-      sliderId="Discover"
-      />
-
-      <GameSlider 
-      title="Top New Release"
-      games={TopNewRelease}
-      sliderId="TopNewRelease"
-      />
-
-      <GameSlider 
-      title="Trending Games"
-      games={Trending}
-      sliderId="Trending"
-      />
-
-      <GameSlider 
-      title="Free Games"
-      games={FreeGames}
-      sliderId="FreeGames"
-      />
-
-      <GameSlider 
-      title="Sales Spotlight"
-      games={SalesSpotlight}
-      sliderId="SalesSpotlight"
-      />
-
-
-      
+      {isAdmin && editingGame && (
+        <div className="discover-game-modal" role="dialog" aria-modal="true" aria-labelledby="discover-game-modal-title">
+          <div className="discover-game-modal-overlay" onClick={closeEditor} />
+          <div className="discover-game-modal-panel">
+            <div className="discover-game-modal-header">
+              <h2 id="discover-game-modal-title">Edit Game</h2>
+              <button type="button" className="discover-game-modal-close" onClick={closeEditor} aria-label="Close editor">
+                ×
+              </button>
+            </div>
+            <GameForm initialData={editingGame} onCancel={closeEditor} onSubmit={handleSave} />
+          </div>
+        </div>
+      )}
     </div>
   );
-
 };
 
 export default Discover;

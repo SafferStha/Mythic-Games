@@ -1,15 +1,27 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import Discover from './pages/Discover';
-import Browse from './pages/Browse';
-import News from './pages/News';
-import Wishlist from './pages/Wishlist';
-import Gifts from './pages/Gifts';
-import Cart from './pages/Cart';
-import Login from './pages/Login';
-import Account from './pages/Account';
-import Library from './pages/Library';
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Discover from "./pages/Discover";
+import Browse from "./pages/Browse";
+import News from "./pages/News";
+import Wishlist from "./pages/Wishlist";
+import Cart from "./pages/Cart";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import ResetPassword from "./pages/ResetPassword";
+import OtpVerification from "./pages/OtpVerification";
+import Account from "./pages/Account";
+import Library from "./pages/Library";
+import GameDetails from "./pages/GameDetails";
+import Checkout from "./pages/Checkout";
+import DemoPaymentGateway from "./pages/DemoPaymentGateway";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PurchaseHistory from "./pages/PurchaseHistory";
+import ManageNews from "./pages/ManageNews";
+import ManageGames from "./pages/ManageGames";
+import ManagePayments from "./pages/ManagePayments";
+import ManageUsers from "./pages/ManageUsers";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App = () => {
   return (
@@ -19,12 +31,100 @@ const App = () => {
       <Route path="/discover" element={<Discover />} />
       <Route path="/browse" element={<Browse />} />
       <Route path="/news" element={<News />} />
-      <Route path="/wishlist" element={<Wishlist />} />
-      <Route path="/gifts" element={<Gifts />} />
+      <Route
+        path="/wishlist"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <Wishlist />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/cart" element={<Cart />} />
+      <Route path="/game/:gameTitle" element={<GameDetails />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/account" element={<Account />} />
-      <Route path="/library" element={<Library />} />
+      <Route path="/signup" element={<SignUp />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/otp-verification" element={<OtpVerification />} />
+      <Route
+        path="/account"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <Account />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/library"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <Library />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <Checkout />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment/success/:paymentId"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <PaymentSuccess />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/purchase-history"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <PurchaseHistory />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment/:method/:paymentId"
+        element={
+          <ProtectedRoute allowedRoles={["user"]}>
+            <DemoPaymentGateway />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-news"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <ManageNews />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-games"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <ManageGames />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-payments"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <ManagePayments />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/manage-users"
+        element={
+          <ProtectedRoute allowedRoles={["admin"]}>
+            <ManageUsers />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 };
