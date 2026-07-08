@@ -313,15 +313,6 @@ const Navbar = () => {
             )}
           </NavLink>
           <NavLink
-            to="/gifts"
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
-          >
-            <span className="nav-link-text">Gifts</span>
-            <i className="bx bx-gift nav-link-icon" aria-hidden="true" />
-          </NavLink>
-          <NavLink
             to="/cart"
             className={({ isActive }) =>
               isActive ? "nav-link active" : "nav-link"

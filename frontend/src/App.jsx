@@ -5,7 +5,6 @@ import Discover from "./pages/Discover";
 import Browse from "./pages/Browse";
 import News from "./pages/News";
 import Wishlist from "./pages/Wishlist";
-import Gifts from "./pages/Gifts";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -40,7 +39,6 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-      <Route path="/gifts" element={<Gifts />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/game/:gameTitle" element={<GameDetails />} />
       <Route path="/login" element={<Login />} />
