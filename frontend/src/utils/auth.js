@@ -14,7 +14,9 @@ export const getStoredUser = () => {
 };
 
 export const setStoredUser = (user) => {
-	window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+	const currentUser = getStoredUser() || {};
+	const updatedUser = { ...currentUser, ...user };
+	window.localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(updatedUser));
 	window.dispatchEvent(new Event('auth-changed'));
 };
 

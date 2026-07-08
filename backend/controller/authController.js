@@ -57,6 +57,8 @@ function sanitizeUser(user) {
 		status: user.status,
 		created_at: user.created_at,
 		updated_at: user.updated_at,
+		profile_image: user.profile_image,
+		bio: user.bio,
 	};
 }
 

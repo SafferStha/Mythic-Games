@@ -1,7 +1,7 @@
 const { pool } = require('../database/db');
 
-const USER_SELECT_FIELDS = 'uid, uid AS user_id, username, email, status, created_at, updated_at';
-const AUTH_SELECT_FIELDS = 'uid, uid AS user_id, username, email, password, status, created_at, updated_at';
+const USER_SELECT_FIELDS = 'uid, uid AS user_id, username, email, status, created_at, updated_at, profile_image, bio';
+const AUTH_SELECT_FIELDS = 'uid, uid AS user_id, username, email, password, status, created_at, updated_at, profile_image, bio';
 
 async function getAllUsers() {
 	const result = await pool.query(
