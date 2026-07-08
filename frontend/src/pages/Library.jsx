@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import LibraryCard from "../components/LibraryCard";
 import { getStoredUser } from "../utils/auth";
-import { API_BASE_URL, resolveAssetUrl } from "../utils/api";
+import { API_BASE_URL, resolveAssetUrl, apiFetch } from "../utils/api";
 import "./Library.css";
 
 const filters = ["All", "Installed", "Ready to install"];
@@ -41,7 +41,7 @@ const Library = () => {
       try {
         setLoading(true);
         setError("");
-        const response = await fetch(
+        const response = await apiFetch(
           `${API_BASE_URL}/api/users/${userId}/library`,
         );
         const payload = await response.json();
@@ -75,7 +75,7 @@ const Library = () => {
     const nextStatus = nextInstalled ? "INSTALLED" : "NOT_INSTALLED";
 
     try {
-      const response = await fetch(
+      const response = await apiFetch(
         `${API_BASE_URL}/api/users/${userId}/library/${game.id}`,
         {
           method: "PUT",
